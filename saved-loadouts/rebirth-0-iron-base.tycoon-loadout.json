@@ -1,0 +1,3128 @@
+{
+  "fileType": "tycoon-sim-2-loadout",
+  "version": 1,
+  "id": "loadout-1786067760240-dd72d74147e9a",
+  "name": "Rebirth 0 Iron Base",
+  "createdAt": "2026-08-07T01:56:00.240Z",
+  "updatedAt": "2026-08-07T01:56:00.240Z",
+  "databaseHash": "13b4e0c44323db363e1d08cabcf1c19a51ffc3e0797fb7477d75abe10a58f230",
+  "plan": {
+    "plotSize": 19,
+    "items": [
+      {
+        "id": "manual-item-1786054036290-2a2d5631a532",
+        "order": 1,
+        "name": "Iron Dropper",
+        "label": "IRON DROPPER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 10,
+          "Drop speed": 2,
+          "Ore size": 1
+        },
+        "x": 1,
+        "y": 1,
+        "itemWidth": 2,
+        "itemLength": 3,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 2,
+        "height": 3,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "dropper",
+        "topLeft": "A1",
+        "bottomRight": "B3",
+        "facing": "south",
+        "footprint": {
+          "width": 2,
+          "height": 3
+        },
+        "occupiedCells": [
+          {
+            "x": 1,
+            "y": 1,
+            "coordinate": "A1"
+          },
+          {
+            "x": 2,
+            "y": 1,
+            "coordinate": "B1"
+          },
+          {
+            "x": 1,
+            "y": 2,
+            "coordinate": "A2"
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "coordinate": "B2"
+          },
+          {
+            "x": 1,
+            "y": 3,
+            "coordinate": "A3"
+          },
+          {
+            "x": 2,
+            "y": 3,
+            "coordinate": "B3"
+          }
+        ],
+        "coordinateRange": "A1:B3",
+        "liveDropperNumber": 1
+      },
+      {
+        "id": "manual-item-1786054036290-0b4516c629a588",
+        "order": 2,
+        "name": "Iron Dropper",
+        "label": "IRON DROPPER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 10,
+          "Drop speed": 2,
+          "Ore size": 1
+        },
+        "x": 3,
+        "y": 1,
+        "itemWidth": 2,
+        "itemLength": 3,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 2,
+        "height": 3,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "dropper",
+        "topLeft": "C1",
+        "bottomRight": "D3",
+        "facing": "south",
+        "footprint": {
+          "width": 2,
+          "height": 3
+        },
+        "occupiedCells": [
+          {
+            "x": 3,
+            "y": 1,
+            "coordinate": "C1"
+          },
+          {
+            "x": 4,
+            "y": 1,
+            "coordinate": "D1"
+          },
+          {
+            "x": 3,
+            "y": 2,
+            "coordinate": "C2"
+          },
+          {
+            "x": 4,
+            "y": 2,
+            "coordinate": "D2"
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "coordinate": "C3"
+          },
+          {
+            "x": 4,
+            "y": 3,
+            "coordinate": "D3"
+          }
+        ],
+        "coordinateRange": "C1:D3",
+        "liveDropperNumber": 2
+      },
+      {
+        "id": "manual-item-1786067568243-16c2637fc3ebf",
+        "order": 3,
+        "name": "Iron Dropper",
+        "label": "IRON DROPPER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 10,
+          "Drop speed": 2,
+          "Ore size": 1
+        },
+        "x": 5,
+        "y": 1,
+        "itemWidth": 2,
+        "itemLength": 3,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 2,
+        "height": 3,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "dropper",
+        "topLeft": "E1",
+        "bottomRight": "F3",
+        "facing": "south",
+        "footprint": {
+          "width": 2,
+          "height": 3
+        },
+        "occupiedCells": [
+          {
+            "x": 5,
+            "y": 1,
+            "coordinate": "E1"
+          },
+          {
+            "x": 6,
+            "y": 1,
+            "coordinate": "F1"
+          },
+          {
+            "x": 5,
+            "y": 2,
+            "coordinate": "E2"
+          },
+          {
+            "x": 6,
+            "y": 2,
+            "coordinate": "F2"
+          },
+          {
+            "x": 5,
+            "y": 3,
+            "coordinate": "E3"
+          },
+          {
+            "x": 6,
+            "y": 3,
+            "coordinate": "F3"
+          }
+        ],
+        "coordinateRange": "E1:F3",
+        "liveDropperNumber": 3
+      },
+      {
+        "id": "manual-item-1786067578400-605300721d56e",
+        "order": 4,
+        "name": "Ore Modernizer",
+        "label": "ORE MODERNIZER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 25,
+          "Range": "N/A",
+          "Conveyor speed": 12
+        },
+        "x": 7,
+        "y": 3,
+        "itemWidth": 4,
+        "itemLength": 2,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 2,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "east",
+        "type": "upgrader",
+        "topLeft": "G3",
+        "bottomRight": "H6",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 7,
+            "y": 3,
+            "coordinate": "G3"
+          },
+          {
+            "x": 8,
+            "y": 3,
+            "coordinate": "H3"
+          },
+          {
+            "x": 7,
+            "y": 4,
+            "coordinate": "G4"
+          },
+          {
+            "x": 8,
+            "y": 4,
+            "coordinate": "H4"
+          },
+          {
+            "x": 7,
+            "y": 5,
+            "coordinate": "G5"
+          },
+          {
+            "x": 8,
+            "y": 5,
+            "coordinate": "H5"
+          },
+          {
+            "x": 7,
+            "y": 6,
+            "coordinate": "G6"
+          },
+          {
+            "x": 8,
+            "y": 6,
+            "coordinate": "H6"
+          }
+        ],
+        "coordinateRange": "G3:H6"
+      },
+      {
+        "id": "manual-item-1786067578401-400eb3db942a68",
+        "order": 5,
+        "name": "Ore Modernizer",
+        "label": "ORE MODERNIZER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 25,
+          "Range": "N/A",
+          "Conveyor speed": 12
+        },
+        "x": 9,
+        "y": 3,
+        "itemWidth": 4,
+        "itemLength": 2,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 2,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "east",
+        "type": "upgrader",
+        "topLeft": "I3",
+        "bottomRight": "J6",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 9,
+            "y": 3,
+            "coordinate": "I3"
+          },
+          {
+            "x": 10,
+            "y": 3,
+            "coordinate": "J3"
+          },
+          {
+            "x": 9,
+            "y": 4,
+            "coordinate": "I4"
+          },
+          {
+            "x": 10,
+            "y": 4,
+            "coordinate": "J4"
+          },
+          {
+            "x": 9,
+            "y": 5,
+            "coordinate": "I5"
+          },
+          {
+            "x": 10,
+            "y": 5,
+            "coordinate": "J5"
+          },
+          {
+            "x": 9,
+            "y": 6,
+            "coordinate": "I6"
+          },
+          {
+            "x": 10,
+            "y": 6,
+            "coordinate": "J6"
+          }
+        ],
+        "coordinateRange": "I3:J6"
+      },
+      {
+        "id": "manual-item-1786067578401-7ba23dc84f7be",
+        "order": 6,
+        "name": "Ore Modernizer",
+        "label": "ORE MODERNIZER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 25,
+          "Range": "N/A",
+          "Conveyor speed": 12
+        },
+        "x": 11,
+        "y": 3,
+        "itemWidth": 4,
+        "itemLength": 2,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 2,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "east",
+        "type": "upgrader",
+        "topLeft": "K3",
+        "bottomRight": "L6",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 11,
+            "y": 3,
+            "coordinate": "K3"
+          },
+          {
+            "x": 12,
+            "y": 3,
+            "coordinate": "L3"
+          },
+          {
+            "x": 11,
+            "y": 4,
+            "coordinate": "K4"
+          },
+          {
+            "x": 12,
+            "y": 4,
+            "coordinate": "L4"
+          },
+          {
+            "x": 11,
+            "y": 5,
+            "coordinate": "K5"
+          },
+          {
+            "x": 12,
+            "y": 5,
+            "coordinate": "L5"
+          },
+          {
+            "x": 11,
+            "y": 6,
+            "coordinate": "K6"
+          },
+          {
+            "x": 12,
+            "y": 6,
+            "coordinate": "L6"
+          }
+        ],
+        "coordinateRange": "K3:L6"
+      },
+      {
+        "id": "manual-item-1786067578401-9337eb33391a28",
+        "order": 7,
+        "name": "Ore Modernizer",
+        "label": "ORE MODERNIZER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 25,
+          "Range": "N/A",
+          "Conveyor speed": 12
+        },
+        "x": 13,
+        "y": 3,
+        "itemWidth": 4,
+        "itemLength": 2,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 2,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "east",
+        "type": "upgrader",
+        "topLeft": "M3",
+        "bottomRight": "N6",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 13,
+            "y": 3,
+            "coordinate": "M3"
+          },
+          {
+            "x": 14,
+            "y": 3,
+            "coordinate": "N3"
+          },
+          {
+            "x": 13,
+            "y": 4,
+            "coordinate": "M4"
+          },
+          {
+            "x": 14,
+            "y": 4,
+            "coordinate": "N4"
+          },
+          {
+            "x": 13,
+            "y": 5,
+            "coordinate": "M5"
+          },
+          {
+            "x": 14,
+            "y": 5,
+            "coordinate": "N5"
+          },
+          {
+            "x": 13,
+            "y": 6,
+            "coordinate": "M6"
+          },
+          {
+            "x": 14,
+            "y": 6,
+            "coordinate": "N6"
+          }
+        ],
+        "coordinateRange": "M3:N6"
+      },
+      {
+        "id": "manual-item-1786067590295-53ac67746a28f",
+        "order": 8,
+        "name": "Ore Purifier",
+        "label": "ORE PURIFIER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.6,
+          "Range": "0-3.5K",
+          "Conveyor speed": 12
+        },
+        "x": 15,
+        "y": 5,
+        "itemWidth": 4,
+        "itemLength": 4,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 4,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "upgrader",
+        "topLeft": "O5",
+        "bottomRight": "R8",
+        "facing": "south",
+        "footprint": {
+          "width": 4,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 15,
+            "y": 5,
+            "coordinate": "O5"
+          },
+          {
+            "x": 16,
+            "y": 5,
+            "coordinate": "P5"
+          },
+          {
+            "x": 17,
+            "y": 5,
+            "coordinate": "Q5"
+          },
+          {
+            "x": 18,
+            "y": 5,
+            "coordinate": "R5"
+          },
+          {
+            "x": 15,
+            "y": 6,
+            "coordinate": "O6"
+          },
+          {
+            "x": 16,
+            "y": 6,
+            "coordinate": "P6"
+          },
+          {
+            "x": 17,
+            "y": 6,
+            "coordinate": "Q6"
+          },
+          {
+            "x": 18,
+            "y": 6,
+            "coordinate": "R6"
+          },
+          {
+            "x": 15,
+            "y": 7,
+            "coordinate": "O7"
+          },
+          {
+            "x": 16,
+            "y": 7,
+            "coordinate": "P7"
+          },
+          {
+            "x": 17,
+            "y": 7,
+            "coordinate": "Q7"
+          },
+          {
+            "x": 18,
+            "y": 7,
+            "coordinate": "R7"
+          },
+          {
+            "x": 15,
+            "y": 8,
+            "coordinate": "O8"
+          },
+          {
+            "x": 16,
+            "y": 8,
+            "coordinate": "P8"
+          },
+          {
+            "x": 17,
+            "y": 8,
+            "coordinate": "Q8"
+          },
+          {
+            "x": 18,
+            "y": 8,
+            "coordinate": "R8"
+          }
+        ],
+        "coordinateRange": "O5:R8"
+      },
+      {
+        "id": "manual-item-1786067592409-83a40eaaedbe1",
+        "order": 9,
+        "name": "Ore Purifier",
+        "label": "ORE PURIFIER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.6,
+          "Range": "0-3.5K",
+          "Conveyor speed": 12
+        },
+        "x": 15,
+        "y": 9,
+        "itemWidth": 4,
+        "itemLength": 4,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 4,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "upgrader",
+        "topLeft": "O9",
+        "bottomRight": "R12",
+        "facing": "south",
+        "footprint": {
+          "width": 4,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 15,
+            "y": 9,
+            "coordinate": "O9"
+          },
+          {
+            "x": 16,
+            "y": 9,
+            "coordinate": "P9"
+          },
+          {
+            "x": 17,
+            "y": 9,
+            "coordinate": "Q9"
+          },
+          {
+            "x": 18,
+            "y": 9,
+            "coordinate": "R9"
+          },
+          {
+            "x": 15,
+            "y": 10,
+            "coordinate": "O10"
+          },
+          {
+            "x": 16,
+            "y": 10,
+            "coordinate": "P10"
+          },
+          {
+            "x": 17,
+            "y": 10,
+            "coordinate": "Q10"
+          },
+          {
+            "x": 18,
+            "y": 10,
+            "coordinate": "R10"
+          },
+          {
+            "x": 15,
+            "y": 11,
+            "coordinate": "O11"
+          },
+          {
+            "x": 16,
+            "y": 11,
+            "coordinate": "P11"
+          },
+          {
+            "x": 17,
+            "y": 11,
+            "coordinate": "Q11"
+          },
+          {
+            "x": 18,
+            "y": 11,
+            "coordinate": "R11"
+          },
+          {
+            "x": 15,
+            "y": 12,
+            "coordinate": "O12"
+          },
+          {
+            "x": 16,
+            "y": 12,
+            "coordinate": "P12"
+          },
+          {
+            "x": 17,
+            "y": 12,
+            "coordinate": "Q12"
+          },
+          {
+            "x": 18,
+            "y": 12,
+            "coordinate": "R12"
+          }
+        ],
+        "coordinateRange": "O9:R12"
+      },
+      {
+        "id": "manual-item-1786067592409-10703208d569f8",
+        "order": 10,
+        "name": "Ore Purifier",
+        "label": "ORE PURIFIER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.6,
+          "Range": "0-3.5K",
+          "Conveyor speed": 12
+        },
+        "x": 15,
+        "y": 13,
+        "itemWidth": 4,
+        "itemLength": 4,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 4,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "upgrader",
+        "topLeft": "O13",
+        "bottomRight": "R16",
+        "facing": "south",
+        "footprint": {
+          "width": 4,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 15,
+            "y": 13,
+            "coordinate": "O13"
+          },
+          {
+            "x": 16,
+            "y": 13,
+            "coordinate": "P13"
+          },
+          {
+            "x": 17,
+            "y": 13,
+            "coordinate": "Q13"
+          },
+          {
+            "x": 18,
+            "y": 13,
+            "coordinate": "R13"
+          },
+          {
+            "x": 15,
+            "y": 14,
+            "coordinate": "O14"
+          },
+          {
+            "x": 16,
+            "y": 14,
+            "coordinate": "P14"
+          },
+          {
+            "x": 17,
+            "y": 14,
+            "coordinate": "Q14"
+          },
+          {
+            "x": 18,
+            "y": 14,
+            "coordinate": "R14"
+          },
+          {
+            "x": 15,
+            "y": 15,
+            "coordinate": "O15"
+          },
+          {
+            "x": 16,
+            "y": 15,
+            "coordinate": "P15"
+          },
+          {
+            "x": 17,
+            "y": 15,
+            "coordinate": "Q15"
+          },
+          {
+            "x": 18,
+            "y": 15,
+            "coordinate": "R15"
+          },
+          {
+            "x": 15,
+            "y": 16,
+            "coordinate": "O16"
+          },
+          {
+            "x": 16,
+            "y": 16,
+            "coordinate": "P16"
+          },
+          {
+            "x": 17,
+            "y": 16,
+            "coordinate": "Q16"
+          },
+          {
+            "x": 18,
+            "y": 16,
+            "coordinate": "R16"
+          }
+        ],
+        "coordinateRange": "O13:R16"
+      },
+      {
+        "id": "manual-item-1786067594329-4d060c77571b28",
+        "order": 11,
+        "name": "Ore Purifier",
+        "label": "ORE PURIFIER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.6,
+          "Range": "0-3.5K",
+          "Conveyor speed": 12
+        },
+        "x": 11,
+        "y": 16,
+        "itemWidth": 4,
+        "itemLength": 4,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 4,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "west",
+        "type": "upgrader",
+        "topLeft": "K16",
+        "bottomRight": "N19",
+        "facing": "west",
+        "footprint": {
+          "width": 4,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 11,
+            "y": 16,
+            "coordinate": "K16"
+          },
+          {
+            "x": 12,
+            "y": 16,
+            "coordinate": "L16"
+          },
+          {
+            "x": 13,
+            "y": 16,
+            "coordinate": "M16"
+          },
+          {
+            "x": 14,
+            "y": 16,
+            "coordinate": "N16"
+          },
+          {
+            "x": 11,
+            "y": 17,
+            "coordinate": "K17"
+          },
+          {
+            "x": 12,
+            "y": 17,
+            "coordinate": "L17"
+          },
+          {
+            "x": 13,
+            "y": 17,
+            "coordinate": "M17"
+          },
+          {
+            "x": 14,
+            "y": 17,
+            "coordinate": "N17"
+          },
+          {
+            "x": 11,
+            "y": 18,
+            "coordinate": "K18"
+          },
+          {
+            "x": 12,
+            "y": 18,
+            "coordinate": "L18"
+          },
+          {
+            "x": 13,
+            "y": 18,
+            "coordinate": "M18"
+          },
+          {
+            "x": 14,
+            "y": 18,
+            "coordinate": "N18"
+          },
+          {
+            "x": 11,
+            "y": 19,
+            "coordinate": "K19"
+          },
+          {
+            "x": 12,
+            "y": 19,
+            "coordinate": "L19"
+          },
+          {
+            "x": 13,
+            "y": 19,
+            "coordinate": "M19"
+          },
+          {
+            "x": 14,
+            "y": 19,
+            "coordinate": "N19"
+          }
+        ],
+        "coordinateRange": "K16:N19"
+      },
+      {
+        "id": "manual-item-1786067598688-ad44262500a3a8",
+        "order": 12,
+        "name": "Ore Purifier",
+        "label": "ORE PURIFIER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.6,
+          "Range": "0-3.5K",
+          "Conveyor speed": 12
+        },
+        "x": 7,
+        "y": 16,
+        "itemWidth": 4,
+        "itemLength": 4,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 4,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "west",
+        "type": "upgrader",
+        "topLeft": "G16",
+        "bottomRight": "J19",
+        "facing": "west",
+        "footprint": {
+          "width": 4,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 7,
+            "y": 16,
+            "coordinate": "G16"
+          },
+          {
+            "x": 8,
+            "y": 16,
+            "coordinate": "H16"
+          },
+          {
+            "x": 9,
+            "y": 16,
+            "coordinate": "I16"
+          },
+          {
+            "x": 10,
+            "y": 16,
+            "coordinate": "J16"
+          },
+          {
+            "x": 7,
+            "y": 17,
+            "coordinate": "G17"
+          },
+          {
+            "x": 8,
+            "y": 17,
+            "coordinate": "H17"
+          },
+          {
+            "x": 9,
+            "y": 17,
+            "coordinate": "I17"
+          },
+          {
+            "x": 10,
+            "y": 17,
+            "coordinate": "J17"
+          },
+          {
+            "x": 7,
+            "y": 18,
+            "coordinate": "G18"
+          },
+          {
+            "x": 8,
+            "y": 18,
+            "coordinate": "H18"
+          },
+          {
+            "x": 9,
+            "y": 18,
+            "coordinate": "I18"
+          },
+          {
+            "x": 10,
+            "y": 18,
+            "coordinate": "J18"
+          },
+          {
+            "x": 7,
+            "y": 19,
+            "coordinate": "G19"
+          },
+          {
+            "x": 8,
+            "y": 19,
+            "coordinate": "H19"
+          },
+          {
+            "x": 9,
+            "y": 19,
+            "coordinate": "I19"
+          },
+          {
+            "x": 10,
+            "y": 19,
+            "coordinate": "J19"
+          }
+        ],
+        "coordinateRange": "G16:J19"
+      },
+      {
+        "id": "manual-item-1786067600869-9e55dad86d4fb8",
+        "order": 13,
+        "name": "Ore Purifier",
+        "label": "ORE PURIFIER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.6,
+          "Range": "0-3.5K",
+          "Conveyor speed": 12
+        },
+        "x": 3,
+        "y": 16,
+        "itemWidth": 4,
+        "itemLength": 4,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 4,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "west",
+        "type": "upgrader",
+        "topLeft": "C16",
+        "bottomRight": "F19",
+        "facing": "west",
+        "footprint": {
+          "width": 4,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 3,
+            "y": 16,
+            "coordinate": "C16"
+          },
+          {
+            "x": 4,
+            "y": 16,
+            "coordinate": "D16"
+          },
+          {
+            "x": 5,
+            "y": 16,
+            "coordinate": "E16"
+          },
+          {
+            "x": 6,
+            "y": 16,
+            "coordinate": "F16"
+          },
+          {
+            "x": 3,
+            "y": 17,
+            "coordinate": "C17"
+          },
+          {
+            "x": 4,
+            "y": 17,
+            "coordinate": "D17"
+          },
+          {
+            "x": 5,
+            "y": 17,
+            "coordinate": "E17"
+          },
+          {
+            "x": 6,
+            "y": 17,
+            "coordinate": "F17"
+          },
+          {
+            "x": 3,
+            "y": 18,
+            "coordinate": "C18"
+          },
+          {
+            "x": 4,
+            "y": 18,
+            "coordinate": "D18"
+          },
+          {
+            "x": 5,
+            "y": 18,
+            "coordinate": "E18"
+          },
+          {
+            "x": 6,
+            "y": 18,
+            "coordinate": "F18"
+          },
+          {
+            "x": 3,
+            "y": 19,
+            "coordinate": "C19"
+          },
+          {
+            "x": 4,
+            "y": 19,
+            "coordinate": "D19"
+          },
+          {
+            "x": 5,
+            "y": 19,
+            "coordinate": "E19"
+          },
+          {
+            "x": 6,
+            "y": 19,
+            "coordinate": "F19"
+          }
+        ],
+        "coordinateRange": "C16:F19"
+      },
+      {
+        "id": "manual-item-1786067602221-f93282dfe02dc",
+        "order": 14,
+        "name": "Ore Purifier",
+        "label": "ORE PURIFIER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.6,
+          "Range": "0-3.5K",
+          "Conveyor speed": 12
+        },
+        "x": 1,
+        "y": 12,
+        "itemWidth": 4,
+        "itemLength": 4,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 4,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "north",
+        "type": "upgrader",
+        "topLeft": "A12",
+        "bottomRight": "D15",
+        "facing": "north",
+        "footprint": {
+          "width": 4,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 1,
+            "y": 12,
+            "coordinate": "A12"
+          },
+          {
+            "x": 2,
+            "y": 12,
+            "coordinate": "B12"
+          },
+          {
+            "x": 3,
+            "y": 12,
+            "coordinate": "C12"
+          },
+          {
+            "x": 4,
+            "y": 12,
+            "coordinate": "D12"
+          },
+          {
+            "x": 1,
+            "y": 13,
+            "coordinate": "A13"
+          },
+          {
+            "x": 2,
+            "y": 13,
+            "coordinate": "B13"
+          },
+          {
+            "x": 3,
+            "y": 13,
+            "coordinate": "C13"
+          },
+          {
+            "x": 4,
+            "y": 13,
+            "coordinate": "D13"
+          },
+          {
+            "x": 1,
+            "y": 14,
+            "coordinate": "A14"
+          },
+          {
+            "x": 2,
+            "y": 14,
+            "coordinate": "B14"
+          },
+          {
+            "x": 3,
+            "y": 14,
+            "coordinate": "C14"
+          },
+          {
+            "x": 4,
+            "y": 14,
+            "coordinate": "D14"
+          },
+          {
+            "x": 1,
+            "y": 15,
+            "coordinate": "A15"
+          },
+          {
+            "x": 2,
+            "y": 15,
+            "coordinate": "B15"
+          },
+          {
+            "x": 3,
+            "y": 15,
+            "coordinate": "C15"
+          },
+          {
+            "x": 4,
+            "y": 15,
+            "coordinate": "D15"
+          }
+        ],
+        "coordinateRange": "A12:D15"
+      },
+      {
+        "id": "manual-item-1786067615442-161cb0e944f37",
+        "order": 15,
+        "name": "Incremental Upgrader",
+        "label": "INCREMENTAL",
+        "description": "1.1 multi first time through, 1.25 second time, and 1.75 3rd time · Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "common",
+          "Range": "N/A",
+          "Conveyor speed": 12
+        },
+        "x": 1,
+        "y": 10,
+        "itemWidth": 4,
+        "itemLength": 2,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 4,
+        "height": 2,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "north",
+        "type": "upgrader",
+        "topLeft": "A10",
+        "bottomRight": "D11",
+        "facing": "north",
+        "footprint": {
+          "width": 4,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 1,
+            "y": 10,
+            "coordinate": "A10"
+          },
+          {
+            "x": 2,
+            "y": 10,
+            "coordinate": "B10"
+          },
+          {
+            "x": 3,
+            "y": 10,
+            "coordinate": "C10"
+          },
+          {
+            "x": 4,
+            "y": 10,
+            "coordinate": "D10"
+          },
+          {
+            "x": 1,
+            "y": 11,
+            "coordinate": "A11"
+          },
+          {
+            "x": 2,
+            "y": 11,
+            "coordinate": "B11"
+          },
+          {
+            "x": 3,
+            "y": 11,
+            "coordinate": "C11"
+          },
+          {
+            "x": 4,
+            "y": 11,
+            "coordinate": "D11"
+          }
+        ],
+        "coordinateRange": "A10:D11"
+      },
+      {
+        "id": "manual-item-1786067617804-54f3dce8a8c01",
+        "order": 16,
+        "name": "Incremental Upgrader",
+        "label": "INCREMENTAL",
+        "description": "1.1 multi first time through, 1.25 second time, and 1.75 3rd time · Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "common",
+          "Range": "N/A",
+          "Conveyor speed": 12
+        },
+        "x": 5,
+        "y": 7,
+        "itemWidth": 4,
+        "itemLength": 2,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 2,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "east",
+        "type": "upgrader",
+        "topLeft": "E7",
+        "bottomRight": "F10",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 5,
+            "y": 7,
+            "coordinate": "E7"
+          },
+          {
+            "x": 6,
+            "y": 7,
+            "coordinate": "F7"
+          },
+          {
+            "x": 5,
+            "y": 8,
+            "coordinate": "E8"
+          },
+          {
+            "x": 6,
+            "y": 8,
+            "coordinate": "F8"
+          },
+          {
+            "x": 5,
+            "y": 9,
+            "coordinate": "E9"
+          },
+          {
+            "x": 6,
+            "y": 9,
+            "coordinate": "F9"
+          },
+          {
+            "x": 5,
+            "y": 10,
+            "coordinate": "E10"
+          },
+          {
+            "x": 6,
+            "y": 10,
+            "coordinate": "F10"
+          }
+        ],
+        "coordinateRange": "E7:F10"
+      },
+      {
+        "id": "manual-item-1786067618716-08a06251dc8b2",
+        "order": 17,
+        "name": "Incremental Upgrader",
+        "label": "INCREMENTAL",
+        "description": "1.1 multi first time through, 1.25 second time, and 1.75 3rd time · Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "common",
+          "Range": "N/A",
+          "Conveyor speed": 12
+        },
+        "x": 7,
+        "y": 7,
+        "itemWidth": 4,
+        "itemLength": 2,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 2,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "east",
+        "type": "upgrader",
+        "topLeft": "G7",
+        "bottomRight": "H10",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 7,
+            "y": 7,
+            "coordinate": "G7"
+          },
+          {
+            "x": 8,
+            "y": 7,
+            "coordinate": "H7"
+          },
+          {
+            "x": 7,
+            "y": 8,
+            "coordinate": "G8"
+          },
+          {
+            "x": 8,
+            "y": 8,
+            "coordinate": "H8"
+          },
+          {
+            "x": 7,
+            "y": 9,
+            "coordinate": "G9"
+          },
+          {
+            "x": 8,
+            "y": 9,
+            "coordinate": "H9"
+          },
+          {
+            "x": 7,
+            "y": 10,
+            "coordinate": "G10"
+          },
+          {
+            "x": 8,
+            "y": 10,
+            "coordinate": "H10"
+          }
+        ],
+        "coordinateRange": "G7:H10"
+      },
+      {
+        "id": "manual-item-1786067628388-3e35d62cd1c7b",
+        "order": 18,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 5,
+        "y": 11,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "north",
+        "type": "portable",
+        "topLeft": "E11",
+        "bottomRight": "E12",
+        "facing": "north",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 5,
+            "y": 11,
+            "coordinate": "E11"
+          },
+          {
+            "x": 5,
+            "y": 12,
+            "coordinate": "E12"
+          }
+        ],
+        "coordinateRange": "E11:E12"
+      },
+      {
+        "id": "manual-item-1786067628388-9cd99055f99ab",
+        "order": 19,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 6,
+        "y": 11,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "north",
+        "type": "portable",
+        "topLeft": "F11",
+        "bottomRight": "F12",
+        "facing": "north",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 6,
+            "y": 11,
+            "coordinate": "F11"
+          },
+          {
+            "x": 6,
+            "y": 12,
+            "coordinate": "F12"
+          }
+        ],
+        "coordinateRange": "F11:F12"
+      },
+      {
+        "id": "manual-item-1786067628388-898c7d598ea068",
+        "order": 20,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 7,
+        "y": 11,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "north",
+        "type": "portable",
+        "topLeft": "G11",
+        "bottomRight": "G12",
+        "facing": "north",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 7,
+            "y": 11,
+            "coordinate": "G11"
+          },
+          {
+            "x": 7,
+            "y": 12,
+            "coordinate": "G12"
+          }
+        ],
+        "coordinateRange": "G11:G12"
+      },
+      {
+        "id": "manual-item-1786067628388-c3d9f46d4f1a1",
+        "order": 21,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 8,
+        "y": 11,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "north",
+        "type": "portable",
+        "topLeft": "H11",
+        "bottomRight": "H12",
+        "facing": "north",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 8,
+            "y": 11,
+            "coordinate": "H11"
+          },
+          {
+            "x": 8,
+            "y": 12,
+            "coordinate": "H12"
+          }
+        ],
+        "coordinateRange": "H11:H12"
+      },
+      {
+        "id": "manual-item-1786067631394-48089fcddd4d1",
+        "order": 22,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 4,
+        "y": 6,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "D6",
+        "bottomRight": "D7",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 4,
+            "y": 6,
+            "coordinate": "D6"
+          },
+          {
+            "x": 4,
+            "y": 7,
+            "coordinate": "D7"
+          }
+        ],
+        "coordinateRange": "D6:D7"
+      },
+      {
+        "id": "manual-item-1786067631394-3cd61474b4715",
+        "order": 23,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 3,
+        "y": 6,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "C6",
+        "bottomRight": "C7",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 3,
+            "y": 6,
+            "coordinate": "C6"
+          },
+          {
+            "x": 3,
+            "y": 7,
+            "coordinate": "C7"
+          }
+        ],
+        "coordinateRange": "C6:C7"
+      },
+      {
+        "id": "manual-item-1786067631394-951c0dc11b202",
+        "order": 24,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 2,
+        "y": 6,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "B6",
+        "bottomRight": "B7",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 2,
+            "y": 6,
+            "coordinate": "B6"
+          },
+          {
+            "x": 2,
+            "y": 7,
+            "coordinate": "B7"
+          }
+        ],
+        "coordinateRange": "B6:B7"
+      },
+      {
+        "id": "manual-item-1786067636391-3dec6b25467b08",
+        "order": 25,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 5,
+        "y": 14,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "E14",
+        "bottomRight": "E15",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 5,
+            "y": 14,
+            "coordinate": "E14"
+          },
+          {
+            "x": 5,
+            "y": 15,
+            "coordinate": "E15"
+          }
+        ],
+        "coordinateRange": "E14:E15"
+      },
+      {
+        "id": "manual-item-1786067636391-1e698fe0c65c88",
+        "order": 26,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 6,
+        "y": 14,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "F14",
+        "bottomRight": "F15",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 6,
+            "y": 14,
+            "coordinate": "F14"
+          },
+          {
+            "x": 6,
+            "y": 15,
+            "coordinate": "F15"
+          }
+        ],
+        "coordinateRange": "F14:F15"
+      },
+      {
+        "id": "manual-item-1786067636391-8362063a1e5ee8",
+        "order": 27,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 7,
+        "y": 14,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "G14",
+        "bottomRight": "G15",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 7,
+            "y": 14,
+            "coordinate": "G14"
+          },
+          {
+            "x": 7,
+            "y": 15,
+            "coordinate": "G15"
+          }
+        ],
+        "coordinateRange": "G14:G15"
+      },
+      {
+        "id": "manual-item-1786067636391-a9662f8b2cf4b",
+        "order": 28,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 8,
+        "y": 14,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "H14",
+        "bottomRight": "H15",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 8,
+            "y": 14,
+            "coordinate": "H14"
+          },
+          {
+            "x": 8,
+            "y": 15,
+            "coordinate": "H15"
+          }
+        ],
+        "coordinateRange": "H14:H15"
+      },
+      {
+        "id": "manual-item-1786067636391-aebdb510f4c71",
+        "order": 29,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 9,
+        "y": 14,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "I14",
+        "bottomRight": "I15",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 9,
+            "y": 14,
+            "coordinate": "I14"
+          },
+          {
+            "x": 9,
+            "y": 15,
+            "coordinate": "I15"
+          }
+        ],
+        "coordinateRange": "I14:I15"
+      },
+      {
+        "id": "manual-item-1786067636391-021557fb7c689",
+        "order": 30,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 10,
+        "y": 14,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "J14",
+        "bottomRight": "J15",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 10,
+            "y": 14,
+            "coordinate": "J14"
+          },
+          {
+            "x": 10,
+            "y": 15,
+            "coordinate": "J15"
+          }
+        ],
+        "coordinateRange": "J14:J15"
+      },
+      {
+        "id": "manual-item-1786067636391-62f411e0b5453",
+        "order": 31,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 11,
+        "y": 14,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "K14",
+        "bottomRight": "K15",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 11,
+            "y": 14,
+            "coordinate": "K14"
+          },
+          {
+            "x": 11,
+            "y": 15,
+            "coordinate": "K15"
+          }
+        ],
+        "coordinateRange": "K14:K15"
+      },
+      {
+        "id": "manual-item-1786067636391-de85a8f94def4",
+        "order": 32,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 12,
+        "y": 14,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "L14",
+        "bottomRight": "L15",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 12,
+            "y": 14,
+            "coordinate": "L14"
+          },
+          {
+            "x": 12,
+            "y": 15,
+            "coordinate": "L15"
+          }
+        ],
+        "coordinateRange": "L14:L15"
+      },
+      {
+        "id": "manual-item-1786067636392-0a23c0e0e321c8",
+        "order": 33,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 13,
+        "y": 14,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "M14",
+        "bottomRight": "M15",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 13,
+            "y": 14,
+            "coordinate": "M14"
+          },
+          {
+            "x": 13,
+            "y": 15,
+            "coordinate": "M15"
+          }
+        ],
+        "coordinateRange": "M14:M15"
+      },
+      {
+        "id": "manual-item-1786067636392-fe082e229b1938",
+        "order": 34,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 14,
+        "y": 14,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 1,
+        "height": 2,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "portable",
+        "topLeft": "N14",
+        "bottomRight": "N15",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 14,
+            "y": 14,
+            "coordinate": "N14"
+          },
+          {
+            "x": 14,
+            "y": 15,
+            "coordinate": "N15"
+          }
+        ],
+        "coordinateRange": "N14:N15"
+      },
+      {
+        "id": "manual-item-1786067641570-17a597ad996c3",
+        "order": 35,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 17,
+        "y": 17,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 2,
+        "height": 1,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "west",
+        "type": "portable",
+        "topLeft": "Q17",
+        "bottomRight": "R17",
+        "facing": "west",
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "occupiedCells": [
+          {
+            "x": 17,
+            "y": 17,
+            "coordinate": "Q17"
+          },
+          {
+            "x": 18,
+            "y": 17,
+            "coordinate": "R17"
+          }
+        ],
+        "coordinateRange": "Q17:R17"
+      },
+      {
+        "id": "manual-item-1786067642751-e023f57bcb9e9",
+        "order": 36,
+        "name": "Portable Upgrader",
+        "label": "PORTABLE",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 1.05,
+          "Range": "N/A",
+          "Conveyor speed": 0
+        },
+        "x": 13,
+        "y": 13,
+        "itemWidth": 2,
+        "itemLength": 1,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 2,
+        "height": 1,
+        "beamLength": 2,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "east",
+        "type": "portable",
+        "topLeft": "M13",
+        "bottomRight": "N13",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "occupiedCells": [
+          {
+            "x": 13,
+            "y": 13,
+            "coordinate": "M13"
+          },
+          {
+            "x": 14,
+            "y": 13,
+            "coordinate": "N13"
+          }
+        ],
+        "coordinateRange": "M13:N13"
+      },
+      {
+        "id": "manual-item-1786067716707-90b6ac129ff7f8",
+        "order": 37,
+        "name": "Proficient Furnace",
+        "label": "PROFICIENT",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Rare",
+          "Main stat": 2.5
+        },
+        "x": 9,
+        "y": 8,
+        "itemWidth": 4,
+        "itemLength": 4,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 4,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 2,
+        "processingZoneDepth": 2,
+        "processingZonePlacement": "front-corner",
+        "sourceDroppers": null,
+        "direction": "west",
+        "type": "furnace",
+        "topLeft": "I8",
+        "bottomRight": "L11",
+        "facing": "west",
+        "footprint": {
+          "width": 4,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 9,
+            "y": 8,
+            "coordinate": "I8"
+          },
+          {
+            "x": 10,
+            "y": 8,
+            "coordinate": "J8"
+          },
+          {
+            "x": 11,
+            "y": 8,
+            "coordinate": "K8"
+          },
+          {
+            "x": 12,
+            "y": 8,
+            "coordinate": "L8"
+          },
+          {
+            "x": 9,
+            "y": 9,
+            "coordinate": "I9"
+          },
+          {
+            "x": 10,
+            "y": 9,
+            "coordinate": "J9"
+          },
+          {
+            "x": 11,
+            "y": 9,
+            "coordinate": "K9"
+          },
+          {
+            "x": 12,
+            "y": 9,
+            "coordinate": "L9"
+          },
+          {
+            "x": 9,
+            "y": 10,
+            "coordinate": "I10"
+          },
+          {
+            "x": 10,
+            "y": 10,
+            "coordinate": "J10"
+          },
+          {
+            "x": 11,
+            "y": 10,
+            "coordinate": "K10"
+          },
+          {
+            "x": 12,
+            "y": 10,
+            "coordinate": "L10"
+          },
+          {
+            "x": 9,
+            "y": 11,
+            "coordinate": "I11"
+          },
+          {
+            "x": 10,
+            "y": 11,
+            "coordinate": "J11"
+          },
+          {
+            "x": 11,
+            "y": 11,
+            "coordinate": "K11"
+          },
+          {
+            "x": 12,
+            "y": 11,
+            "coordinate": "L11"
+          }
+        ],
+        "coordinateRange": "I8:L11"
+      }
+    ],
+    "lanes": [
+      {
+        "id": "manual-conveyor-1786054072512-4f6b3ef70e25e",
+        "name": "Supercharged Conveyor",
+        "conveyor": "Supercharged Conveyor",
+        "x": 1,
+        "y": 4,
+        "itemWidth": 2,
+        "itemLength": 2,
+        "width": 2,
+        "height": 2,
+        "direction": "east",
+        "speed": 18,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "A4",
+        "bottomRight": "B5",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 1,
+            "y": 4,
+            "coordinate": "A4"
+          },
+          {
+            "x": 2,
+            "y": 4,
+            "coordinate": "B4"
+          },
+          {
+            "x": 1,
+            "y": 5,
+            "coordinate": "A5"
+          },
+          {
+            "x": 2,
+            "y": 5,
+            "coordinate": "B5"
+          }
+        ],
+        "coordinateRange": "A4:B5"
+      },
+      {
+        "id": "manual-conveyor-1786054073873-42f5a841aed06",
+        "name": "Supercharged Conveyor",
+        "conveyor": "Supercharged Conveyor",
+        "x": 3,
+        "y": 4,
+        "itemWidth": 2,
+        "itemLength": 2,
+        "width": 2,
+        "height": 2,
+        "direction": "east",
+        "speed": 18,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "C4",
+        "bottomRight": "D5",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 3,
+            "y": 4,
+            "coordinate": "C4"
+          },
+          {
+            "x": 4,
+            "y": 4,
+            "coordinate": "D4"
+          },
+          {
+            "x": 3,
+            "y": 5,
+            "coordinate": "C5"
+          },
+          {
+            "x": 4,
+            "y": 5,
+            "coordinate": "D5"
+          }
+        ],
+        "coordinateRange": "C4:D5"
+      },
+      {
+        "id": "manual-conveyor-1786067570388-86a5eecee500f",
+        "name": "Supercharged Conveyor",
+        "conveyor": "Supercharged Conveyor",
+        "x": 5,
+        "y": 4,
+        "itemWidth": 2,
+        "itemLength": 2,
+        "width": 2,
+        "height": 2,
+        "direction": "east",
+        "speed": 18,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "E4",
+        "bottomRight": "F5",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 5,
+            "y": 4,
+            "coordinate": "E4"
+          },
+          {
+            "x": 6,
+            "y": 4,
+            "coordinate": "F4"
+          },
+          {
+            "x": 5,
+            "y": 5,
+            "coordinate": "E5"
+          },
+          {
+            "x": 6,
+            "y": 5,
+            "coordinate": "F5"
+          }
+        ],
+        "coordinateRange": "E4:F5"
+      },
+      {
+        "id": "manual-conveyor-1786067659406-b0885e47f63b9",
+        "name": "Supercharged Conveyor",
+        "conveyor": "Supercharged Conveyor",
+        "x": 15,
+        "y": 17,
+        "itemWidth": 2,
+        "itemLength": 2,
+        "width": 2,
+        "height": 2,
+        "direction": "west",
+        "speed": 18,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "O17",
+        "bottomRight": "P18",
+        "facing": "west",
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 15,
+            "y": 17,
+            "coordinate": "O17"
+          },
+          {
+            "x": 16,
+            "y": 17,
+            "coordinate": "P17"
+          },
+          {
+            "x": 15,
+            "y": 18,
+            "coordinate": "O18"
+          },
+          {
+            "x": 16,
+            "y": 18,
+            "coordinate": "P18"
+          }
+        ],
+        "coordinateRange": "O17:P18"
+      },
+      {
+        "id": "manual-conveyor-1786067671380-1a62d43ace78e",
+        "name": "Supercharged Conveyor",
+        "conveyor": "Supercharged Conveyor",
+        "x": 1,
+        "y": 16,
+        "itemWidth": 2,
+        "itemLength": 2,
+        "width": 2,
+        "height": 2,
+        "direction": "north",
+        "speed": 18,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "A16",
+        "bottomRight": "B17",
+        "facing": "north",
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 1,
+            "y": 16,
+            "coordinate": "A16"
+          },
+          {
+            "x": 2,
+            "y": 16,
+            "coordinate": "B16"
+          },
+          {
+            "x": 1,
+            "y": 17,
+            "coordinate": "A17"
+          },
+          {
+            "x": 2,
+            "y": 17,
+            "coordinate": "B17"
+          }
+        ],
+        "coordinateRange": "A16:B17"
+      },
+      {
+        "id": "manual-conveyor-1786067671380-ac17d131b4fa4",
+        "name": "Supercharged Conveyor",
+        "conveyor": "Supercharged Conveyor",
+        "x": 1,
+        "y": 18,
+        "itemWidth": 2,
+        "itemLength": 2,
+        "width": 2,
+        "height": 2,
+        "direction": "north",
+        "speed": 18,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "A18",
+        "bottomRight": "B19",
+        "facing": "north",
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 1,
+            "y": 18,
+            "coordinate": "A18"
+          },
+          {
+            "x": 2,
+            "y": 18,
+            "coordinate": "B18"
+          },
+          {
+            "x": 1,
+            "y": 19,
+            "coordinate": "A19"
+          },
+          {
+            "x": 2,
+            "y": 19,
+            "coordinate": "B19"
+          }
+        ],
+        "coordinateRange": "A18:B19"
+      },
+      {
+        "id": "manual-conveyor-1786067692074-54eb3ca9fd337",
+        "name": "Quarter Conveyor",
+        "conveyor": "Quarter Conveyor",
+        "x": 15,
+        "y": 4,
+        "itemWidth": 1,
+        "itemLength": 1,
+        "width": 1,
+        "height": 1,
+        "direction": "east",
+        "speed": 12,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "O4",
+        "bottomRight": "O4",
+        "facing": "east",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "occupiedCells": [
+          {
+            "x": 15,
+            "y": 4,
+            "coordinate": "O4"
+          }
+        ],
+        "coordinateRange": "O4"
+      },
+      {
+        "id": "manual-conveyor-1786067693025-ebc5db6173fbf8",
+        "name": "Quarter Conveyor",
+        "conveyor": "Quarter Conveyor",
+        "x": 16,
+        "y": 4,
+        "itemWidth": 1,
+        "itemLength": 1,
+        "width": 1,
+        "height": 1,
+        "direction": "south",
+        "speed": 12,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "P4",
+        "bottomRight": "P4",
+        "facing": "south",
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "occupiedCells": [
+          {
+            "x": 16,
+            "y": 4,
+            "coordinate": "P4"
+          }
+        ],
+        "coordinateRange": "P4"
+      },
+      {
+        "id": "manual-conveyor-1786067699834-7f8687fca6dcd8",
+        "name": "Supercharged Conveyor",
+        "conveyor": "Supercharged Conveyor",
+        "x": 3,
+        "y": 8,
+        "itemWidth": 2,
+        "itemLength": 2,
+        "width": 2,
+        "height": 2,
+        "direction": "east",
+        "speed": 18,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "C8",
+        "bottomRight": "D9",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 3,
+            "y": 8,
+            "coordinate": "C8"
+          },
+          {
+            "x": 4,
+            "y": 8,
+            "coordinate": "D8"
+          },
+          {
+            "x": 3,
+            "y": 9,
+            "coordinate": "C9"
+          },
+          {
+            "x": 4,
+            "y": 9,
+            "coordinate": "D9"
+          }
+        ],
+        "coordinateRange": "C8:D9"
+      },
+      {
+        "id": "manual-conveyor-1786067700526-ae3af73cd1458",
+        "name": "Supercharged Conveyor",
+        "conveyor": "Supercharged Conveyor",
+        "x": 1,
+        "y": 8,
+        "itemWidth": 2,
+        "itemLength": 2,
+        "width": 2,
+        "height": 2,
+        "direction": "east",
+        "speed": 18,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "A8",
+        "bottomRight": "B9",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 1,
+            "y": 8,
+            "coordinate": "A8"
+          },
+          {
+            "x": 2,
+            "y": 8,
+            "coordinate": "B8"
+          },
+          {
+            "x": 1,
+            "y": 9,
+            "coordinate": "A9"
+          },
+          {
+            "x": 2,
+            "y": 9,
+            "coordinate": "B9"
+          }
+        ],
+        "coordinateRange": "A8:B9"
+      }
+    ]
+  },
+  "stats": {
+    "expectedCashPerMinute": 15528600,
+    "rebirth": 0,
+    "lastRebirthItem": "None",
+    "plotSize": 19,
+    "highestCrate": "Factory",
+    "payment": "F2P",
+    "specialItems": {
+      "merchant": [],
+      "secret": [],
+      "achievement": [],
+      "premium": []
+    },
+    "oreLimit": 100,
+    "activeOres": 76,
+    "projectedActiveOres": 76,
+    "limitedByOreCap": false,
+    "destroyedOresPerMinute": 0,
+    "survivalToFurnace": 1,
+    "furnaceEntriesPerMinute": 360,
+    "longestRouteSeconds": 13,
+    "routesTotal": 3,
+    "routesReachingFurnace": 3,
+    "reservedTiles": 274,
+    "remainingTiles": 87,
+    "itemCount": 37,
+    "conveyorCount": 10,
+    "diagnosticCount": 0,
+    "simulationValid": true
+  },
+  "diagnostics": []
+}

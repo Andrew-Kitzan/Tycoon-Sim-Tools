@@ -53,6 +53,7 @@ const savedBaseList = document.querySelector('#saved-base-list');
 const savedBaseDetails = document.querySelector('#saved-base-details');
 const savedBasePreview = document.querySelector('#saved-base-preview');
 const loadBaseStatus = document.querySelector('#load-base-status');
+const savedLoadoutFolderFiles = document.querySelector('#saved-loadout-folder-files');
 const savedLoadoutFolderInput = document.querySelector('#saved-loadout-folder-input');
 const savedLoadoutFileInput = document.querySelector('#saved-loadout-file-input');
 const confirmLoadBaseDialog = document.querySelector('#confirm-load-base-dialog');
@@ -1590,38 +1591,139 @@ function downloadLoadoutFile(record) {
   URL.revokeObjectURL(url);
 }
 
-async function chooseSavedLoadoutDirectory() {
+const LOADOUT_HANDLE_DB_NAME = 'tycoon-sim-2-fs-handles';
+const LOADOUT_HANDLE_STORE_NAME = 'handles';
+const LOADOUT_HANDLE_KEY = 'saved-loadout-directory';
+
+function openLoadoutHandleDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(LOADOUT_HANDLE_DB_NAME, 1);
+    request.onupgradeneeded = () => request.result.createObjectStore(LOADOUT_HANDLE_STORE_NAME);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function persistSavedLoadoutDirectoryHandle(handle) {
+  try {
+    const db = await openLoadoutHandleDatabase();
+    await new Promise((resolve, reject) => {
+      const transaction = db.transaction(LOADOUT_HANDLE_STORE_NAME, 'readwrite');
+      transaction.objectStore(LOADOUT_HANDLE_STORE_NAME).put(handle, LOADOUT_HANDLE_KEY);
+      transaction.oncomplete = resolve;
+      transaction.onerror = () => reject(transaction.error);
+    });
+  } catch {
+    // IndexedDB unavailable or the handle isn't cloneable; the in-memory handle still works for this tab.
+  }
+}
+
+async function loadPersistedSavedLoadoutDirectoryHandle() {
+  try {
+    const db = await openLoadoutHandleDatabase();
+    return await new Promise((resolve, reject) => {
+      const transaction = db.transaction(LOADOUT_HANDLE_STORE_NAME, 'readonly');
+      const request = transaction.objectStore(LOADOUT_HANDLE_STORE_NAME).get(LOADOUT_HANDLE_KEY);
+      request.onsuccess = () => resolve(request.result ?? null);
+      request.onerror = () => reject(request.error);
+    });
+  } catch {
+    return null;
+  }
+}
+
+// Reconnects to the previously chosen saved-loadouts folder without prompting the user to pick it
+// again. `allowPicker` only opens the folder picker as a last resort when nothing is connected yet;
+// re-selecting a *different* folder only ever happens through the explicit "Import" button.
+async function connectSavedLoadoutDirectory({ allowPicker = false } = {}) {
   if (savedLoadoutDirectoryHandle) return savedLoadoutDirectoryHandle;
   if (typeof globalThis.showDirectoryPicker !== 'function') return null;
+  const persisted = await loadPersistedSavedLoadoutDirectoryHandle();
+  if (persisted) {
+    try {
+      let permission = await persisted.queryPermission({ mode: 'readwrite' });
+      if (permission !== 'granted') permission = await persisted.requestPermission({ mode: 'readwrite' });
+      if (permission === 'granted') {
+        savedLoadoutDirectoryHandle = persisted;
+        return savedLoadoutDirectoryHandle;
+      }
+    } catch {
+      // The Permissions API isn't supported or the handle is stale; fall through below.
+    }
+  }
+  if (!allowPicker) return null;
   savedLoadoutDirectoryHandle = await globalThis.showDirectoryPicker({
     id: 'tycoon-sim-2-saved-loadouts',
     mode: 'readwrite',
     startIn: 'documents',
   });
+  await persistSavedLoadoutDirectoryHandle(savedLoadoutDirectoryHandle);
   return savedLoadoutDirectoryHandle;
 }
 
+function renderLoadoutFolderStatus(handle, filenames) {
+  if (!savedLoadoutFolderFiles) return;
+  if (!handle) {
+    savedLoadoutFolderFiles.textContent = 'No saved-loadouts folder connected. Use “Import saved-loadouts folder” to connect one.';
+    return;
+  }
+  savedLoadoutFolderFiles.textContent = filenames.length
+    ? `Connected to “${handle.name}” · ${filenames.length} JSON file${filenames.length === 1 ? '' : 's'}: ${filenames.join(', ')}`
+    : `Connected to “${handle.name}” · no JSON files found in this folder.`;
+}
+
+async function directoryJsonFiles(directory) {
+  const entries = [];
+  for await (const entry of directory.values()) {
+    if (entry.kind !== 'file' || !entry.name.toLowerCase().endsWith('.json')) continue;
+    entries.push(entry);
+  }
+  entries.sort((left, right) => left.name.localeCompare(right.name));
+  return entries;
+}
+
+async function syncSavedLoadoutsFromDirectory(directory) {
+  const entries = await directoryJsonFiles(directory);
+  let imported = 0;
+  const errors = [];
+  for (const entry of entries) {
+    try {
+      const record = normalizeSavedLoadout(JSON.parse(await (await entry.getFile()).text()));
+      upsertSavedLoadout(record);
+      imported += 1;
+    } catch (error) {
+      errors.push(`${entry.name}: ${error.message}`);
+    }
+  }
+  renderLoadoutFolderStatus(directory, entries.map((entry) => entry.name));
+  return { imported, errors };
+}
+
 async function importSavedLoadoutFolder() {
-  const directory = await chooseSavedLoadoutDirectory();
-  if (!directory?.values) {
+  if (typeof globalThis.showDirectoryPicker !== 'function') {
     savedLoadoutFolderInput.click();
     return 'file-input';
   }
-  const files = [];
-  for await (const entry of directory.values()) {
-    if (entry.kind !== 'file' || !entry.name.toLowerCase().endsWith('.json')) continue;
-    files.push(await entry.getFile());
-  }
-  await importSavedLoadoutFiles(files);
+  const directory = await globalThis.showDirectoryPicker({
+    id: 'tycoon-sim-2-saved-loadouts',
+    mode: 'readwrite',
+    startIn: 'documents',
+  });
+  savedLoadoutDirectoryHandle = directory;
+  await persistSavedLoadoutDirectoryHandle(directory);
+  const { imported, errors } = await syncSavedLoadoutsFromDirectory(directory);
+  loadBaseStatus.textContent = `${imported} loadout${imported === 1 ? '' : 's'} imported.${errors.length ? ` ${errors.length} file${errors.length === 1 ? '' : 's'} skipped.` : ''}`;
+  renderSavedBaseList();
   return 'folder';
 }
 
 async function deleteLoadoutFile(record) {
-  const directory = await chooseSavedLoadoutDirectory();
+  const directory = await connectSavedLoadoutDirectory({ allowPicker: false });
   const filename = loadoutFilename(record.name);
   if (!directory?.removeEntry) return { status: 'unsupported', filename };
   try {
     await directory.removeEntry(filename);
+    renderLoadoutFolderStatus(directory, (await directoryJsonFiles(directory)).map((entry) => entry.name));
     return { status: 'deleted', filename };
   } catch (error) {
     if (error?.name === 'NotFoundError') return { status: 'missing', filename };
@@ -1632,8 +1734,8 @@ async function deleteLoadoutFile(record) {
 async function writeLoadoutFile(record) {
   if (typeof globalThis.showDirectoryPicker === 'function') {
     try {
-      savedLoadoutDirectoryHandle = await chooseSavedLoadoutDirectory();
-      const file = await savedLoadoutDirectoryHandle.getFileHandle(loadoutFilename(record.name), { create: true });
+      const directory = await connectSavedLoadoutDirectory({ allowPicker: true });
+      const file = await directory.getFileHandle(loadoutFilename(record.name), { create: true });
       const writable = await file.createWritable();
       await writable.write(JSON.stringify(record, null, 2));
       await writable.close();
@@ -1738,7 +1840,7 @@ function openSaveBaseMenu() {
   const placements = (activePlan?.items?.length ?? 0) + (activePlan?.lanes?.length ?? 0);
   saveBaseStatus.hidden = true;
   saveBaseStatus.classList.remove('is-success');
-  savedBaseName.value = activePlan?.title && !/workspace|benchmark/i.test(activePlan.title) ? activePlan.title : '';
+  savedBaseName.value = '';
   const submit = saveBaseForm.querySelector('[type="submit"]');
   submit.disabled = placements === 0;
   if (!placements) {
@@ -1757,10 +1859,25 @@ function openSaveBaseMenu() {
   if (placements) savedBaseName.focus();
 }
 
+async function existingSavedLoadoutConflict(name) {
+  const nameKey = name.trim().toLowerCase();
+  if (loadSavedLoadouts().some((record) => record.name?.trim().toLowerCase() === nameKey)) return true;
+  const directory = await connectSavedLoadoutDirectory({ allowPicker: false });
+  if (!directory?.getFileHandle) return false;
+  try {
+    await directory.getFileHandle(loadoutFilename(name));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function submitSavedBase(event) {
   event.preventDefault();
   const name = savedBaseName.value.trim();
   if (!name || !pendingSaveSnapshot) return;
+  if (await existingSavedLoadoutConflict(name)
+    && !globalThis.confirm(`"${name}" already has a saved base. Overwrite it?`)) return;
   const submit = saveBaseForm.querySelector('[type="submit"]');
   submit.disabled = true;
   submit.textContent = 'Saving…';
@@ -1781,13 +1898,21 @@ async function submitSavedBase(event) {
   }
 }
 
-function openLoadBaseMenu() {
+async function openLoadBaseMenu() {
   selectedSavedBaseId = selectedSavedBaseId && loadSavedLoadouts().some((record) => record.id === selectedSavedBaseId)
     ? selectedSavedBaseId
     : null;
   loadBaseStatus.textContent = `${loadSavedLoadouts().length} saved base${loadSavedLoadouts().length === 1 ? '' : 's'} available.`;
   renderSavedBaseList();
   loadBaseDialog.showModal();
+  const directory = await connectSavedLoadoutDirectory({ allowPicker: false });
+  if (!directory) {
+    renderLoadoutFolderStatus(null, []);
+    return;
+  }
+  await syncSavedLoadoutsFromDirectory(directory);
+  loadBaseStatus.textContent = `${loadSavedLoadouts().length} saved base${loadSavedLoadouts().length === 1 ? '' : 's'} available.`;
+  renderSavedBaseList();
 }
 
 function renderSavedLoadoutPreview(record) {
@@ -3176,6 +3301,7 @@ function renderBoxSelectionOverlay() {
 
 function startBoxSelectionDrag(event) {
   if (event.button !== 0 || plannerMode !== 'build' || buildInteraction || massMoveInteraction || itemEditor.open || massSelectionDialog.open) return;
+  if (event.target.closest('.plan-item, .plan-lane')) return;
   const coordinate = clampedGridCoordinateFromPointer(event);
   boxSelectionDrag = {
     pointerId: event.pointerId,
@@ -4118,8 +4244,6 @@ libraryTabs.addEventListener('click', (event) => {
   restoreLibrarySearchFocus = false;
   libraryCategory = button.dataset.category;
   itemSearch.value = '';
-  libraryTierFilter.value = 'all';
-  libraryVariantFilter.value = 'all';
   libraryTabs.querySelectorAll('[data-category]').forEach((tab) => {
     tab.setAttribute('aria-selected', String(tab === button));
   });
@@ -4170,6 +4294,7 @@ loadBaseDialog.addEventListener('click', async (event) => {
   if (action === 'delete') {
     const record = selectedSavedLoadout();
     if (!record) return;
+    if (!globalThis.confirm(`Delete "${record.name}" from the saved-base library and its JSON file? This cannot be undone.`)) return;
     const deleteButton = loadBaseDialog.querySelector('[data-load-base-action="delete"]');
     deleteButton.disabled = true;
     try {
@@ -4180,12 +4305,10 @@ loadBaseDialog.addEventListener('click', async (event) => {
         ? `Deleted “${record.name}” from the saved-base library and removed “${fileResult.filename}” from the folder.`
         : fileResult.status === 'missing'
           ? `Deleted “${record.name}” from the saved-base library. Its JSON file was already missing from the folder.`
-          : `Deleted “${record.name}” from the saved-base library. This browser did not provide writable folder access, so its JSON file could not be removed.`;
+          : `Deleted “${record.name}” from the saved-base library. Connect your saved-loadouts folder (Import saved-loadouts folder) to also remove its JSON file.`;
       renderSavedBaseList();
     } catch (error) {
-      loadBaseStatus.textContent = error?.name === 'AbortError'
-        ? 'Delete cancelled. Choose the imported saved-loadouts folder to remove both the layout and its JSON file.'
-        : `Delete failed: ${error.message}. The layout was kept in the saved-base library.`;
+      loadBaseStatus.textContent = `Delete failed: ${error.message}. The layout was kept in the saved-base library.`;
       deleteButton.disabled = false;
     }
   }

@@ -1,4 +1,4 @@
-import { integerUseLimit, normalize } from './utils.mjs';
+import { integerUseLimit, normalize, roundOreValue } from './utils.mjs';
 import { isCrimsonPillars } from './crimson.mjs';
 import { itemDestructionChance } from './destruction.mjs';
 import { applyItemValueDistribution, expectedDistributionValue } from './value-distribution.mjs';
@@ -193,7 +193,8 @@ export function applyDeterministicItem(item, state, useNumber = 1, profile = {},
   const valueDistribution = activates
     ? applyItemValueDistribution(item, state, useNumber, profile, rules)
     : (state.valueDistribution ?? [{ value: before, probability: 1 }]);
-  if (state.valueDistribution) value = expectedDistributionValue(valueDistribution);
+  if (activates && state.valueDistribution) value = expectedDistributionValue(valueDistribution);
+  if (activates) value = roundOreValue(value);
 
   const itemSurvival = state.survival > 0 ? survival / state.survival : 0;
   if (outcomeModel) outcomeModel.expectedValuePerInput = value * itemSurvival;

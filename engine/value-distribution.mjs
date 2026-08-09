@@ -1,3 +1,5 @@
+import { roundOreValue } from './utils.mjs';
+
 const MAX_BRANCHES = 1024;
 
 function distributionLabelNumber(value, places = 4) {
@@ -11,7 +13,8 @@ function withDistributionOutcome(entry, outcome) {
 
 function normalize(entries) {
   const combined = new Map();
-  for (const entry of entries.filter((candidate) => candidate.probability > 0 && Number.isFinite(candidate.value))) {
+  for (const candidate of entries.filter((item) => item.probability > 0 && Number.isFinite(item.value))) {
+    const entry = { ...candidate, value: roundOreValue(candidate.value) };
     const key = `${entry.tikiPhase ?? ''}|${(entry.history ?? []).join('>')}|${entry.outcome ?? ''}|${Number(entry.value).toPrecision(12)}`;
     const prior = combined.get(key);
     if (prior) prior.probability += entry.probability;

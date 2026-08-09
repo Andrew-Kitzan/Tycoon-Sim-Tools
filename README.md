@@ -125,21 +125,26 @@ The **Load Bases** and **Save Base** controls are beside the Base Planner title.
 4. Select **Save Base** in the dialog.
 5. Choose this repository's `saved-loadouts` folder if the browser asks for a destination.
 
+If a saved base with the same name already exists, you'll be asked to confirm the overwrite before it's saved.
+
 The planner keeps the loadout in its browser library and creates a shareable `*.tycoon-loadout.json` file. If direct folder access is unavailable, the file downloads normally; move it into `saved-loadouts` manually.
 
 To share a setup, send its `.tycoon-loadout.json` file to another player. They can copy it into their own `saved-loadouts` folder.
 
 ## Load a saved base
 
-1. Select **Load Bases** beside the Base Planner title.
-2. If necessary, choose **Import saved-loadouts folder** or **Import JSON files**.
+1. Select **Load Bases** beside the Base Planner title. If a saved-loadouts folder is already connected, its contents are rescanned automatically so newly added or edited files show up without any extra steps.
+2. If no folder is connected yet, choose **Import saved-loadouts folder** or **Import JSON files**.
 3. Select a loadout from the scrollable list to view its important statistics.
 4. Choose one of the available actions:
    - **Preview:** Displays the saved layout without changing the current grid.
    - **Load Base:** Opens a final warning before replacing the current grid.
-   - **Delete:** Removes the loadout from the browser library and also deletes
-     its matching `.tycoon-loadout.json` file from the imported folder. If the
-     browser requests folder access again, select that same folder.
+   - **Delete:** Asks for confirmation, then removes the loadout from the
+     browser library and also deletes its matching `.tycoon-loadout.json` file
+     from the connected folder. Once you've connected a saved-loadouts folder,
+     the planner remembers it (even after a reload) — you only need to choose
+     it again with **Import saved-loadouts folder** if you want to switch to a
+     different folder.
 5. To replace the current grid, select **Load anyway**. Select **Never mind** to keep the current layout unchanged.
 
 Always save the current base first if you may want to return to it.

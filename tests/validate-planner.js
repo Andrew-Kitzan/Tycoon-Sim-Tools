@@ -50,7 +50,8 @@ assert.match(indexSource, /data\/optimization-progress\.js/);
 assert.match(indexSource, /id="stage-preview-summary"/);
 assert.match(indexSource, /id="item-library"/);
 assert.match(indexSource, /data-category="conveyor"/);
-assert.match(appSource, /button\.dataset\.category === libraryCategory[\s\S]+itemSearch\.value = '';/);
+assert.match(appSource, /libraryCategory = button\.dataset\.category;\s*\n\s*itemSearch\.value = '';/, 'switching library categories must clear the search box');
+assert.doesNotMatch(appSource, /libraryCategory = button\.dataset\.category;[\s\S]{0,200}libraryTierFilter\.value = 'all'/, 'switching library categories must not reset the tier/variant filters');
 assert.match(appSource, /libraryTabs\.addEventListener\('pointerdown'[\s\S]+document\.activeElement === itemSearch/);
 assert.match(appSource, /if \(shouldRestoreSearchFocus\) itemSearch\.focus\(\)/);
 assert.match(indexSource, /id="library-filter-toggle"/);
@@ -656,9 +657,9 @@ assert.deepEqual(
     after: stage.afterValue,
   })))),
   [
-    { useNumber: 1, useLimit: 3, multiplier: 1.1, before: 100, after: 110.00000000000001 },
-    { useNumber: 2, useLimit: 3, multiplier: 1.25, before: 110.00000000000001, after: 137.50000000000003 },
-    { useNumber: 3, useLimit: 3, multiplier: 1.75, before: 137.50000000000003, after: 240.62500000000006 },
+    { useNumber: 1, useLimit: 3, multiplier: 1.1, before: 100, after: 110 },
+    { useNumber: 2, useLimit: 3, multiplier: 1.25, before: 110, after: 138 },
+    { useNumber: 3, useLimit: 3, multiplier: 1.75, before: 138, after: 242 },
   ],
 );
 

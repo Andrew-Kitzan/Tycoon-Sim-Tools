@@ -1,0 +1,677 @@
+{
+  "fileType": "tycoon-sim-2-loadout",
+  "version": 1,
+  "id": "loadout-1786054691897-87fb0d098321c",
+  "name": "Early merchant",
+  "createdAt": "2026-08-06T22:18:11.897Z",
+  "updatedAt": "2026-08-07T01:36:55.334Z",
+  "databaseHash": "13b4e0c44323db363e1d08cabcf1c19a51ffc3e0797fb7477d75abe10a58f230",
+  "plan": {
+    "plotSize": 19,
+    "items": [
+      {
+        "id": "manual-item-1786054036290-2a2d5631a532",
+        "order": 1,
+        "name": "Iron Dropper",
+        "label": "IRON DROPPER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 10,
+          "Drop speed": 2,
+          "Ore size": 1
+        },
+        "x": 1,
+        "y": 1,
+        "itemWidth": 2,
+        "itemLength": 3,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 2,
+        "height": 3,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "dropper",
+        "topLeft": "A1",
+        "bottomRight": "B3",
+        "facing": "south",
+        "footprint": {
+          "width": 2,
+          "height": 3
+        },
+        "occupiedCells": [
+          {
+            "x": 1,
+            "y": 1,
+            "coordinate": "A1"
+          },
+          {
+            "x": 2,
+            "y": 1,
+            "coordinate": "B1"
+          },
+          {
+            "x": 1,
+            "y": 2,
+            "coordinate": "A2"
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "coordinate": "B2"
+          },
+          {
+            "x": 1,
+            "y": 3,
+            "coordinate": "A3"
+          },
+          {
+            "x": 2,
+            "y": 3,
+            "coordinate": "B3"
+          }
+        ],
+        "coordinateRange": "A1:B3",
+        "liveDropperNumber": 1
+      },
+      {
+        "id": "manual-item-1786054036290-0b4516c629a588",
+        "order": 2,
+        "name": "Iron Dropper",
+        "label": "IRON DROPPER",
+        "description": "Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 10,
+          "Drop speed": 2,
+          "Ore size": 1
+        },
+        "x": 3,
+        "y": 1,
+        "itemWidth": 2,
+        "itemLength": 3,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 2,
+        "height": 3,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "dropper",
+        "topLeft": "C1",
+        "bottomRight": "D3",
+        "facing": "south",
+        "footprint": {
+          "width": 2,
+          "height": 3
+        },
+        "occupiedCells": [
+          {
+            "x": 3,
+            "y": 1,
+            "coordinate": "C1"
+          },
+          {
+            "x": 4,
+            "y": 1,
+            "coordinate": "D1"
+          },
+          {
+            "x": 3,
+            "y": 2,
+            "coordinate": "C2"
+          },
+          {
+            "x": 4,
+            "y": 2,
+            "coordinate": "D2"
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "coordinate": "C3"
+          },
+          {
+            "x": 4,
+            "y": 3,
+            "coordinate": "D3"
+          }
+        ],
+        "coordinateRange": "C1:D3",
+        "liveDropperNumber": 2
+      },
+      {
+        "id": "manual-item-1786066572193-991c217ba9adf",
+        "order": 3,
+        "name": "Alien Helper",
+        "label": "ALIEN HELPER",
+        "description": "centered · Sold by Traveling Merchant",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Common",
+          "Main stat": 10000,
+          "Range": "N/A",
+          "Conveyor speed": 12
+        },
+        "x": 5,
+        "y": 3,
+        "itemWidth": 4,
+        "itemLength": 2,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 2,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "east",
+        "type": "upgrader",
+        "topLeft": "E3",
+        "bottomRight": "F6",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 5,
+            "y": 3,
+            "coordinate": "E3"
+          },
+          {
+            "x": 6,
+            "y": 3,
+            "coordinate": "F3"
+          },
+          {
+            "x": 5,
+            "y": 4,
+            "coordinate": "E4"
+          },
+          {
+            "x": 6,
+            "y": 4,
+            "coordinate": "F4"
+          },
+          {
+            "x": 5,
+            "y": 5,
+            "coordinate": "E5"
+          },
+          {
+            "x": 6,
+            "y": 5,
+            "coordinate": "F5"
+          },
+          {
+            "x": 5,
+            "y": 6,
+            "coordinate": "E6"
+          },
+          {
+            "x": 6,
+            "y": 6,
+            "coordinate": "F6"
+          }
+        ],
+        "coordinateRange": "E3:F6"
+      },
+      {
+        "id": "manual-item-1786066588116-5264786a52f9e8",
+        "order": 4,
+        "name": "Nuclear Upgrader",
+        "label": "NUCLEAR",
+        "description": "Applies Nuclear Effect to ore. · Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Rare",
+          "Main stat": 1.4,
+          "Range": "0-50K",
+          "Conveyor speed": 24
+        },
+        "x": 7,
+        "y": 3,
+        "itemWidth": 4,
+        "itemLength": 3,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 3,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "east",
+        "type": "upgrader",
+        "topLeft": "G3",
+        "bottomRight": "I6",
+        "facing": "east",
+        "footprint": {
+          "width": 3,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 7,
+            "y": 3,
+            "coordinate": "G3"
+          },
+          {
+            "x": 8,
+            "y": 3,
+            "coordinate": "H3"
+          },
+          {
+            "x": 9,
+            "y": 3,
+            "coordinate": "I3"
+          },
+          {
+            "x": 7,
+            "y": 4,
+            "coordinate": "G4"
+          },
+          {
+            "x": 8,
+            "y": 4,
+            "coordinate": "H4"
+          },
+          {
+            "x": 9,
+            "y": 4,
+            "coordinate": "I4"
+          },
+          {
+            "x": 7,
+            "y": 5,
+            "coordinate": "G5"
+          },
+          {
+            "x": 8,
+            "y": 5,
+            "coordinate": "H5"
+          },
+          {
+            "x": 9,
+            "y": 5,
+            "coordinate": "I5"
+          },
+          {
+            "x": 7,
+            "y": 6,
+            "coordinate": "G6"
+          },
+          {
+            "x": 8,
+            "y": 6,
+            "coordinate": "H6"
+          },
+          {
+            "x": 9,
+            "y": 6,
+            "coordinate": "I6"
+          }
+        ],
+        "coordinateRange": "G3:I6"
+      },
+      {
+        "id": "manual-item-1786066588925-98c60e00b4e86",
+        "order": 5,
+        "name": "Nuclear Upgrader",
+        "label": "NUCLEAR",
+        "description": "Applies Nuclear Effect to ore. · Obtained from advanced crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Rare",
+          "Main stat": 1.4,
+          "Range": "0-50K",
+          "Conveyor speed": 24
+        },
+        "x": 10,
+        "y": 3,
+        "itemWidth": 4,
+        "itemLength": 3,
+        "conveyorWidth": 2,
+        "conveyorOffset": 1,
+        "width": 3,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 0,
+        "processingZoneDepth": 0,
+        "processingZonePlacement": null,
+        "sourceDroppers": null,
+        "direction": "east",
+        "type": "upgrader",
+        "topLeft": "J3",
+        "bottomRight": "L6",
+        "facing": "east",
+        "footprint": {
+          "width": 3,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 10,
+            "y": 3,
+            "coordinate": "J3"
+          },
+          {
+            "x": 11,
+            "y": 3,
+            "coordinate": "K3"
+          },
+          {
+            "x": 12,
+            "y": 3,
+            "coordinate": "L3"
+          },
+          {
+            "x": 10,
+            "y": 4,
+            "coordinate": "J4"
+          },
+          {
+            "x": 11,
+            "y": 4,
+            "coordinate": "K4"
+          },
+          {
+            "x": 12,
+            "y": 4,
+            "coordinate": "L4"
+          },
+          {
+            "x": 10,
+            "y": 5,
+            "coordinate": "J5"
+          },
+          {
+            "x": 11,
+            "y": 5,
+            "coordinate": "K5"
+          },
+          {
+            "x": 12,
+            "y": 5,
+            "coordinate": "L5"
+          },
+          {
+            "x": 10,
+            "y": 6,
+            "coordinate": "J6"
+          },
+          {
+            "x": 11,
+            "y": 6,
+            "coordinate": "K6"
+          },
+          {
+            "x": 12,
+            "y": 6,
+            "coordinate": "L6"
+          }
+        ],
+        "coordinateRange": "J3:L6"
+      },
+      {
+        "id": "manual-item-1786066599774-13dadf2dbdb5f",
+        "order": 6,
+        "name": "Proficient Furnace",
+        "label": "PROFICIENT",
+        "description": "Obtained from factory crate",
+        "stats": {
+          "Variant": "Base",
+          "Rarity": "Rare",
+          "Main stat": 2.5
+        },
+        "x": 13,
+        "y": 2,
+        "itemWidth": 4,
+        "itemLength": 4,
+        "conveyorWidth": 0,
+        "conveyorOffset": 0,
+        "width": 4,
+        "height": 4,
+        "beamLength": 0,
+        "processingZoneAcross": 2,
+        "processingZoneDepth": 2,
+        "processingZonePlacement": "front-corner",
+        "sourceDroppers": null,
+        "direction": "south",
+        "type": "furnace",
+        "topLeft": "M2",
+        "bottomRight": "P5",
+        "facing": "south",
+        "footprint": {
+          "width": 4,
+          "height": 4
+        },
+        "occupiedCells": [
+          {
+            "x": 13,
+            "y": 2,
+            "coordinate": "M2"
+          },
+          {
+            "x": 14,
+            "y": 2,
+            "coordinate": "N2"
+          },
+          {
+            "x": 15,
+            "y": 2,
+            "coordinate": "O2"
+          },
+          {
+            "x": 16,
+            "y": 2,
+            "coordinate": "P2"
+          },
+          {
+            "x": 13,
+            "y": 3,
+            "coordinate": "M3"
+          },
+          {
+            "x": 14,
+            "y": 3,
+            "coordinate": "N3"
+          },
+          {
+            "x": 15,
+            "y": 3,
+            "coordinate": "O3"
+          },
+          {
+            "x": 16,
+            "y": 3,
+            "coordinate": "P3"
+          },
+          {
+            "x": 13,
+            "y": 4,
+            "coordinate": "M4"
+          },
+          {
+            "x": 14,
+            "y": 4,
+            "coordinate": "N4"
+          },
+          {
+            "x": 15,
+            "y": 4,
+            "coordinate": "O4"
+          },
+          {
+            "x": 16,
+            "y": 4,
+            "coordinate": "P4"
+          },
+          {
+            "x": 13,
+            "y": 5,
+            "coordinate": "M5"
+          },
+          {
+            "x": 14,
+            "y": 5,
+            "coordinate": "N5"
+          },
+          {
+            "x": 15,
+            "y": 5,
+            "coordinate": "O5"
+          },
+          {
+            "x": 16,
+            "y": 5,
+            "coordinate": "P5"
+          }
+        ],
+        "coordinateRange": "M2:P5"
+      }
+    ],
+    "lanes": [
+      {
+        "id": "manual-conveyor-1786054072512-4f6b3ef70e25e",
+        "name": "Supercharged Conveyor",
+        "conveyor": "Supercharged Conveyor",
+        "x": 1,
+        "y": 4,
+        "itemWidth": 2,
+        "itemLength": 2,
+        "width": 2,
+        "height": 2,
+        "direction": "east",
+        "speed": 18,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "A4",
+        "bottomRight": "B5",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 1,
+            "y": 4,
+            "coordinate": "A4"
+          },
+          {
+            "x": 2,
+            "y": 4,
+            "coordinate": "B4"
+          },
+          {
+            "x": 1,
+            "y": 5,
+            "coordinate": "A5"
+          },
+          {
+            "x": 2,
+            "y": 5,
+            "coordinate": "B5"
+          }
+        ],
+        "coordinateRange": "A4:B5"
+      },
+      {
+        "id": "manual-conveyor-1786054073873-42f5a841aed06",
+        "name": "Supercharged Conveyor",
+        "conveyor": "Supercharged Conveyor",
+        "x": 3,
+        "y": 4,
+        "itemWidth": 2,
+        "itemLength": 2,
+        "width": 2,
+        "height": 2,
+        "direction": "east",
+        "speed": 18,
+        "wall": false,
+        "nonTransport": false,
+        "teleporterColor": null,
+        "teleporterRole": null,
+        "topLeft": "C4",
+        "bottomRight": "D5",
+        "facing": "east",
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "occupiedCells": [
+          {
+            "x": 3,
+            "y": 4,
+            "coordinate": "C4"
+          },
+          {
+            "x": 4,
+            "y": 4,
+            "coordinate": "D4"
+          },
+          {
+            "x": 3,
+            "y": 5,
+            "coordinate": "C5"
+          },
+          {
+            "x": 4,
+            "y": 5,
+            "coordinate": "D5"
+          }
+        ],
+        "coordinateRange": "C4:D5"
+      }
+    ]
+  },
+  "stats": {
+    "expectedCashPerMinute": 11772000,
+    "rebirth": 0,
+    "lastRebirthItem": "None",
+    "plotSize": 19,
+    "highestCrate": "Factory",
+    "payment": "F2P",
+    "specialItems": {
+      "merchant": [
+        "Alien Helper (Base)"
+      ],
+      "secret": [],
+      "achievement": [],
+      "premium": []
+    },
+    "oreLimit": 100,
+    "activeOres": 7,
+    "projectedActiveOres": 7,
+    "limitedByOreCap": false,
+    "destroyedOresPerMinute": 0,
+    "survivalToFurnace": 1,
+    "furnaceEntriesPerMinute": 240,
+    "longestRouteSeconds": 1.9166666666666665,
+    "routesTotal": 2,
+    "routesReachingFurnace": 2,
+    "reservedTiles": 68,
+    "remainingTiles": 293,
+    "itemCount": 6,
+    "conveyorCount": 2,
+    "diagnosticCount": 0,
+    "simulationValid": true
+  },
+  "diagnostics": []
+}

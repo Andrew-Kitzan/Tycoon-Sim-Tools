@@ -15,8 +15,8 @@
   "assert": {
     "tikiBranches": 2,
     "downstreamBranches": 2,
-    "downstreamGreen": 8088943500000,
-    "downstreamYellow": 399454198000,
+    "downstreamGreen": 8088943500001,
+    "downstreamYellow": 399454198001,
     "lambdaBranches": 10,
     "lambdaSetToOneBranches": 2,
     "probabilityTotal": 1,

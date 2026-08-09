@@ -42,3 +42,7 @@ export function stableStringify(value) {
 export function diagnostic(code, message, context = {}) {
   return { code, message, context };
 }
+
+export function roundOreValue(value) {
+  return Number.isFinite(value) ? Math.ceil(value - 1e-6) : value;
+}

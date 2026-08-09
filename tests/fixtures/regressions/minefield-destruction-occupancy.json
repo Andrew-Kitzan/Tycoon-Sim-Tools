@@ -13,7 +13,7 @@
   "assert": {
     "destructionChance": 0.3,
     "survival": 0.7,
-    "survivorValue": 220.00000000000003,
+    "survivorValue": 220,
     "occupancySeconds": 8.2
   }
 }

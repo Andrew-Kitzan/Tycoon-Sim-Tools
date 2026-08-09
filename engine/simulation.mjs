@@ -1,4 +1,5 @@
 import { expectedCashWeight } from './models.mjs';
+import { roundOreValue } from './utils.mjs';
 
 export function analyticOreFlow({ droppers, routeTimeSeconds, finalState, furnaceMultiplier, oreCap = 100 }) {
   const dropRate = droppers.reduce((sum, dropper) => sum + dropper.oresPerSecond, 0);
@@ -8,7 +9,7 @@ export function analyticOreFlow({ droppers, routeTimeSeconds, finalState, furnac
   const processedFraction = finalState.survival ?? 1;
   const replication = finalState.replication ?? 1;
   const furnaceEntriesPerSecond = dropRate * processedFraction * replication * throughputScale;
-  const cashPerEntry = finalState.value * furnaceMultiplier;
+  const cashPerEntry = roundOreValue(finalState.value * furnaceMultiplier);
   return {
     dropRate,
     projectedActiveOres,
@@ -51,7 +52,7 @@ export function seededOreSimulation({ seconds = 300, seed = 1, droppers, routeTi
       if (ore.destroyed) destroyed += 1;
       else {
         processed += ore.count;
-        cash += ore.value * ore.count * furnaceMultiplier;
+        cash += roundOreValue(ore.value * ore.count * furnaceMultiplier);
       }
     }
   };
@@ -61,7 +62,7 @@ export function seededOreSimulation({ seconds = 300, seed = 1, droppers, routeTi
     let ore = { value: event.dropper.value, count: 1, destroyed: false, finishTime: event.time + routeTimeSeconds };
     for (const stage of stages) {
       if (random() < (stage.destructionChance ?? 0)) { ore.destroyed = true; ore.finishTime = event.time + (stage.removalTimeSeconds ?? routeTimeSeconds); break; }
-      ore.value = stage.additive != null ? ore.value + stage.additive : ore.value * (stage.multiplier ?? 1);
+      ore.value = roundOreValue(stage.additive != null ? ore.value + stage.additive : ore.value * (stage.multiplier ?? 1));
       ore.count *= stage.replication ?? 1;
     }
     active.push(ore);

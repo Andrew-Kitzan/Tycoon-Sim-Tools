@@ -31,6 +31,10 @@
     return String(Math.trunc((Number(value) + Number.EPSILON) * factor) / factor);
   }
 
+  function roundOreValue(value) {
+    return Number.isFinite(value) ? Math.ceil(value - 1e-6) : value;
+  }
+
   function withDistributionOutcome(entry, outcome) {
     return { ...entry, outcome, history: [...(entry.history ?? []), outcome] };
   }
@@ -43,11 +47,12 @@
 
   function normalizeValueDistribution(entries, maximumBranches = 1024) {
     const combined = new Map();
-    entries.filter((entry) => entry.probability > 0 && Number.isFinite(entry.value)).forEach((entry) => {
+    entries.filter((candidate) => candidate.probability > 0 && Number.isFinite(candidate.value)).forEach((candidate) => {
+      const entry = { ...candidate, value: roundOreValue(candidate.value) };
       const key = `${entry.tikiPhase ?? ''}|${(entry.history ?? []).join('>')}|${entry.outcome ?? ''}|${Number(entry.value).toPrecision(12)}`;
       const prior = combined.get(key);
       if (prior) prior.probability += entry.probability;
-      else combined.set(key, { ...entry });
+      else combined.set(key, entry);
     });
     let output = [...combined.values()];
     const total = output.reduce((sum, entry) => sum + entry.probability, 0) || 1;
@@ -1075,7 +1080,7 @@
         };
       }
       const valueDistribution = applyItemValueDistribution(definition, state, useNumber, scannerHitChance, activated);
-      value = expectedDistributionValue(valueDistribution);
+      if (activated) value = roundOreValue(expectedDistributionValue(valueDistribution));
       if (definition.name === 'Tiki Evaluator' && outcomeModel) {
         for (const phase of ['green', 'yellow']) {
           const branches = valueDistribution.filter((entry) => entry.tikiPhase === phase);
@@ -1491,7 +1496,7 @@
         : [{ value: state.value, probability: 1, outcome: 'Exact route value', history: [] }];
       const furnaceOutcomes = oreReachesFurnace ? finalValueDistribution.map((branch) => ({
         beforeValue: Number(branch.value),
-        cashPerOre: Number(branch.value) * furnaceRate.multiplier,
+        cashPerOre: roundOreValue(Number(branch.value) * furnaceRate.multiplier),
         probability: Number(branch.probability ?? 1),
         outcome: branch.outcome ?? 'Exact route value',
         history: [...(branch.history ?? [])],
@@ -1524,7 +1529,7 @@
         seconds: state.timeSeconds,
         currentValue: state.value,
         valueBeforeFurnace: oreReachesFurnace ? state.value : null,
-        cashPerOre: oreReachesFurnace ? state.value * furnaceRate.multiplier : null,
+        cashPerOre: oreReachesFurnace ? roundOreValue(state.value * furnaceRate.multiplier) : null,
         furnaceMultiplier: oreReachesFurnace ? furnaceRate.multiplier : null,
         furnaceCondition: oreReachesFurnace ? furnaceRate.condition : null,
         valueDistribution: oreReachesFurnace ? finalValueDistribution : [],

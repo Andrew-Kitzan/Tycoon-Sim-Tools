@@ -15,6 +15,7 @@ import { validatePlan } from '../engine/validate.mjs';
 import { furnaceMultiplierForOre } from '../engine/furnaces.mjs';
 import { expectedRouteOccupancySeconds, itemDestructionChance } from '../engine/destruction.mjs';
 import { applyItemValueDistribution } from '../engine/value-distribution.mjs';
+import { roundOreValue } from '../engine/utils.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const directory = path.join(root, 'tests', 'fixtures', 'regressions');
@@ -157,7 +158,7 @@ for (const fixture of fixtures) {
         const before = { value: fixture.input.startingValue, survival: 1, replication: 1, oreSize: 1, effects: [], timeSeconds: 0, area: 0 };
         const after = applyDeterministicItem(item, before, index + 1, {}, rules);
         assert.equal(after.appliedMultiplier, multiplier);
-        assert.equal(after.value, before.value * multiplier);
+        assert.equal(after.value, roundOreValue(before.value * multiplier));
       }
     }
     const appSource = await fs.readFile(path.join(root, 'app.js'), 'utf8');
