@@ -7,17 +7,20 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <button id="tool-nav-toggle" class="tool-nav-toggle" type="button" aria-haspopup="dialog" aria-label="Open tools menu">
+      <span></span><span></span><span></span>
+    </button>
     <main class="app-shell">
       <header class="topbar">
         <div class="planner-brand">
-          <p class="eyebrow">TYCOON SIM 2</p>
-          <h1>Base Planner</h1>
-          <div class="planner-loadout-actions" aria-label="Saved base controls">
+          <p class="eyebrow">TYCOON SIM</p>
+          <h1 id="header-title">Base Builder</h1>
+          <div id="planner-loadout-actions" class="planner-loadout-actions" aria-label="Saved base controls">
             <button id="load-bases" class="saved-base-button" type="button">Load Bases</button>
             <button id="save-base" class="saved-base-button" type="button" disabled title="Simulate the current base before saving">Save Base</button>
           </div>
         </div>
-        <div class="topbar-actions">
+        <div id="topbar-actions" class="topbar-actions">
           <div id="planner-mode-toggle" class="planner-mode-toggle" role="group" aria-label="Planner mode">
             <button type="button" data-planner-mode="build" aria-pressed="true">Build mode</button>
             <button type="button" data-planner-mode="generation" aria-pressed="false">Generation mode</button>
@@ -149,7 +152,92 @@
           <div id="plan-legend" class="plan-legend" aria-label="Current plan legend"></div>
         </section>
       </section>
+
+      <section id="capgrader-tool" class="capgrader-tool" aria-label="Capgrader generator" hidden>
+        <p class="capgrader-intro">Pick your dropper(s) and mark which capgraders, additive upgraders, Lunar Landing, and capgrader scanners you own. The generator finds the best chain to push your ore as close to the final capgrader's range ceiling as possible, without any extra multiplier you don't need.</p>
+
+        <div class="capgrader-generate-bar">
+          <button id="capgrader-generate" type="button" class="capgrader-generate">Generate capgrader section</button>
+        </div>
+
+        <div class="capgrader-layout">
+          <div class="capgrader-main">
+            <div class="capgrader-panel">
+              <h3>Droppers</h3>
+              <div id="capgrader-dropper-rows" class="capgrader-dropper-rows"></div>
+              <button id="capgrader-add-dropper" type="button" class="capgrader-add-dropper">+ Add another dropper</button>
+              <p id="capgrader-spread-warning" class="capgrader-spread-warning" hidden></p>
+            </div>
+
+            <div class="capgrader-panel">
+              <h3>Capgraders</h3>
+              <p class="capgrader-panel-note">Click to toggle what you own — red means off, green means on. Owning it assumes you have as many copies as the game allows unless you set a specific count or variant below.</p>
+              <div class="capgrader-toggle-controls">
+                <label class="capgrader-toggle-search">
+                  <span class="visually-hidden">Search capgraders</span>
+                  <input type="search" id="capgrader-toggle-search" placeholder="Search by name…" autocomplete="off" />
+                </label>
+                <button type="button" id="capgrader-toggle-select-all" class="capgrader-bulk-button">Select all shown</button>
+                <button type="button" id="capgrader-toggle-select-none" class="capgrader-bulk-button">Deselect all shown</button>
+              </div>
+              <div id="capgrader-toggle-list" class="capgrader-toggle-list"></div>
+              <p id="capgrader-toggle-empty" class="capgrader-empty-note" hidden>No items match that search.</p>
+            </div>
+
+            <div id="capgrader-results" class="capgrader-results" aria-live="polite"></div>
+          </div>
+
+          <aside class="capgrader-sidebar">
+            <div class="capgrader-panel">
+              <h3>Additive upgraders &amp; Lunar Landing</h3>
+              <p class="capgrader-panel-note">Used only as a one-time opening move, before the capgrader chain — whichever gives more value up front.</p>
+              <div class="capgrader-toggle-controls">
+                <label class="capgrader-toggle-search">
+                  <span class="visually-hidden">Search additive upgraders and Lunar Landing</span>
+                  <input type="search" id="capgrader-additive-search" placeholder="Search by name…" autocomplete="off" />
+                </label>
+                <button type="button" id="capgrader-additive-select-all" class="capgrader-bulk-button">Select all shown</button>
+                <button type="button" id="capgrader-additive-select-none" class="capgrader-bulk-button">Deselect all shown</button>
+              </div>
+              <div id="capgrader-additive-list" class="capgrader-toggle-list"></div>
+              <p id="capgrader-additive-empty" class="capgrader-empty-note" hidden>No items match that search.</p>
+            </div>
+          </aside>
+
+          <aside class="capgrader-sidebar">
+            <div class="capgrader-panel">
+              <h3>Capgrader scanners</h3>
+              <p class="capgrader-panel-note">These only get used when they're the only way to bridge to the next capgrader (or the final one) — their multiplier isn't guaranteed, so the generator avoids them otherwise.</p>
+              <div class="capgrader-toggle-controls">
+                <button type="button" id="capgrader-scanner-select-all" class="capgrader-bulk-button">Select all</button>
+                <button type="button" id="capgrader-scanner-select-none" class="capgrader-bulk-button">Deselect all</button>
+              </div>
+              <div id="capgrader-scanner-list" class="capgrader-toggle-list"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
     </main>
+
+    <dialog id="tool-nav-menu" class="tool-nav-menu" aria-labelledby="tool-nav-menu-title">
+      <div class="tool-nav-card">
+        <div class="tool-nav-heading">
+          <p class="panel-label">Tools</p>
+          <h2 id="tool-nav-menu-title">Choose a tool</h2>
+          <button class="icon-button" type="button" data-tool-nav-action="close" aria-label="Close tools menu">&times;</button>
+        </div>
+        <div class="tool-nav-list" role="list">
+          <button type="button" class="tool-nav-item" data-tool="builder" aria-current="true">
+            <strong>Base Builder</strong>
+            <span>Grid-based base planner</span>
+          </button>
+          <button type="button" class="tool-nav-item" data-tool="capgrader" aria-current="false">
+            <strong>Capgrader Generator</strong>
+            <span>Find the best capgrader chain for your dropper(s)</span>
+          </button>
+        </div>
+      </div>
+    </dialog>
 
     <div id="item-tooltip" class="item-tooltip" role="tooltip" hidden></div>
 
@@ -271,5 +359,6 @@
     <script src="data/optimization-progress.js"></script>
     <script src="data/active-plan.js"></script>
     <script src="app.js"></script>
+    <script src="capgrader-generator.js"></script>
   </body>
 </html>

@@ -38,6 +38,16 @@ const libraryVariantFilter = document.querySelector('#library-variant-filter');
 const libraryFilterReset = document.querySelector('#library-filter-reset');
 const buildModeHint = document.querySelector('#build-mode-hint');
 const plannerModeToggle = document.querySelector('#planner-mode-toggle');
+const toolNavToggle = document.querySelector('#tool-nav-toggle');
+const toolNavMenu = document.querySelector('#tool-nav-menu');
+const toolNavItemBuilder = document.querySelector('[data-tool="builder"]');
+const toolNavItemCapgrader = document.querySelector('[data-tool="capgrader"]');
+const toolNavItems = [toolNavItemBuilder, toolNavItemCapgrader].filter(Boolean);
+const workspaceSection = document.querySelector('.workspace');
+const capgraderToolSection = document.querySelector('#capgrader-tool');
+const headerTitle = document.querySelector('#header-title');
+const plannerLoadoutActions = document.querySelector('#planner-loadout-actions');
+const topbarActions = document.querySelector('#topbar-actions');
 const simulateBaseButton = document.querySelector('#simulate-base');
 const saveBaseButton = document.querySelector('#save-base');
 const loadBasesButton = document.querySelector('#load-bases');
@@ -81,6 +91,7 @@ const optimizationProgress = globalThis.TycoonOptimizationProgress ?? null;
 const baseTileSize = 24;
 const workspaceStorageKey = 'tycoon-sim-2:benchmark-workspace:v1';
 const plannerModeStorageKey = 'tycoon-sim-2:planner-mode:v1';
+const activeToolStorageKey = 'tycoon-sim-2:active-tool:v1';
 const generationBaselineStorageKey = 'tycoon-sim-2:generation-baseline:v1';
 const viewPreferencesStorageKey = 'tycoon-sim-2:view-preferences:v1';
 const simulationInfoModeStorageKey = 'tycoon-sim-2:simulation-info-mode:v1';
@@ -112,6 +123,7 @@ let boxSelectionDrag = null;
 let massMoveInteraction = null;
 const massSelectedIds = new Set();
 let plannerMode = 'build';
+let activeTool = 'builder';
 let tooltipHideTimer = null;
 let selectedSavedBaseId = null;
 let pendingLoadBaseId = null;
@@ -2074,6 +2086,66 @@ function applyPlannerModeUi() {
   });
   renderKeybindGuide();
 }
+
+function saveActiveTool() {
+  const storage = browserStorage();
+  if (!storage) return false;
+  try {
+    storage.setItem(activeToolStorageKey, activeTool);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function loadActiveTool() {
+  const storage = browserStorage();
+  if (!storage) return 'builder';
+  try {
+    const saved = storage.getItem(activeToolStorageKey);
+    return saved === 'capgrader' ? 'capgrader' : 'builder';
+  } catch {
+    return 'builder';
+  }
+}
+
+function applyActiveToolUi() {
+  if (workspaceSection) workspaceSection.hidden = activeTool !== 'builder';
+  if (capgraderToolSection) capgraderToolSection.hidden = activeTool !== 'capgrader';
+  if (headerTitle) headerTitle.textContent = activeTool === 'capgrader' ? 'Capgrader Generator' : 'Base Builder';
+  if (plannerLoadoutActions) plannerLoadoutActions.hidden = activeTool !== 'builder';
+  if (topbarActions) topbarActions.hidden = activeTool !== 'builder';
+  toolNavItems.forEach((button) => {
+    button.setAttribute?.('aria-current', String(button.dataset?.tool === activeTool));
+  });
+  if (activeTool === 'capgrader') document.dispatchEvent(new CustomEvent('capgrader-tool:activated'));
+}
+
+function setActiveTool(nextTool) {
+  activeTool = nextTool === 'capgrader' ? 'capgrader' : 'builder';
+  applyActiveToolUi();
+  saveActiveTool();
+}
+
+toolNavToggle?.addEventListener('click', () => {
+  toolNavMenu?.showModal();
+});
+
+toolNavMenu?.addEventListener('click', (event) => {
+  const closeTarget = event.target.closest('[data-tool-nav-action="close"]');
+  if (closeTarget) {
+    toolNavMenu.close();
+    return;
+  }
+  if (event.target === toolNavMenu) toolNavMenu.close();
+});
+
+toolNavItems.forEach((button) => {
+  button.addEventListener('click', () => {
+    setActiveTool(button.dataset.tool);
+    toolNavMenu?.close();
+  });
+});
 
 function generationSourceSignature() {
   const generatedPlan = globalThis.TycoonActivePlan;
@@ -4162,6 +4234,8 @@ function renderPlan(size) {
 clearPlanner();
 plannerMode = loadPlannerMode();
 applyPlannerModeUi();
+activeTool = loadActiveTool();
+applyActiveToolUi();
 if (plannerMode === 'build') {
   if (!loadSavedWorkspace()) resetWorkspaceForMode({ render: false });
 } else if (generationSourceChanged()) {
