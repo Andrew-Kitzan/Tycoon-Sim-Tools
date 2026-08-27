@@ -1,8 +1,8 @@
 {
   "importerVersion": 5,
-  "generatedAt": "2026-08-04T09:58:19.709Z",
+  "generatedAt": "2026-08-19T02:08:35.970Z",
   "sourceWorkbook": "data/Tycoon Sim Database.xlsx",
-  "sourceHash": "13b4e0c44323db363e1d08cabcf1c19a51ffc3e0797fb7477d75abe10a58f230",
+  "sourceHash": "a4a454ab8102a09bc1563d6f701a20a840403e1826e5f4b916ce627dbe6379d9",
   "sheet": "Ore SizeHeight",
   "paths": [
     {
@@ -2751,6 +2751,23 @@
       ],
       "notes": "will drag on the roof but get through in decent time",
       "row": 15
+    },
+    {
+      "name": "Krakatoa",
+      "rarity": "Secret",
+      "size": {
+        "width": 6,
+        "length": 5
+      },
+      "acceptable": [
+        2.4,
+        1.8
+      ],
+      "rejected": [
+        1.95
+      ],
+      "notes": "The processing zone has a length of 1/0.5 that isnt covered by the overhang(depending on the variant). the size is how small the ore can be before it gets stuck.\n1st = is the size of ore that can fit in base / shiny krakatoa.\n2nd = is the size of ore that can fit in mythic / shiny mythic krakatoa.",
+      "row": 16
     }
   ]
 }
