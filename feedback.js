@@ -81,12 +81,19 @@
           Contact: contact || '(not provided)',
           Page: window.location.href,
           _template: 'table',
+          // FormSubmit's AJAX endpoint returns "success" immediately on
+          // receipt, before its own spam/captcha checks run — a submission
+          // it later flags can still silently never arrive even though the
+          // widget already showed the success banner. Disabling captcha
+          // removes one source of that; see feedback.js's git history notes
+          // for the delivery investigation if reports go missing again.
+          _captcha: false,
         }),
       });
       if (!response.ok) throw new Error(`Request failed (${response.status})`);
       setStatus('Thanks — your report was sent!', 'success');
       form.reset();
-      setTimeout(closeDialog, 1600);
+      setTimeout(closeDialog, 4500);
     } catch (error) {
       setStatus('Couldn’t send that — check your connection and try again.', 'error');
     } finally {
