@@ -6,4 +6,5 @@ Thumbs.db
 .idea/
 plans/active-plan.json
 .planner-cache/
-.claude
+.claude/*
+!.claude/agents/
