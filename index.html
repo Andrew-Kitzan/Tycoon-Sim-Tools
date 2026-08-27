@@ -358,7 +358,7 @@
     </dialog>
 
     <dialog id="feedback-dialog" class="feedback-dialog" aria-labelledby="feedback-dialog-title">
-      <form id="feedback-form" class="feedback-card">
+      <form id="feedback-form" class="feedback-card" method="POST" enctype="multipart/form-data" target="feedback-target-frame">
         <div class="feedback-heading">
           <p class="panel-label">Feedback</p>
           <h2 id="feedback-dialog-title">Send a bug report, feedback, or suggestion</h2>
@@ -367,7 +367,7 @@
         <p class="feedback-intro">This goes straight to the developer — include as much detail as you can (what you were doing, what you expected, what happened instead).</p>
         <label class="feedback-field">
           <span>Type</span>
-          <select id="feedback-type" name="type" required>
+          <select id="feedback-type" name="Type" required>
             <option value="Bug report">Bug report</option>
             <option value="Feedback">Feedback</option>
             <option value="Suggestion">Suggestion</option>
@@ -375,16 +375,24 @@
         </label>
         <label class="feedback-field">
           <span>Title</span>
-          <input type="text" id="feedback-title" name="title" placeholder="Short summary" maxlength="120" required />
+          <input type="text" id="feedback-title" name="Title" placeholder="Short summary" maxlength="120" required />
         </label>
         <label class="feedback-field">
           <span>Details</span>
-          <textarea id="feedback-message" name="message" rows="6" placeholder="Describe the bug, feedback, or suggestion in as much detail as you'd like…" required></textarea>
+          <textarea id="feedback-message" name="Details" rows="6" placeholder="Describe the bug, feedback, or suggestion in as much detail as you'd like…" required></textarea>
         </label>
         <label class="feedback-field feedback-field-optional">
           <span>Your name or contact info (optional)</span>
-          <input type="text" id="feedback-contact" name="contact" placeholder="So I can follow up, if you'd like" />
+          <input type="text" id="feedback-contact" name="Contact" placeholder="So I can follow up, if you'd like" />
         </label>
+        <label class="feedback-field feedback-field-optional">
+          <span>Attach images or a video (optional, 10MB total max)</span>
+          <input type="file" id="feedback-attachments" name="attachment" accept="image/*,video/*" multiple />
+        </label>
+        <input type="hidden" id="feedback-page-field" name="Page" />
+        <input type="hidden" id="feedback-subject-field" name="_subject" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="false" />
         <p id="feedback-status" class="feedback-status" role="status" aria-live="polite" hidden></p>
         <div class="feedback-actions">
           <button type="button" class="feedback-cancel" data-feedback-action="close">Cancel</button>
@@ -392,6 +400,7 @@
         </div>
       </form>
     </dialog>
+    <iframe name="feedback-target-frame" class="feedback-target-frame" title="Feedback submission target" tabindex="-1" aria-hidden="true"></iframe>
 
     <script src="data/items.generated.js"></script>
     <script src="planner-core.js"></script>

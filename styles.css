@@ -627,3 +627,9 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .feedback-submit { border-color: #4a9a79; background: #1c8f5c; color: #eafff2; }
 .feedback-submit:hover, .feedback-submit:focus-visible { background: #229c65; border-color: var(--accent); outline: none; }
 .feedback-submit:disabled { opacity: .6; cursor: not-allowed; }
+.feedback-field input[type="file"] { padding: 7px; font-size: .78rem; }
+
+/* Submission target for the feedback form — kept off-screen rather than
+   display:none, since some browsers stop firing an already-hidden iframe's
+   load event, which the widget relies on to know the submission finished. */
+.feedback-target-frame { position: fixed; width: 1px; height: 1px; top: -9999px; left: -9999px; border: 0; opacity: 0; }
