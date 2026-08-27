@@ -46,6 +46,7 @@ const toolNavItems = [toolNavItemBuilder, toolNavItemCapgrader].filter(Boolean);
 const workspaceSection = document.querySelector('.workspace');
 const capgraderToolSection = document.querySelector('#capgrader-tool');
 const headerTitle = document.querySelector('#header-title');
+const wipBadge = document.querySelector('#wip-badge');
 const plannerLoadoutActions = document.querySelector('#planner-loadout-actions');
 const topbarActions = document.querySelector('#topbar-actions');
 const simulateBaseButton = document.querySelector('#simulate-base');
@@ -2113,6 +2114,7 @@ function applyActiveToolUi() {
   if (workspaceSection) workspaceSection.hidden = activeTool !== 'builder';
   if (capgraderToolSection) capgraderToolSection.hidden = activeTool !== 'capgrader';
   if (headerTitle) headerTitle.textContent = activeTool === 'capgrader' ? 'Capgrader Generator' : 'Base Builder';
+  if (wipBadge) wipBadge.hidden = activeTool === 'capgrader';
   if (plannerLoadoutActions) plannerLoadoutActions.hidden = activeTool !== 'builder';
   if (topbarActions) topbarActions.hidden = activeTool !== 'builder';
   toolNavItems.forEach((button) => {

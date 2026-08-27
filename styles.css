@@ -144,6 +144,10 @@ body.mode-generation .live-ore-tracker { display: none; }
 .live-tracker-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .live-tracker-heading h2 { margin: 3px 0 0; font-size: 1.05rem; }
 .live-badge { padding: 3px 7px; border: 1px solid #4a9a79; border-radius: 999px; background: #17372d; color: var(--accent); font-size: .62rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+.wip-badge { display: inline-block; padding: 3px 7px; border: 1px solid #a86a2c; border-radius: 999px; background: #3a2a14; color: #ffdca8; font-size: .62rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; }
+.wip-badge[hidden] { display: none; }
+#header-title { display: inline-flex; align-items: center; gap: 8px; }
+.tool-nav-item strong { display: inline-flex; align-items: center; gap: 6px; }
 .live-dropper-control { display: grid; gap: 5px; color: var(--muted); font-size: .68rem; font-weight: 800; }
 .live-dropper-control select { width: 100%; padding: 8px 9px; border: 1px solid var(--line); border-radius: 7px; background: #13212d; color: var(--text); font: inherit; }
 .live-dropper-control select:focus { border-color: var(--accent); outline: 2px solid rgba(124,225,186,.25); }

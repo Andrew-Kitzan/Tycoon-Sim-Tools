@@ -15,6 +15,7 @@
         <div class="planner-brand">
           <p class="eyebrow">TYCOON SIM</p>
           <h1 id="header-title">Base Builder</h1>
+          <span id="wip-badge" class="wip-badge" title="Item geometry data (drop points, conveyor beams, furnace zones) is still being audited, so simulation accuracy here is a work in progress" hidden>WIP</span>
           <div id="planner-loadout-actions" class="planner-loadout-actions" aria-label="Saved base controls">
             <button id="load-bases" class="saved-base-button" type="button">Load Bases</button>
             <button id="save-base" class="saved-base-button" type="button" disabled title="Simulate the current base before saving">Save Base</button>
@@ -228,7 +229,7 @@
         </div>
         <div class="tool-nav-list" role="list">
           <button type="button" class="tool-nav-item" data-tool="builder" aria-current="true">
-            <strong>Base Builder</strong>
+            <strong>Base Builder <span class="wip-badge">WIP</span></strong>
             <span>Grid-based base planner</span>
           </button>
           <button type="button" class="tool-nav-item" data-tool="capgrader" aria-current="false">
