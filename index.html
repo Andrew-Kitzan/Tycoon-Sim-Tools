@@ -10,6 +10,9 @@
     <button id="tool-nav-toggle" class="tool-nav-toggle" type="button" aria-haspopup="dialog" aria-label="Open tools menu">
       <span></span><span></span><span></span>
     </button>
+    <button id="feedback-toggle" class="feedback-toggle" type="button" aria-haspopup="dialog" aria-label="Send feedback, report a bug, or suggest a feature">
+      Feedback
+    </button>
     <main class="app-shell">
       <header class="topbar">
         <div class="planner-brand">
@@ -353,6 +356,42 @@
       </div>
     </dialog>
 
+    <dialog id="feedback-dialog" class="feedback-dialog" aria-labelledby="feedback-dialog-title">
+      <form id="feedback-form" class="feedback-card">
+        <div class="feedback-heading">
+          <p class="panel-label">Feedback</p>
+          <h2 id="feedback-dialog-title">Send a bug report, feedback, or suggestion</h2>
+          <button class="icon-button" type="button" data-feedback-action="close" aria-label="Close feedback form">&times;</button>
+        </div>
+        <p class="feedback-intro">This goes straight to the developer — include as much detail as you can (what you were doing, what you expected, what happened instead).</p>
+        <label class="feedback-field">
+          <span>Type</span>
+          <select id="feedback-type" name="type" required>
+            <option value="Bug report">Bug report</option>
+            <option value="Feedback">Feedback</option>
+            <option value="Suggestion">Suggestion</option>
+          </select>
+        </label>
+        <label class="feedback-field">
+          <span>Title</span>
+          <input type="text" id="feedback-title" name="title" placeholder="Short summary" maxlength="120" required />
+        </label>
+        <label class="feedback-field">
+          <span>Details</span>
+          <textarea id="feedback-message" name="message" rows="6" placeholder="Describe the bug, feedback, or suggestion in as much detail as you'd like…" required></textarea>
+        </label>
+        <label class="feedback-field feedback-field-optional">
+          <span>Your name or contact info (optional)</span>
+          <input type="text" id="feedback-contact" name="contact" placeholder="So I can follow up, if you'd like" />
+        </label>
+        <p id="feedback-status" class="feedback-status" role="status" aria-live="polite" hidden></p>
+        <div class="feedback-actions">
+          <button type="button" class="feedback-cancel" data-feedback-action="close">Cancel</button>
+          <button type="submit" id="feedback-submit" class="feedback-submit">Submit</button>
+        </div>
+      </form>
+    </dialog>
+
     <script src="data/items.generated.js"></script>
     <script src="planner-core.js"></script>
     <script src="data/workflow-state.js"></script>
@@ -362,5 +401,6 @@
     <script src="data/active-plan.js"></script>
     <script src="app.js"></script>
     <script src="capgrader-generator.js"></script>
+    <script src="feedback.js"></script>
   </body>
 </html>
