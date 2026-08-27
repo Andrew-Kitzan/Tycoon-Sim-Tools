@@ -24,6 +24,24 @@ body {
 
 button { font: inherit; }
 
+/* Belt-and-suspenders against Android/Chrome's "force dark" content
+   inversion — the <meta name="color-scheme"> tag in index.html should
+   already opt every browser out of that, but some Android WebViews still
+   need form controls to declare their own color-scheme and text-fill-color
+   explicitly or typed text renders invisible (reported live on a Galaxy
+   phone: the feedback form's own fields showed nothing while typing). Text
+   was actually being entered correctly the whole time — this is purely a
+   rendering bug, but a bad one, since a player can't tell what they typed
+   is real without it. */
+input, textarea, select {
+  color-scheme: dark;
+}
+input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  -webkit-text-fill-color: var(--text);
+}
+
 .app-shell { max-width: 1740px; margin: 0 auto; padding: 28px; }
 
 .topbar {
