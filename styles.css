@@ -510,7 +510,7 @@ body.mode-generation .live-ore-tracker { display: none; }
 .capgrader-tool { display: flex; flex-direction: column; gap: 18px; max-width: 1660px; }
 .capgrader-tool[hidden] { display: none; }
 
-.capgrader-generate-bar { position: sticky; top: 0; z-index: 10; padding: 10px 0; background: linear-gradient(var(--page) 70%, transparent); }
+.capgrader-generate-bar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 10px; padding: 10px 0; background: linear-gradient(var(--page) 70%, transparent); }
 .capgrader-layout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
 .capgrader-main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .capgrader-sidebar { position: sticky; top: 56px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
@@ -518,6 +518,14 @@ body.mode-generation .live-ore-tracker { display: none; }
   .capgrader-layout { grid-template-columns: 1fr; }
   .capgrader-sidebar { position: static; }
 }
+
+/* After Generate, the setup panels step aside so the result reads cleanly on
+   its own, centered — "Edit setup" (in the generate bar) brings them back. */
+.capgrader-layout.is-results-only { grid-template-columns: 1fr; justify-items: center; }
+.capgrader-layout.is-results-only .capgrader-panel,
+.capgrader-layout.is-results-only .capgrader-sidebar { display: none; }
+.capgrader-layout.is-results-only .capgrader-main { width: 100%; max-width: 1040px; align-items: center; }
+.capgrader-layout.is-results-only .capgrader-results { width: 100%; }
 .capgrader-intro { margin: 0; color: var(--muted); font-size: .86rem; max-width: 70ch; }
 .capgrader-panel { padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .capgrader-panel h3 { margin: 0 0 8px; font-size: .95rem; }
@@ -557,13 +565,20 @@ body.mode-generation .live-ore-tracker { display: none; }
 
 .capgrader-generate { align-self: flex-start; padding: 10px 18px; font-size: .88rem; font-weight: 800; border: 1px solid #4a9a79; border-radius: 8px; background: #1c8f5c; color: #eafff2; cursor: pointer; box-shadow: 0 4px 14px rgba(28,143,92,.28); }
 .capgrader-generate:hover, .capgrader-generate:focus-visible { background: #229c65; border-color: var(--accent); outline: none; }
+.capgrader-edit-setup { padding: 9px 16px; font-size: .82rem; font-weight: 700; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-raised); color: var(--text); cursor: pointer; }
+.capgrader-edit-setup:hover, .capgrader-edit-setup:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+.capgrader-edit-setup[hidden] { display: none; }
 
-.capgrader-results { display: flex; flex-direction: column; gap: 20px; }
-.capgrader-result-table-wrap { overflow-x: auto; }
-.capgrader-result-heading { margin: 0 0 8px; font-size: .9rem; color: var(--accent); }
-table.capgrader-result-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-table.capgrader-result-table th, table.capgrader-result-table td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+.capgrader-results { display: flex; flex-direction: column; gap: 22px; }
+.capgrader-result-table-wrap { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+.capgrader-result-heading { margin: 0; padding: 14px 18px; font-size: 1rem; font-weight: 800; color: var(--accent); background: var(--surface-raised); border-bottom: 1px solid var(--line); }
+.capgrader-result-table-scroll { overflow-x: auto; }
+table.capgrader-result-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+table.capgrader-result-table th, table.capgrader-result-table td { padding: 10px 16px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
 table.capgrader-result-table th:first-child, table.capgrader-result-table td:first-child,
 table.capgrader-result-table th:nth-child(2), table.capgrader-result-table td:nth-child(2) { text-align: left; }
-table.capgrader-result-table thead th { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; }
+table.capgrader-result-table thead th { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 800; background: color-mix(in srgb, var(--surface-raised) 70%, transparent); }
+table.capgrader-result-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--surface-raised) 40%, transparent); }
+table.capgrader-result-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font-weight: 800; border-bottom: none; }
 .capgrader-empty-note { color: var(--muted); font-size: .84rem; }

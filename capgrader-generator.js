@@ -95,6 +95,26 @@
     return geometry.kind === 'azure' ? predictAzureHitChance(oreSizeRaw) : predictSweepHitChance(geometry, oreSizeRaw);
   }
 
+  // A blended expected-value multiplier (hitChance * mainStat + (1-hitChance))
+  // is mathematically correct on average, but it's a fake number no single
+  // ore ever actually has, and anything placed after a scanner in the chain
+  // would be "starting from" a value that can't really happen — the ore
+  // either got hit (jumps to before*mainStat) or it didn't (stays exactly
+  // the same). Since this tool plans a physical belt layout, not a single
+  // simulated ore, the fix is to place enough scanner UNITS in a row that a
+  // hit is (for planning purposes) certain, then treat the chain as if that
+  // one guaranteed hit happened — costing that many units' worth of
+  // time/length, but producing a real, exact "before"/"after" pair for
+  // whatever comes next. Uses the simple 1/hitChance rule of thumb (e.g. a
+  // 30%-per-unit scanner needs 4 in a row) rather than a strict statistical
+  // confidence bound — good enough for planning, and matches how a player
+  // would actually reason about it in-game.
+  function scanUnitsForGuarantee(hitChance) {
+    if (hitChance >= 1) return 1;
+    if (hitChance <= 0) return Infinity;
+    return Math.ceil(1 / hitChance);
+  }
+
   // ---- Item pools ---------------------------------------------------------
 
   // The runtime database (data/items.generated.js) only carries a single
@@ -214,12 +234,18 @@
 
   // ---- Deterministic item application (trimmed applyDeterministicItem) -----
 
-  function applyItem(record, state) {
+  // `count` is how many physical copies of `record` this one move represents
+  // — normally 1, but a scanner move places `scanUnitsForGuarantee(hitChance)`
+  // units in a row so the single hit it then applies is a real, exact outcome
+  // (see scanUnitsForGuarantee above) rather than a blended average. Time,
+  // length, and uses all scale with `count`; the value transformation itself
+  // does not (a "hit" is a hit regardless of how many units it took to get
+  // one), except that scanners always apply their full mainStat exactly once.
+  function applyItem(record, state, count = 1) {
     const before = state.value;
     let value = before;
     if (SCANNER_NAMES.has(record.name)) {
-      const hitChance = scannerHitChance(record.name, state.oreSize);
-      value = before * (1 + hitChance * (record.mainStat - 1));
+      value = before * Number(record.mainStat ?? 1);
     } else if (normalize(record.mainStatType).includes('additive')) {
       value = before + Number(record.mainStat ?? 0);
     } else {
@@ -229,20 +255,22 @@
     let hasFire = state.hasFire;
     if (record.name === 'Ore Flamethrower') hasFire = true;
     if (record.name === 'Oasis Cleanser') hasFire = false;
+    const timeSeconds = state.timeSeconds + crossingSeconds(record) * count;
+    const length = state.length + record.size.length * count;
     return {
       value,
       oreSize: state.oreSize,
       hasFire,
-      timeSeconds: state.timeSeconds + crossingSeconds(record),
-      length: state.length + record.size.length,
-      uses: { ...state.uses, [record.name]: (state.uses[record.name] ?? 0) + 1 },
-      chain: [...state.chain, { record, before, after: value, timeAfter: state.timeSeconds + crossingSeconds(record), lengthAfter: state.length + record.size.length }],
+      timeSeconds,
+      length,
+      uses: { ...state.uses, [record.name]: (state.uses[record.name] ?? 0) + count },
+      chain: [...state.chain, { record, before, after: value, count, timeAfter: timeSeconds, lengthAfter: length }],
     };
   }
 
-  function useAllowed(record, state, toggle) {
+  function useAllowed(record, state, toggle, count = 1) {
     const used = state.uses[record.name] ?? 0;
-    return used < effectiveCap(record, toggle);
+    return used + count <= effectiveCap(record, toggle);
   }
 
   function withinRange(record, value) {
@@ -322,7 +350,18 @@
 
   function candidateMoves(state, pool) {
     const moves = [];
-    const items = pool.capgraders.concat(pool.scanners);
+    for (const record of pool.scanners) {
+      if (!withinRange(record, state.value)) continue;
+      const toggle = getToggle(record.name);
+      const hitChance = scannerHitChance(record.name, state.oreSize);
+      const unitsNeeded = scanUnitsForGuarantee(hitChance);
+      // Not enough owned copies to guarantee a hit — this scanner can't be
+      // used here at all (no partial/uncertain placement offered; see
+      // scanUnitsForGuarantee above for why an exact outcome matters).
+      if (!Number.isFinite(unitsNeeded) || !useAllowed(record, state, toggle, unitsNeeded)) continue;
+      moves.push(applyItem(record, state, unitsNeeded));
+    }
+    const items = pool.capgraders;
     for (const record of items) {
       if (!withinRange(record, state.value)) continue;
       const toggle = getToggle(record.name);
@@ -419,7 +458,16 @@
     // excluded from candidateMoves entirely — so picking the highest-value terminal
     // here (lightly discounted for time/length, same reasoning as the tuning above)
     // directly maximizes the base the finisher cascade below multiplies from.
-    const terminalScore = (s) => Math.log(Math.max(1, s.value)) * 100 - s.timeSeconds * 10 - s.length;
+    // Weights of time*10/length*1 (tuned to stop the search padding a chain for
+    // a sub-1% value gain) turned out to overcorrect: a real, legal extra step
+    // — e.g. a Fusion Upgrader application that was still fully in-range and
+    // worth +21% value — could lose to NOT taking it, because a couple of
+    // extra seconds/tiles cost more raw score than a double-digit-percent
+    // value gain was worth under those weights. time*2/length*0.3 keeps the
+    // original sub-1%-gain case correctly rejected (extra cost still dwarfs
+    // the log-value gain there) while letting genuinely worthwhile extra
+    // steps win instead of being discarded for a minor space/time cost.
+    const terminalScore = (s) => Math.log(Math.max(1, s.value)) * 100 - s.timeSeconds * 2 - s.length * 0.3;
     let best = terminals.sort((a, b) => terminalScore(b) - terminalScore(a))[0];
     // Cascade every owned, still-eligible finisher on top, in ascending mainStat
     // order — order among finishers themselves never affects the total (each has
@@ -440,7 +488,19 @@
   const addDropperButton = document.querySelector('#capgrader-add-dropper');
   const spreadWarningEl = document.querySelector('#capgrader-spread-warning');
   const generateButton = document.querySelector('#capgrader-generate');
+  const editSetupButton = document.querySelector('#capgrader-edit-setup');
+  const capgraderLayoutEl = document.querySelector('#capgrader-layout');
   const resultsEl = document.querySelector('#capgrader-results');
+
+  // After generating, the setup panels (droppers/capgraders/additives/
+  // scanners) get out of the way so the result can be read without a busy
+  // toggle-list wall around it — "Edit setup" brings them back.
+  function setResultsMode(isResultsMode) {
+    capgraderLayoutEl?.classList.toggle('is-results-only', isResultsMode);
+    if (generateButton) generateButton.hidden = isResultsMode;
+    if (editSetupButton) editSetupButton.hidden = !isResultsMode;
+  }
+  editSetupButton?.addEventListener('click', () => setResultsMode(false));
 
   // Three independent toggle lists (capgraders / additives+Lunar / scanners),
   // each with its own search + select-all/none, sharing the same behavior.
@@ -737,7 +797,7 @@
     wrap.className = 'capgrader-result-table-wrap';
     const rows = chain.map((entry) => `
       <tr>
-        <td>${entry.record.name}</td>
+        <td>${entry.record.name}${entry.count > 1 ? ` &times;${entry.count}` : ''}</td>
         <td>${entry.record.variant}</td>
         <td>${compactNumber(entry.before)}</td>
         <td>${compactNumber(entry.after)}</td>
@@ -747,10 +807,12 @@
     `).join('');
     wrap.innerHTML = `
       <p class="capgrader-result-heading">${dropperLabel} — starting at ${compactNumber(startingValue)}</p>
-      <table class="capgrader-result-table">
-        <thead><tr><th>Upgrader</th><th>Variant</th><th>Value before</th><th>Value after</th><th>Time</th><th>Length</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="6">No legal capgrader chain found — toggle on more items you own.</td></tr>'}</tbody>
-      </table>
+      <div class="capgrader-result-table-scroll">
+        <table class="capgrader-result-table">
+          <thead><tr><th>Upgrader</th><th>Variant</th><th>Value before</th><th>Value after</th><th>Time</th><th>Length</th></tr></thead>
+          <tbody>${rows || '<tr><td colspan="6">No legal capgrader chain found — toggle on more items you own.</td></tr>'}</tbody>
+        </table>
+      </div>
     `;
     return wrap;
   }
@@ -764,6 +826,7 @@
       resultsEl.innerHTML = '<p class="capgrader-empty-note">Pick at least one dropper first.</p>';
       return;
     }
+    setResultsMode(true);
     for (const row of validRows) {
       const record = variantsFor(row.name).find((r) => r.variant === row.variant);
       const startingValue = Number(record.mainStat);
