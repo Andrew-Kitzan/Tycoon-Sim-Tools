@@ -8,11 +8,66 @@ now wrong, correct it in place and say why.
 
 ## Last worked on
 
-2026-08-27 — see "2026-08-27 Luck / Crate Simulator tool" below (a third tool
-added alongside Base Builder and Capgrader Generator). Supersedes the
-"2026-08-26 Capgrader Generator: beam-search quality fixes" section for
-priority purposes (that section is still accurate, just not the most recent
-work).
+2026-08-27 — see "2026-08-27 Capgrader Generator: automated test coverage"
+below. Closes out the item AI_TASKS.md had kept open ("feature-complete,
+kept open only for lack of automated tests").
+
+## 2026-08-27 Capgrader Generator: automated test coverage
+
+**Capgrader Generator can now move to Resolved in AI_TASKS.md** — it had zero
+automated tests (only manual browser checks and ad hoc Node scratch scripts);
+now `tests/capgrader-generator.test.mjs` exists and is wired into both
+`npm test` and `npm run check`.
+
+**How it tests a plain (non-module) browser script:** `capgrader-generator.js`
+now permanently exposes `globalThis.__cgDebug = { legalPool,
+optimizeCapgraderChain, getToggle, capgraderNames, additiveNames,
+scannerNames, lunarName }` right after `optimizeCapgraderChain`'s closing
+brace (previously this hook only ever existed in a throwaway scratch copy —
+see the 2026-08-26 entry below). The test file loads `data/items.generated.js`
++ `capgrader-generator.js` together via `new Function(...)` against a minimal
+hand-written `document`/`localStorage`/`CSS` stub (no jsdom dependency added —
+this project is intentionally zero-npm-dependency) and pulls the hook off
+`globalThis`. The stub works because every real DOM lookup in the file is
+either `?.`-guarded or behind an `if (!el) return`, so a stub where
+`document.querySelector`/`querySelectorAll` always return
+`null`/`[]` is enough to let the module finish loading (and reach the
+`__cgDebug` assignment) without a real HTML parser — verified by reading the
+whole file's DOM-touching code paths, not assumed. **Do not remove the
+`globalThis.__cgDebug` line — the test suite depends on it and it's a no-op in
+production** (browsers just get one extra harmless global property).
+
+**What's covered:** `legalPool()` (empty pool, fully-owned pool including
+finisher/non-finisher split, owning exactly one item doesn't leak others in),
+and `optimizeCapgraderChain()` (a regression band of $1.25T-$1.4T for the
+"own everything, Dropper starting at $10" scenario from the 2026-08-26 quality
+fixes below — catches all three fixes regressing at once; finishers only ever
+cascade at the very end, never as a mid-chain bridge, per quality bug #2; an
+empty pool returns the starting value unchanged without throwing).
+**Not covered:** the UI rendering/event-wiring code (`renderDropperRows`,
+`renderToggleLists`, etc.) — the DOM stub deliberately makes those all no-op,
+so this is search-logic coverage only, not a full UI test. Scanner
+hit-chance formulas (`predictSweepHitChance`/`predictAzureHitChance`) also
+aren't unit-tested directly yet, only exercised indirectly through the
+regression scenario when scanners are legal moves.
+
+**Real bug found and fixed while writing these tests — significant, not
+cosmetic:** `CAPGRADER_NAMES` had `"Rubix's Polisher"` (with an x) but the
+actual database item is **"Rubik's Polisher"** (a Rubik's Cube reference) —
+the typo silently meant this item could never be toggled on in the tool at
+all, since `legalPool()` only ever looks up names from that hardcoded set.
+Fixed in `capgrader-generator.js` (both the `CAPGRADER_NAMES` entry and the
+comment above `isFinisherRecord`). Measured impact on the "own everything,
+Dropper starting at $10" scenario: **$604B with the typo (old, broken) vs.
+$1.33T fixed** — more than 2x, because Rubik's Polisher is a *finisher*
+(range 0 - 1 septillion, single-use) that cascades on top of Toybox Express
+at the very end of the chain (see quality bug #2 below), so losing it wasn't
+just "one fewer option," it silently cut off one of exactly two
+finisher-cascade multipliers the search could ever apply. If this tool felt
+like it was underperforming for players who owned Rubik's Polisher, this was
+why. The $1.25T-$1.4T regression band in the new test file already reflects
+the fixed number — do not "fix" the test back down to ~$604B-780B if this
+typo ever creeps back in; that would mean the bug regressed, not the test.
 
 ## 2026-08-27 Luck / Crate Simulator tool
 

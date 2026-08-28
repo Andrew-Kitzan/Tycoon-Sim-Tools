@@ -128,7 +128,7 @@
     'Fusion Upgrader', 'Oil Well', 'Cookie Upgrader', '8-Ball Refiner', 'Desert Remains',
     'Martian Tech', 'Fairy Forest', 'Helio-Grader', 'Quad Rays Upgrader', 'Satellite Enhancer',
     'Orbital Messenger', 'Sugar Churner', 'Anchor Upgrader', 'Ore Purifier', 'Blocky Refiner',
-    'Hydrothermal Vent', 'Observatory Refiner', 'Fine Point Upgrader', "Rubix's Polisher",
+    'Hydrothermal Vent', 'Observatory Refiner', 'Fine Point Upgrader', "Rubik's Polisher",
     'Rocketship Upgrader', 'Surfboard Polisher', 'Gumball Enhancer', 'Toybox Express',
   ]);
   const SCANNER_NAMES = new Set(['Ancient Scanner', 'Precision Ore Scanner', 'Azure Scanner']);
@@ -282,7 +282,7 @@
 
   // A "finisher" capgrader has a range floor of 0 and a ceiling so far above
   // every normal, tiered capgrader's ceiling that it's effectively usable at
-  // any value — Toybox Express (0-1 octillion) and Rubix's Polisher (0-1
+  // any value — Toybox Express (0-1 octillion) and Rubik's Polisher (0-1
   // septillion) are the only two in the current dataset. Because they're
   // single-use and legal almost anywhere, the beam search below used to grab
   // them opportunistically as mid-chain bridges between two narrower-range
@@ -481,6 +481,14 @@
     }
     return { chain: best.chain, finalValue: best.value };
   }
+
+  // Exposes the search internals for tests/capgrader-generator.test.mjs to
+  // call directly against this real shipped file (rather than a hand-written
+  // reimplementation, which risks silently testing a subtly different
+  // algorithm than the one that actually runs) — see AI_HANDOFF.md "How this
+  // was debugged" under the 2026-08-26 Capgrader Generator entry. No-op in
+  // the browser beyond this one property assignment.
+  globalThis.__cgDebug = { legalPool, optimizeCapgraderChain, getToggle, capgraderNames, additiveNames, scannerNames, lunarName };
 
   // ---- UI: dropper rows -----------------------------------------------------
 

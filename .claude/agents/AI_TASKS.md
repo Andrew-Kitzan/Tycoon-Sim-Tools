@@ -6,25 +6,6 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
 
 ## In progress
 
-- **Capgrader Generator tool — feature-complete and pushed, kept open only
-  for lack of automated tests.** A second full tool alongside the Base
-  Builder (hamburger nav menu to switch between them), for finding the best
-  capgrader chain for one or more droppers given which capgraders/
-  additives/Lunar Landing/scanners the player owns. Build and all
-  beam-search quality fixes (terminal scoring, wide-range single-use items
-  wasted as mid-chain bridges, depth-aligned pruning penalizing
-  many-small-steps chains) are done and the user confirmed satisfied with
-  output quality ("that is perfect") — full detail in `AI_HANDOFF.md` →
-  "2026-08-27 Capgrader Generator tool + scanner formula finalization" and
-  "2026-08-26 Capgrader Generator: beam-search quality fixes", read both
-  before touching `optimizeCapgraderChain`/`candidateMoves`. The user
-  explicitly wants this to stay open (not Resolved) until it has real
-  automated test coverage — right now it has zero beyond manual browser
-  checks and ad hoc Node scratch scripts (see AI_HANDOFF.md for the
-  debug-hook technique used to test the search logic directly against the
-  real file, useful groundwork for writing real tests). A small (~1-1.5%)
-  gap to the true theoretical optimum is a known, accepted limitation, not
-  something to chase — not the reason this stays open.
 - **Auditing `data/item-geometry-worksheet.json`'s `upgraders` section.**
   Droppers and furnaces are fully audited and fixed. Upgraders: every item has
   been bulk pre-filled with best-guess defaults (conveyor centered per
@@ -129,6 +110,22 @@ later item leans on the data/work from the ones before it):
 
 ## Resolved (kept for context, don't re-open without new information)
 
+- **Capgrader Generator tool.** Feature-complete, pushed, and now has real
+  automated test coverage (`tests/capgrader-generator.test.mjs`, wired into
+  `npm test`/`npm run check`) — this was the one thing keeping it open. Full
+  detail in `AI_HANDOFF.md` → "2026-08-27 Capgrader Generator: automated test
+  coverage" (how the DOM-stub test harness works, what's covered vs. not) and
+  the two entries below it ("2026-08-27 Capgrader Generator tool + scanner
+  formula finalization", "2026-08-26 Capgrader Generator: beam-search quality
+  fixes" — read all three before touching `optimizeCapgraderChain`/
+  `candidateMoves`/`legalPool`). Writing the tests also surfaced and fixed a
+  real, significant bug: `CAPGRADER_NAMES` had a typo ("Rubix's Polisher"
+  instead of the database's actual "Rubik's Polisher") that silently made
+  that finisher item impossible to ever toggle on, costing more than 2x final
+  value in the "own everything" scenario ($604B → $1.33T once fixed) — see
+  the handoff entry for the measured numbers. A small (~1-1.5%) gap to the
+  true theoretical search optimum remains a known, accepted limitation, not
+  something to chase.
 - Beam/zone coordinate convention (center-anchored vs. edge-anchored) — was
   briefly reconsidered, explicitly reverted back to edge-anchored. See
   AI_DECISIONS.md.
