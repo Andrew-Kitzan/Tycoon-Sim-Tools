@@ -6,53 +6,6 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
 
 ## In progress
 
-- **Luck / Crate Simulator tool — built, pushed (`b91278e`), still no
-  automated tests.** Third tool alongside Base Builder and Capgrader
-  Generator. Full detail in `AI_HANDOFF.md` → "2026-08-27 Luck / Crate
-  Simulator tool" plus the three sections right after it (icon-naming
-  cleanup, database resync, and — most important if touching the math again —
-  the "Any Crate" items fix, which went through 3 attempts before landing on
-  the correct one: odds must be identical across every crate at exactly 1x
-  Unbox Luck, but are allowed to diverge at any other luck value). Manually
-  verified in-browser against the real reference spreadsheet's own numbers,
-  both at 1x luck and at luck 202. User is about to test further and give
-  feedback in a new session — check whether new feedback contradicts the
-  "identical at 1x luck" invariant before assuming the math regressed; that
-  invariant was confirmed directly by the user, not assumed. Remaining open
-  item: the rarity color palette is a reasonable default guess, not sourced
-  from the spreadsheet (confirmed no such data exists there). No automated
-  tests.
-- **Capgrader Generator tool — built, beam-search quality issues fixed, and
-  pushed to `main`.** A second full tool alongside the Base Builder (new
-  hamburger nav menu to switch between them), for finding the best capgrader
-  chain for one or more droppers given which capgraders/additives/Lunar
-  Landing/scanners the player owns. Full detail (files, architecture
-  decisions, known gotchas) is in `AI_HANDOFF.md` → "2026-08-27 Capgrader
-  Generator tool + scanner formula finalization" for the original build, and
-  → "2026-08-26 Capgrader Generator: beam-search quality fixes" for a round
-  of real correctness bugs found and fixed in the search algorithm itself
-  (terminal scoring, wide-range single-use items being wasted as mid-chain
-  bridges, depth-aligned pruning unfairly penalizing many-small-steps
-  chains) — read both before changing anything here, the second one
-  especially before touching `optimizeCapgraderChain` or `candidateMoves`.
-  User confirmed satisfied with current output quality ("that is perfect");
-  a small (~1-1.5%) gap to the true theoretical optimum remains and is
-  flagged as a known, accepted limitation, not a bug to chase reflexively —
-  see that section's item 4 before trying to close it, it would need a real
-  search-architecture change (best-first/A*), not a parameter tweak. No
-  automated tests written for `capgrader-generator.js` itself — worth adding
-  if this tool gets touched again, since it's had zero regression coverage
-  so far beyond manual browser checks and ad hoc Node scratch scripts (see
-  AI_HANDOFF.md for the debug-hook technique used to test the search logic
-  directly against the real file).
-- **Feedback widget — built and pushed, working live.** A small third-ish
-  feature (not a full "tool" in the nav sense): a "Feedback" button visible
-  on every tool, opening a form (bug report/feedback/suggestion + optional
-  image/video attachment) that relays through FormSubmit since the site is
-  static GitHub Pages with no backend. `feedback.js`. Fixed one real Android
-  "forced dark mode" bug this surfaced (form text was invisible on some
-  phones — see AI_HANDOFF.md if not already covered there). No known open
-  issues; not expected to need more work unless the user reports something.
 - **Auditing `data/item-geometry-worksheet.json`'s `upgraders` section.**
   Droppers and furnaces are fully audited and fixed. Upgraders: every item has
   been bulk pre-filled with best-guess defaults (conveyor centered per
@@ -69,29 +22,29 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
   Starlight Enhancer, Raceway Accelerator (both upgraders — formulas were
   discussed early in the geometry-revamp theory pass but not yet written into
   `formulaOverride`).
-- **Scanner beam geometry + hit-chance experiment design.** Purpose: the
-  live engine currently approximates every scanner as one flat
-  `scannerHitChance` percentage (see `models.mjs`/`value-distribution.mjs`,
-  detected via `/scanner/i` matching name+effects text) — a crude stand-in,
-  not a real simulation of the beam physically passing over the ore. This
-  work is specifically building the real replacement for that.
-  **Status: instead of in-game empirical testing, a geometry-based kinematic
-  simulator was built** (`scripts/scanner-hit-simulator.mjs` +
-  `scripts/scanner-hit-report.mjs`) that directly computes hit chance from
-  each scanner's real confirmed beam geometry — closed-form formulas have
-  been derived and fit against the simulated data (arcsine-based formula for
-  sweep scanners, expected-value linear fit for Azure below its guaranteed
-  threshold). Full derivation, the formulas themselves, and validation status
-  are written up in AI_DECISIONS.md "Scanner hit-chance formulas" — read that
-  before touching this further. These formulas are now also the ones used
-  live by the Capgrader Generator tool (see the "In progress" entry above /
-  AI_HANDOFF.md) for its scanner math — keep both in sync if the formulas
-  ever get refit again. **Not yet done:** writing these into the
-  worksheet's `formulaOverride` fields (see AI_DECISIONS.md for the exact
-  formula text to use) or wiring into the engine; the sweep-scanner model
-  hasn't been checked against any real in-game measurement yet, and Azure's
-  `pivotHeight` (1.1, eyeballed from one screenshot) is still the single
-  biggest source of uncertainty in that model.
+- **Scanner beam geometry + hit-chance — formulas done and in production use
+  via Capgrader Generator; the original wider goal (live engine + worksheet)
+  is still open.** Two genuinely different scopes here, worth keeping
+  separate so this doesn't get marked "done" by mistake:
+  - **Done:** a geometry-based kinematic simulator
+    (`scripts/scanner-hit-simulator.mjs` + `scripts/scanner-hit-report.mjs`)
+    computes hit chance from each scanner's real confirmed beam geometry;
+    closed-form formulas were derived and fit against that simulated data
+    (arcsine-based for sweep scanners, expected-value linear fit for Azure
+    below its guaranteed threshold). Full derivation in AI_DECISIONS.md
+    "Scanner hit-chance formulas". These are the formulas Capgrader
+    Generator's own scanner math uses today — that consumer is finished and
+    shipped.
+  - **Still not done, original goal of this task:** the *live game engine*
+    (`models.mjs`/`value-distribution.mjs`) still uses the old flat
+    `scannerHitChance` approximation — these formulas were never wired in
+    there, and were never written into the item-geometry-worksheet's
+    `formulaOverride` fields either. The sweep-scanner model also hasn't
+    been checked against any real in-game measurement yet, and Azure's
+    `pivotHeight` (1.1, eyeballed from one screenshot) is still the single
+    biggest source of uncertainty in that model. **Ask the user whether they
+    still want this wider engine-wiring work or consider the Capgrader-tool
+    use sufficient** before closing this out or continuing it.
 
 ## Not started
 
@@ -164,3 +117,35 @@ later item leans on the data/work from the ones before it):
   request; not needed.
 - `needsFormula` field — removed entirely from upgraders (superseded by
   `formulaOverride` alone); still present on droppers and furnaces.
+- **Capgrader Generator tool.** Built, beam-search quality issues fixed
+  (terminal scoring, wide-range single-use items wasted as mid-chain
+  bridges, depth-aligned pruning penalizing many-small-steps chains), user
+  confirmed satisfied with output quality ("that is perfect"), pushed to
+  `main`. Full detail in `AI_HANDOFF.md` → "2026-08-27 Capgrader Generator
+  tool + scanner formula finalization" and "2026-08-26 Capgrader Generator:
+  beam-search quality fixes" — read both before touching
+  `optimizeCapgraderChain`/`candidateMoves` if this ever needs revisiting. A
+  small (~1-1.5%) gap to the true theoretical optimum is a known, accepted
+  limitation (would need a search-architecture change, not a parameter
+  tweak), not something to chase reflexively. No automated tests exist —
+  worth adding before any future changes, since there's zero regression
+  coverage beyond manual browser checks and ad hoc Node scratch scripts.
+- **Luck / Crate Simulator tool.** Built, verified against the real
+  reference spreadsheet's own numbers (byte-for-byte at 1x luck, and against
+  a live screenshot at luck 202), pushed (`b91278e`). Full detail in
+  `AI_HANDOFF.md` → "2026-08-27 Luck / Crate Simulator tool" plus the three
+  sections right after it — the "Any Crate" items fix especially, since it
+  went through 3 attempts before landing on the correct invariant (odds
+  identical across every crate at exactly 1x Unbox Luck, allowed to diverge
+  at any other luck value) — re-verify against that invariant, not just
+  against whatever the most recent screenshot showed, if this needs
+  revisiting. No automated tests exist. The rarity color palette is a
+  reasonable default guess, not sourced from the spreadsheet (confirmed no
+  such data exists there — no per-cell fills or conditional formatting on
+  the Rarity column).
+- **Feedback widget.** A "Feedback" button visible on every tool, opening a
+  form (bug report/feedback/suggestion + optional image/video attachment)
+  that relays through FormSubmit since the site is static GitHub Pages with
+  no backend. `feedback.js`. Fixed one real Android "forced dark mode" bug
+  this surfaced live (form text was invisible on some phones — see
+  AI_HANDOFF.md). Working live, no known open issues.
