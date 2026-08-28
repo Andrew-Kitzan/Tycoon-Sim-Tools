@@ -6,45 +6,53 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
 
 ## In progress
 
-- **Luck / Crate Simulator tool — built and icon gap fully resolved, still
-  no automated tests.** Third tool alongside Base Builder and Capgrader
+- **Luck / Crate Simulator tool — built, pushed (`b91278e`), still no
+  automated tests.** Third tool alongside Base Builder and Capgrader
   Generator. Full detail in `AI_HANDOFF.md` → "2026-08-27 Luck / Crate
-  Simulator tool" (plus the "Icon gap — resolved" and "database resync"
-  entries right after it) — read all three before touching
-  `luck-crate-generator.js` or `scripts/build-crate-luck-data.mjs`. Manually
-  verified in-browser this session (odds reproduced the reference spreadsheet
-  exactly for the Basic Crate, both before and after the database resync).
-  What initially looked like 13-14 missing icon files turned out to be pure
-  naming mismatches between the DB and `icons/items/` — all fixed by
-  renaming icon files, 0 missing now (verified exhaustively, not spot-checked).
-  Remaining open item: the rarity color palette is a reasonable default
-  guess, not sourced from the spreadsheet (confirmed no such data exists
-  there — no per-cell fills or conditional formatting on the Rarity column).
-  No automated tests.
-- **Capgrader Generator tool — built and beam-search quality issues fixed,
-  still no automated tests.** A second full tool alongside the Base Builder
-  (new hamburger nav menu to switch between them), for finding the best
-  capgrader chain for one or more droppers given which capgraders/
-  additives/Lunar Landing/scanners the player owns. Full detail (files,
-  architecture decisions, known gotchas) is in `AI_HANDOFF.md` → "2026-08-27
-  Capgrader Generator tool + scanner formula finalization" for the original
-  build, and → "2026-08-26 Capgrader Generator: beam-search quality fixes"
-  for a round of real correctness bugs found and fixed in the search
-  algorithm itself (terminal scoring, wide-range single-use items being
-  wasted as mid-chain bridges, depth-aligned pruning unfairly penalizing
-  many-small-steps chains) — read both before changing anything here, the
-  second one especially before touching `optimizeCapgraderChain` or
-  `candidateMoves`. User confirmed satisfied with current output quality
-  ("that is perfect"); a small (~1-1.5%) gap to the true theoretical optimum
-  remains and is flagged as a known, accepted limitation, not a bug to
-  chase reflexively — see that section's item 4 before trying to close it,
-  it would need a real search-architecture change (best-first/A*), not a
-  parameter tweak. Nothing committed yet. No automated tests written for
-  `capgrader-generator.js` itself — worth adding if this tool gets touched
-  again, since it's had zero regression coverage so far beyond manual
-  browser checks and ad hoc Node scratch scripts (see AI_HANDOFF.md for the
-  debug-hook technique used to test the search logic directly against the
-  real file).
+  Simulator tool" plus the three sections right after it (icon-naming
+  cleanup, database resync, and — most important if touching the math again —
+  the "Any Crate" items fix, which went through 3 attempts before landing on
+  the correct one: odds must be identical across every crate at exactly 1x
+  Unbox Luck, but are allowed to diverge at any other luck value). Manually
+  verified in-browser against the real reference spreadsheet's own numbers,
+  both at 1x luck and at luck 202. User is about to test further and give
+  feedback in a new session — check whether new feedback contradicts the
+  "identical at 1x luck" invariant before assuming the math regressed; that
+  invariant was confirmed directly by the user, not assumed. Remaining open
+  item: the rarity color palette is a reasonable default guess, not sourced
+  from the spreadsheet (confirmed no such data exists there). No automated
+  tests.
+- **Capgrader Generator tool — built, beam-search quality issues fixed, and
+  pushed to `main`.** A second full tool alongside the Base Builder (new
+  hamburger nav menu to switch between them), for finding the best capgrader
+  chain for one or more droppers given which capgraders/additives/Lunar
+  Landing/scanners the player owns. Full detail (files, architecture
+  decisions, known gotchas) is in `AI_HANDOFF.md` → "2026-08-27 Capgrader
+  Generator tool + scanner formula finalization" for the original build, and
+  → "2026-08-26 Capgrader Generator: beam-search quality fixes" for a round
+  of real correctness bugs found and fixed in the search algorithm itself
+  (terminal scoring, wide-range single-use items being wasted as mid-chain
+  bridges, depth-aligned pruning unfairly penalizing many-small-steps
+  chains) — read both before changing anything here, the second one
+  especially before touching `optimizeCapgraderChain` or `candidateMoves`.
+  User confirmed satisfied with current output quality ("that is perfect");
+  a small (~1-1.5%) gap to the true theoretical optimum remains and is
+  flagged as a known, accepted limitation, not a bug to chase reflexively —
+  see that section's item 4 before trying to close it, it would need a real
+  search-architecture change (best-first/A*), not a parameter tweak. No
+  automated tests written for `capgrader-generator.js` itself — worth adding
+  if this tool gets touched again, since it's had zero regression coverage
+  so far beyond manual browser checks and ad hoc Node scratch scripts (see
+  AI_HANDOFF.md for the debug-hook technique used to test the search logic
+  directly against the real file).
+- **Feedback widget — built and pushed, working live.** A small third-ish
+  feature (not a full "tool" in the nav sense): a "Feedback" button visible
+  on every tool, opening a form (bug report/feedback/suggestion + optional
+  image/video attachment) that relays through FormSubmit since the site is
+  static GitHub Pages with no backend. `feedback.js`. Fixed one real Android
+  "forced dark mode" bug this surfaced (form text was invisible on some
+  phones — see AI_HANDOFF.md if not already covered there). No known open
+  issues; not expected to need more work unless the user reports something.
 - **Auditing `data/item-geometry-worksheet.json`'s `upgraders` section.**
   Droppers and furnaces are fully audited and fixed. Upgraders: every item has
   been bulk pre-filled with best-guess defaults (conveyor centered per

@@ -220,30 +220,26 @@ below):**
   on a design worked out in a separate ChatGPT conversation (shared link in
   chat history if you need the original source).
 
-## Files changed (uncommitted)
+## Files changed (uncommitted) — UPDATED 2026-08-27, corrects a stale entry below
 
-- `data/item-geometry-worksheet.json` (new)
-- `scripts/build-item-geometry-worksheet.mjs` (new, now self-locking — see
-  AI_DECISIONS.md)
-- `.claude/agents/AI_HANDOFF.md`, `AI_DECISIONS.md`, `AI_TASKS.md` (new, this
-  handoff system)
-- `.claude/agents/AGENTS.md` (moved here from the repo root, updated with a
-  pointer to this handoff system) — the real instructions file now.
-- Root-level `AGENTS.md` is now a **1-paragraph stub** that just points here,
-  so tools that auto-discover `AGENTS.md` at the repo root by convention
-  (e.g. OpenAI Codex CLI) still find their way to the real content. Keep
-  both in sync if the real file's purpose ever changes — the stub shouldn't
-  need edits often, but if `.claude/agents/AGENTS.md` ever moves again,
-  update the stub's pointer.
-- `.gitignore` — was fully ignoring `.claude/`, which would have hidden this
-  entire handoff system from git. Changed to `.claude/*` +
-  `!.claude/agents/` so only `.claude/agents/` is tracked; local settings
-  (`.claude/settings.json`, `.claude/launch.json`) stay ignored.
+As of the end of the 2026-08-27 session, **everything is committed and pushed
+to `origin/main`** (last push: commit `b91278e`, "Add Luck/Crate Simulator
+tool and resync database") **except** these two, which stay uncommitted at
+the user's explicit, repeated request (do not "helpfully" commit them):
+- `data/item-geometry-worksheet.json`
+- `scripts/build-item-geometry-worksheet.mjs`
 
-Everything else from this session's engine/UI fixes is already committed
-(`474a1c7`). Do not assume `git log` alone tells the whole story — the
-worksheet and this handoff system are real, current work that git doesn't
-know about yet.
+`git status` should show only those two as untracked and nothing else
+modified. If it shows more than that, something changed after this note was
+written — trust `git status`/`git log` over this file in that case, and
+update this section rather than leaving it stale again (see the paragraph
+below this one for what NOT to do).
+
+The paragraph that used to be here (something like "AGENTS.md move,
+scanner-beam thread, files changed for that session") was from a much
+earlier session and had gone stale — corrected in place per this file's own
+instructions rather than deleted, so you know this section can and does drift
+if not actively maintained every session.
 
 ## Important decisions
 
@@ -253,18 +249,27 @@ already settled.
 
 ## Current problem / state
 
-Nothing is actively broken. The geometry worksheet is a working document
-mid-audit, not a bug. The main thing to know: **the worksheet is not wired
-into the engine yet** — none of this geometry/formula data affects actual
-gameplay simulation until the "revamp" work in AI_TASKS.md happens.
+Nothing is actively broken. Three tools now exist (Base Builder — WIP badge,
+Capgrader Generator, Luck/Crate Simulator — see the dated sections below for
+each). The item-geometry worksheet is a working document mid-audit, not a
+bug, and is **still not wired into the engine** — none of that geometry data
+affects actual gameplay simulation yet (see AI_TASKS.md's "revamp" entry).
 
 ## Next suggested task
 
-**Immediate/active thread: scanner beam hit-chance testing** (see the
-dedicated section below — this is what the user was mid-conversation on when
-this handoff was last updated). Once that's far enough along, fall back to
-the general upgraders audit (AI_TASKS.md → "In progress"), item by item, the
-same way droppers and furnaces were done: user provides in-game
+**Immediate: the user is about to test the Luck/Crate Simulator further and
+give feedback in a new chat** — read the "2026-08-27 Luck / Crate Simulator
+tool" section (and the two sections right after it) in full before touching
+`luck-crate-generator.js` or `scripts/build-crate-luck-data.mjs`, especially
+the "Any Crate items" fix's 3 attempts — the correct invariant is "identical
+odds across all crates at exactly 1x Unbox Luck, allowed to diverge at any
+other luck value." No automated tests exist for this tool yet; consider
+adding some if it gets touched again, since it's had zero regression coverage
+beyond manual browser checks so far.
+
+Once that's stable, fall back to the general upgraders audit (AI_TASKS.md →
+"In progress"), item by item, the same way droppers and furnaces were done:
+user provides in-game
 observations/screenshots, agent proposes the JSON, user pastes it in or asks
 the agent to write it directly.
 
