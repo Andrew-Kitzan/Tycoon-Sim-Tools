@@ -6,6 +6,21 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
 
 ## In progress
 
+- **Luck / Crate Simulator tool — built and icon gap fully resolved, still
+  no automated tests.** Third tool alongside Base Builder and Capgrader
+  Generator. Full detail in `AI_HANDOFF.md` → "2026-08-27 Luck / Crate
+  Simulator tool" (plus the "Icon gap — resolved" and "database resync"
+  entries right after it) — read all three before touching
+  `luck-crate-generator.js` or `scripts/build-crate-luck-data.mjs`. Manually
+  verified in-browser this session (odds reproduced the reference spreadsheet
+  exactly for the Basic Crate, both before and after the database resync).
+  What initially looked like 13-14 missing icon files turned out to be pure
+  naming mismatches between the DB and `icons/items/` — all fixed by
+  renaming icon files, 0 missing now (verified exhaustively, not spot-checked).
+  Remaining open item: the rarity color palette is a reasonable default
+  guess, not sourced from the spreadsheet (confirmed no such data exists
+  there — no per-cell fills or conditional formatting on the Rarity column).
+  No automated tests.
 - **Capgrader Generator tool — built and beam-search quality issues fixed,
   still no automated tests.** A second full tool alongside the Base Builder
   (new hamburger nav menu to switch between them), for finding the best

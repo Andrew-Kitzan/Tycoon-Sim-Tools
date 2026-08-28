@@ -223,7 +223,55 @@
           </aside>
         </div>
       </section>
+
+      <section id="luck-tool" class="luck-tool" aria-label="Luck simulator" hidden>
+        <p class="luck-intro">Type in your current luck and roll stats, then pick a crate to see exactly what you can pull — which item, which variant, and the real combined odds.</p>
+
+        <div class="luck-stats-panel">
+          <label class="luck-stat-field"><span>Unbox Luck</span><input type="number" id="luck-unbox-luck" step="any" min="1" value="1" inputmode="decimal" /></label>
+          <label class="luck-stat-field"><span>Shiny Luck <small>(1 in X)</small></span><input type="number" id="luck-shiny-luck" step="any" min="1" value="20" inputmode="decimal" /></label>
+          <label class="luck-stat-field"><span>Mythic Luck <small>(1 in X)</small></span><input type="number" id="luck-mythic-luck" step="any" min="1" value="100" inputmode="decimal" /></label>
+          <label class="luck-stat-field"><span>Roll Speed <small>(sec)</small></span><input type="number" id="luck-roll-speed" step="any" min="0" value="0.7" inputmode="decimal" /></label>
+          <label class="luck-stat-field"><span>Unbox Slots</span><input type="number" id="luck-unbox-slots" step="any" min="1" value="1" inputmode="decimal" /></label>
+        </div>
+
+        <div id="luck-select-view" class="luck-select-view">
+          <div class="luck-panel luck-anycrate-panel">
+            <h3>Any-crate items</h3>
+            <p class="capgrader-panel-note">These can technically drop from any crate for a limited time. Toggle on the ones you consider currently attainable to include them in the crates below.</p>
+            <div id="luck-anycrate-list" class="luck-anycrate-list"></div>
+          </div>
+          <div id="luck-crate-grid" class="luck-crate-grid"></div>
+        </div>
+
+        <div id="luck-detail-view" class="luck-detail-view" hidden>
+          <div class="luck-detail-header">
+            <button type="button" id="luck-back-button" class="luck-back-button">&larr; Back to crates</button>
+            <h2 id="luck-detail-crate-name"></h2>
+            <div class="luck-variant-toggle" role="group" aria-label="Variant">
+              <button type="button" data-luck-variant="Base" aria-pressed="true">Base</button>
+              <button type="button" data-luck-variant="Shiny" aria-pressed="false">Shiny</button>
+              <button type="button" data-luck-variant="Mythic" aria-pressed="false">Mythic</button>
+              <button type="button" data-luck-variant="Shiny Mythic" aria-pressed="false">Shiny Mythic</button>
+            </div>
+          </div>
+          <div class="luck-crate-frame">
+            <div id="luck-item-grid" class="luck-item-grid"></div>
+          </div>
+        </div>
+      </section>
     </main>
+
+    <dialog id="luck-item-dialog" class="luck-item-dialog" aria-labelledby="luck-item-dialog-title">
+      <div class="luck-item-dialog-card">
+        <div class="feedback-heading">
+          <p class="panel-label" id="luck-item-dialog-rarity">Rarity</p>
+          <h2 id="luck-item-dialog-title">Item</h2>
+          <button class="icon-button" type="button" data-luck-item-action="close" aria-label="Close item details">&times;</button>
+        </div>
+        <div id="luck-item-dialog-body" class="luck-item-dialog-body"></div>
+      </div>
+    </dialog>
 
     <dialog id="tool-nav-menu" class="tool-nav-menu" aria-labelledby="tool-nav-menu-title">
       <div class="tool-nav-card">
@@ -240,6 +288,10 @@
           <button type="button" class="tool-nav-item" data-tool="capgrader" aria-current="false">
             <strong>Capgrader Generator</strong>
             <span>Find the best capgrader chain for your dropper(s)</span>
+          </button>
+          <button type="button" class="tool-nav-item" data-tool="luck" aria-current="false">
+            <strong>Luck Simulator</strong>
+            <span>See what you can pull from any crate at your current luck</span>
           </button>
         </div>
       </div>
@@ -403,6 +455,7 @@
     <iframe name="feedback-target-frame" class="feedback-target-frame" title="Feedback submission target" tabindex="-1" aria-hidden="true"></iframe>
 
     <script src="data/items.generated.js"></script>
+    <script src="data/crate-luck-data.generated.js"></script>
     <script src="planner-core.js"></script>
     <script src="data/workflow-state.js"></script>
     <script src="data/coordinate-preview.js"></script>
@@ -411,6 +464,7 @@
     <script src="data/active-plan.js"></script>
     <script src="app.js"></script>
     <script src="capgrader-generator.js"></script>
+    <script src="luck-crate-generator.js"></script>
     <script src="feedback.js"></script>
   </body>
 </html>

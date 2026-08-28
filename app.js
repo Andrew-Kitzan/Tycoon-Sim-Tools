@@ -42,9 +42,11 @@ const toolNavToggle = document.querySelector('#tool-nav-toggle');
 const toolNavMenu = document.querySelector('#tool-nav-menu');
 const toolNavItemBuilder = document.querySelector('[data-tool="builder"]');
 const toolNavItemCapgrader = document.querySelector('[data-tool="capgrader"]');
-const toolNavItems = [toolNavItemBuilder, toolNavItemCapgrader].filter(Boolean);
+const toolNavItemLuck = document.querySelector('[data-tool="luck"]');
+const toolNavItems = [toolNavItemBuilder, toolNavItemCapgrader, toolNavItemLuck].filter(Boolean);
 const workspaceSection = document.querySelector('.workspace');
 const capgraderToolSection = document.querySelector('#capgrader-tool');
+const luckToolSection = document.querySelector('#luck-tool');
 const headerTitle = document.querySelector('#header-title');
 const wipBadge = document.querySelector('#wip-badge');
 const plannerLoadoutActions = document.querySelector('#planner-loadout-actions');
@@ -2104,7 +2106,7 @@ function loadActiveTool() {
   if (!storage) return 'builder';
   try {
     const saved = storage.getItem(activeToolStorageKey);
-    return saved === 'capgrader' ? 'capgrader' : 'builder';
+    return saved === 'capgrader' || saved === 'luck' ? saved : 'builder';
   } catch {
     return 'builder';
   }
@@ -2113,18 +2115,22 @@ function loadActiveTool() {
 function applyActiveToolUi() {
   if (workspaceSection) workspaceSection.hidden = activeTool !== 'builder';
   if (capgraderToolSection) capgraderToolSection.hidden = activeTool !== 'capgrader';
-  if (headerTitle) headerTitle.textContent = activeTool === 'capgrader' ? 'Capgrader Generator' : 'Base Builder';
-  if (wipBadge) wipBadge.hidden = activeTool === 'capgrader';
+  if (luckToolSection) luckToolSection.hidden = activeTool !== 'luck';
+  if (headerTitle) {
+    headerTitle.textContent = activeTool === 'capgrader' ? 'Capgrader Generator' : activeTool === 'luck' ? 'Luck Simulator' : 'Base Builder';
+  }
+  if (wipBadge) wipBadge.hidden = activeTool !== 'builder';
   if (plannerLoadoutActions) plannerLoadoutActions.hidden = activeTool !== 'builder';
   if (topbarActions) topbarActions.hidden = activeTool !== 'builder';
   toolNavItems.forEach((button) => {
     button.setAttribute?.('aria-current', String(button.dataset?.tool === activeTool));
   });
   if (activeTool === 'capgrader') document.dispatchEvent(new CustomEvent('capgrader-tool:activated'));
+  if (activeTool === 'luck') document.dispatchEvent(new CustomEvent('luck-tool:activated'));
 }
 
 function setActiveTool(nextTool) {
-  activeTool = nextTool === 'capgrader' ? 'capgrader' : 'builder';
+  activeTool = nextTool === 'capgrader' || nextTool === 'luck' ? nextTool : 'builder';
   applyActiveToolUi();
   saveActiveTool();
 }

@@ -8,10 +8,172 @@ now wrong, correct it in place and say why.
 
 ## Last worked on
 
-2026-08-26 — see "2026-08-26 Capgrader Generator: beam-search quality fixes"
-below. Supersedes the "2026-08-27 Capgrader Generator tool + scanner formula
-finalization" section for priority purposes (that section is still accurate
-background/architecture, just not the most recent work).
+2026-08-27 — see "2026-08-27 Luck / Crate Simulator tool" below (a third tool
+added alongside Base Builder and Capgrader Generator). Supersedes the
+"2026-08-26 Capgrader Generator: beam-search quality fixes" section for
+priority purposes (that section is still accurate, just not the most recent
+work).
+
+## 2026-08-27 Luck / Crate Simulator tool
+
+Third tool added to the hamburger nav (`data-tool="luck"`), same
+self-contained-IIFE pattern as the other two. Simulates the real crate-opening
+luck system: player types in Unbox/Shiny/Mythic Luck + Roll Speed + Unbox
+Slots, picks a crate, and sees exactly which item/variant they can pull and
+the real combined odds, plus an expected "how long to get it" estimate.
+
+**This was built from a real, previously-undocumented game system** — the
+user supplied the actual production Lua (`UnboxUtils.GetLuckWeights` /
+`RollFromCrate`) mid-conversation, and separately every formula was
+cross-checked directly against the real cell formulas in `data/Tycoon Sim
+Database.xlsx`'s "Crates" sheet (extracted from the raw worksheet XML via
+`engine/xlsx-reader.mjs`'s `XlsxArchive`, not guessed from computed values) —
+this is not reverse-engineered speculation, it was verified byte-for-byte
+against the sheet's own "Odds" column for every item in the Basic Crate
+before any UI was built. **If this math is ever touched again, re-verify
+against the sheet the same way rather than trusting comments alone** — see
+the git history around this date for the exact verification commands.
+
+**Files:**
+- `scripts/build-crate-luck-data.mjs` (new) — parses the Crates sheet's
+  repeated blocks (crate-name row → `Cost:` row → header row → item variant
+  rows grouped by Name → totals row → next crate) directly, emits
+  `data/crate-luck-data.generated.js` (`globalThis.CrateLuckData`, same
+  loading pattern as `data/items.generated.js`). **This is a generated file,
+  never hand-edit it** — everything in it is mechanically derivable from the
+  spreadsheet (unlike `data/item-geometry-worksheet.json`, which needed real
+  manual judgment calls). Re-run the script if the workbook's Crates sheet
+  changes. Watch for the same off-by-one parsing trap that bit this session
+  twice: candidate "crate name" rows that are actually legend cells (`"Shiny
+  Luck"`/`"Mythic Luck"`/`"Unbox Luck"` labels, or the bare numbers `20`/
+  `100`/`1` beneath them) — both are explicitly excluded now, but if the
+  sheet's legend layout ever changes, this parser needs re-checking against
+  the raw rows, not just trusted.
+- `luck-crate-generator.js` (new) — all the tool's logic: `getLuckWeights()`
+  is a direct line-by-line port of the user's Lua (sort ascending by weight,
+  power-formula raw chance, then the 30%-floor lock-and-rescale `while` loop
+  — confirmed this loop runs on *every* calculation, not just rare edge
+  cases). `variantChance()` implements the Shiny/Mythic combination math
+  (verified algebraically that all 4 variants' probabilities sum back to the
+  item's total chance). `timeToConfidence()` implements the "how long"
+  popup math: `cycleTime = RollSpeed + 1.1` (the `1.1` is a **hardcoded**
+  game constant — the forced wait after the roll animation — not
+  player-adjustable), `attemptsPerSecond = UnboxSlots / cycleTime`,
+  `attemptsNeeded = ln(1-confidence) / ln(1-p)`; verified this exact formula
+  shape against the "Stats for Nerds" sheet's "How Long?" section (75%'s time
+  is exactly 2× the 50% time, matching `ln(4)/ln(2)=2` precisely) and its
+  exact constant (reproduced its reference row's 50/75/90% day-outputs to 5
+  significant figures using this formula, including the `+1.1`).
+- `index.html` — new `#luck-tool` section (crate-select view + crate-detail
+  view, toggled by JS, not a dialog), new `#luck-item-dialog` for the
+  per-item popup, new nav button, new `<script>` tags for the generated data
+  file and `luck-crate-generator.js`.
+- `app.js` — `activeTool` extended from a 2-way (`'builder'|'capgrader'`) to
+  a 3-way (`+'luck'`) toggle; same `applyActiveToolUi()`/`loadActiveTool()`/
+  `setActiveTool()` functions, just widened. The WIP badge is now `hidden`
+  whenever `activeTool !== 'builder'` (was `=== 'capgrader'`) so it doesn't
+  leak into the new tool either.
+- `icons/items/` (new, ~402 PNGs) — copied from the user's local
+  `Documents\Tycoon Sim\Icons` folder, matched by the existing `{Name}
+  {Variant}.png` filename convention (Base has no suffix). **Explicitly NOT**
+  using the user's real crate icons (`Documents\Tycoon Sim\Crates`) — the
+  user said those aren't visually consistent — crate buttons use a small
+  inline-SVG custom crate icon generated per-crate instead
+  (`crateIconSvg()` in `luck-crate-generator.js`).
+- `styles.css` — new `.luck-*` section. The item grid sits inside a
+  `.luck-crate-frame` — a plain CSS-only decorative crate background (no
+  imagery), per the user's request for a generic frame rather than a themed
+  illustration.
+
+**Icon gap — resolved, not actually missing assets.** The initial pass found
+14, then (after a `data/Tycoon Sim Database.xlsx` resync — see below) 5,
+name+variant PNG lookups with no match in `icons/items/`. Every single one
+turned out to be a **naming mismatch between the DB and the icon file**, not a
+genuinely missing icon — fixed by renaming the icon files to match the DB
+names exactly (not by editing the database): `Advanced ore Upgrader Shiny`→
+`Advanced Ore Upgrader Shiny` (case), `Effecient Furnace`→`Efficient Furnace`,
+`Quad Rays`→`Quad Rays Upgrader`, `Robotic Apocalypse`→`Robot Apocalypse`,
+`Percision Ore Scanner`→`Precision Ore Scanner`, `Enforced Upgrader Mythic
+Shiny`→`Enforced Upgrader Shiny Mythic` (variant word order). One went the
+*other* direction: the DB's own name is `Rubik's Polisher` (not `Rubix's` —
+this session initially misspelled it and had to revert), so the icon file's
+original name was already correct. **0 of 101×~2.5 variant icon lookups
+missing now** (verified by diffing every crate item+variant name against
+`icons/items/`'s actual file list, not just spot-checking) — don't
+re-introduce the `onerror`-hide-on-missing fallback logic in
+`luck-crate-generator.js` as a sign something's still broken; it's
+now-unused defensive code kept for whenever new items/icons are added later
+and inevitably drift again.
+
+**2026-08-27 database resync (same session, right after the above):** the
+user supplied a corrected `Tycoon Sim Database (10).xlsx` mid-session
+specifically because "i had some names wrong" (the Rubik's/Precision/etc.
+typos above turned out to be from the *previous* workbook version — the new
+one doesn't have them, though the *icon files* still needed the renames
+above regardless of workbook version, since the file names themselves were
+never sourced from the workbook). Copied over `data/Tycoon Sim Database.xlsx`
+(sha256 verified to match the source exactly), then re-ran `npm run
+database:sync`, `npm run database:index`, and `node
+scripts/build-crate-luck-data.mjs` — 727 rows, 0 cross-sheet conflicts, 354
+unique item variants, same 17 crates / 101 crate items as before. Re-verified
+the luck math still reproduces the sheet's own Odds column exactly after the
+resync (same Basic Crate check as the original verification pass).
+
+**2026-08-27 "Any Crate" items — placeholder text, and a real merge-pool
+bug fixed, one false alarm chased down.** All three found via the user
+actually using the tool and reporting a screenshot, not from more static
+formula reading:
+1. `build-crate-luck-data.mjs` was pulling `effects` straight from the
+   Crates sheet's own "Other Effects" column, which for many items (complex
+   furnace formulas etc.) is literally the placeholder text `"Refer to the
+   'Stats for Nerds' Page"` rather than real content. Fixed by cross-referencing
+   `data/items.generated.js` (already has the real resolved formula text via
+   `sync-database.mjs`'s `parseStatsForNerds`) whenever the Crates-sheet text
+   is that exact placeholder — see the `resolvedByKey` lookup added to the
+   script. Verified 0 of 254 item variants still carry the placeholder.
+   `luck-crate-generator.js`'s item popup also no longer renders a bare "N/A"
+   line for `otherStats` when that's literally all the sheet has.
+2. **Real bug, fixed — went through 3 iterations, this is the correct one.**
+   Any-crate items' odds should be pinned to a **fixed target raw chance**
+   (e.g. Freedom Dropper = 1/150,000,000), calibrated once against Basic
+   Crate — that number must reproduce exactly at 1x Unbox Luck no matter
+   which crate you're viewing, but at any *other* luck value it legitimately
+   varies crate to crate, since luck reshuffles odds based on an item's rank
+   within whichever crate's own rarity ladder it's merged into. Confirmed
+   directly by the user after two wrong intermediate attempts:
+   - **Attempt 1 (wrong):** merged the any-crate item's raw stored weight
+     unchanged into whichever crate was open, renormalized against that
+     crate's own total. Made the "fixed at 1x luck" property crate-dependent
+     too, which the user flagged with a screenshot (Tropic showing ~1/1B vs
+     Basic's expected ~1/150M at the same settings).
+   - **Attempt 2 (wrong):** overcorrected to *always* compute against Basic
+     Crate's weights regardless of which crate was open — fully fixed at
+     every luck value, not just 1x. Also wrong: at that point the user
+     clarified with a screenshot that at high luck (~202, not the "152" first
+     quoted — that was a value mixup, verified by solving for the luck that
+     reproduces the user's exact numbers) the *real* odds do differ by crate.
+   - **Correct version (current code):** `targetRawChance(name)` recovers the
+     item's fixed target chance by reversing the original Basic-Crate
+     calibration (`weight / (basicCrateTotal + weight)`). `computeChances()`
+     then re-derives a fresh equivalent weight for whichever crate is
+     currently open (`target * thatCrate'sNativeTotal / (1 - other active
+     any-crate items' target chances)`) before feeding it into that crate's
+     own `getLuckWeights` pool — mirroring the sheet's own `J15 = K15 *
+     SUM(otherWeights) / (1 - ...)` pattern, just re-evaluated per crate
+     instead of hardcoded to Basic. Verified: exactly 1/150M (Freedom) and
+     1/183M (Twitchium) in *every* crate at 1x Unbox Luck; genuinely
+     different (e.g. 1/1.05M in Basic vs 1/1.11M in Tropic) at luck 202,
+     matching the user's real spreadsheet numbers at that luck value. If this
+     needs touching again: the invariant to preserve is "identical across all
+     crates at exactly 1x Unbox Luck, allowed to diverge at any other luck."
+
+**Still open, not bugs:**
+- No exact rarity color palette exists in the spreadsheet (checked: no
+  per-cell fills or conditional-formatting rules on the Rarity column) — a
+  reasonable default game palette was used (`RARITY_COLORS` in
+  `luck-crate-generator.js`). Swap this out if the user has an exact palette.
+- No automated tests written for `luck-crate-generator.js` beyond manual
+  browser verification (same gap as `capgrader-generator.js` originally had).
 
 ## Last agent
 
