@@ -2127,6 +2127,13 @@ function applyActiveToolUi() {
   });
   if (activeTool === 'capgrader') document.dispatchEvent(new CustomEvent('capgrader-tool:activated'));
   if (activeTool === 'luck') document.dispatchEvent(new CustomEvent('luck-tool:activated'));
+  // Exposed for other standalone-IIFE scripts (help.js) that need to know
+  // which tool is active without app.js's internal `activeTool` variable —
+  // same pattern as globalThis.TycoonDatabase/TycoonActivePlan.
+  globalThis.TycoonActiveTool = activeTool;
+  if (typeof CustomEvent === 'function' && typeof document.dispatchEvent === 'function') {
+    document.dispatchEvent(new CustomEvent('active-tool:changed', { detail: { tool: activeTool } }));
+  }
 }
 
 function setActiveTool(nextTool) {

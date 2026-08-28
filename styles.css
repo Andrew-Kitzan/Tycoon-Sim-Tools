@@ -634,6 +634,24 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
    load event, which the widget relies on to know the submission finished. */
 .feedback-target-frame { position: fixed; width: 1px; height: 1px; top: -9999px; left: -9999px; border: 0; opacity: 0; }
 
+/* ---- Help widget ---- */
+
+.help-toggle { position: fixed; top: 64px; right: 20px; z-index: 30; width: 34px; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 999px; background: #13212d; color: var(--text); font-size: .9rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+.help-toggle:hover, .help-toggle:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+.help-toggle[hidden] { display: none; }
+
+.help-dialog { width: min(600px, calc(100vw - 28px)); max-height: min(720px, calc(100vh - 40px)); }
+.help-dialog .feedback-card { max-height: inherit; overflow-y: auto; }
+.help-content[hidden] { display: none; }
+.help-section { border: 1px solid var(--line); border-radius: 9px; background: var(--surface-raised); }
+.help-section + .help-section { margin-top: 8px; }
+.help-section summary { padding: 10px 14px; font-size: .86rem; font-weight: 800; cursor: pointer; list-style: none; }
+.help-section summary::-webkit-details-marker { display: none; }
+.help-section summary::before { content: '+'; display: inline-block; width: 1em; color: var(--accent); }
+.help-section[open] summary::before { content: '\2212'; }
+.help-section p { margin: 0 14px 12px; color: var(--muted); font-size: .82rem; line-height: 1.55; }
+.help-section p + p { margin-top: -4px; }
+
 /* ---- Luck / Crate Simulator ---- */
 
 .luck-tool { display: flex; flex-direction: column; gap: 18px; max-width: 1400px; }

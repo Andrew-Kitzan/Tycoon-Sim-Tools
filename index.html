@@ -14,6 +14,7 @@
     <button id="feedback-toggle" class="feedback-toggle" type="button" aria-haspopup="dialog" aria-label="Send feedback, report a bug, or suggest a feature">
       Feedback
     </button>
+    <button id="help-toggle" class="help-toggle" type="button" aria-haspopup="dialog" aria-label="How to use this tool" hidden>?</button>
     <main class="app-shell">
       <header class="topbar">
         <div class="planner-brand">
@@ -454,6 +455,49 @@
     </dialog>
     <iframe name="feedback-target-frame" class="feedback-target-frame" title="Feedback submission target" tabindex="-1" aria-hidden="true"></iframe>
 
+    <dialog id="help-dialog" class="feedback-dialog help-dialog" aria-labelledby="help-dialog-title">
+      <div class="feedback-card">
+        <div class="feedback-heading">
+          <p class="panel-label">Help</p>
+          <h2 id="help-dialog-title">How to use this tool</h2>
+          <button class="icon-button" type="button" data-help-action="close" aria-label="Close help">&times;</button>
+        </div>
+
+        <div id="help-content-capgrader" class="help-content" hidden>
+          <p class="feedback-intro">Find the best chain of capgraders to push one or more droppers' ore as close to the final capgrader's range ceiling as possible.</p>
+          <details class="help-section" open>
+            <summary>1. Add your dropper(s)</summary>
+            <p>Pick which Dropper(s) you're building this section for in the <strong>Droppers</strong> panel — add another row if you're planning one shared section for multiple droppers. If your droppers' starting values are very spread out, a warning will tell you so, since it takes more capgraders (and more space) to cover a wide spread in one chain.</p>
+          </details>
+          <details class="help-section">
+            <summary>2. Toggle what you own</summary>
+            <p>In the <strong>Capgraders</strong>, <strong>Additive upgraders &amp; Lunar Landing</strong>, and <strong>Capgrader scanners</strong> panels, click an item to mark it red (not owned) or green (owned). Owning it assumes the game's maximum copies unless you set a specific owned count or variant on that item. Use the search box and "Select all shown" / "Deselect all shown" to toggle a whole filtered group at once.</p>
+            <p>Additive upgraders and Lunar Landing are only ever used as a single opening move before the capgrader chain starts. Scanners are a last resort — since a scan isn't a guaranteed hit, the generator only reaches for one when it's the only way to bridge to the next capgrader.</p>
+          </details>
+          <details class="help-section">
+            <summary>3. Generate</summary>
+            <p>Click <strong>Generate capgrader section</strong>. For each dropper you added, you'll get a table of the exact chain to build: which upgrader, which variant, the value before and after each step, and the running time/length so far. Click <strong>&larr; Edit setup</strong> to go back and adjust anything.</p>
+          </details>
+        </div>
+
+        <div id="help-content-luck" class="help-content" hidden>
+          <p class="feedback-intro">See exactly what you can pull from any crate at your current luck — which item, which variant, and the real combined odds.</p>
+          <details class="help-section" open>
+            <summary>1. Enter your stats</summary>
+            <p>Fill in your <strong>Unbox Luck</strong>, <strong>Shiny Luck</strong> and <strong>Mythic Luck</strong> (both as "1 in X"), <strong>Roll Speed</strong>, and <strong>Unbox Slots</strong> at the top. These drive every odds calculation below.</p>
+          </details>
+          <details class="help-section">
+            <summary>2. Toggle any-crate items you can get</summary>
+            <p>Some items can technically drop from any crate for a limited time. Toggle on the ones you consider currently attainable in the <strong>Any-crate items</strong> panel so they're included in crate odds below.</p>
+          </details>
+          <details class="help-section">
+            <summary>3. Pick a crate</summary>
+            <p>Click a crate in the grid to open it. Switch between <strong>Base / Shiny / Mythic / Shiny Mythic</strong> variant tabs, browse the item grid, and click any item to see its full odds breakdown and an estimate of how long it'll take to get at your current stats.</p>
+          </details>
+        </div>
+      </div>
+    </dialog>
+
     <script src="data/items.generated.js"></script>
     <script src="data/crate-luck-data.generated.js"></script>
     <script src="planner-core.js"></script>
@@ -466,5 +510,6 @@
     <script src="capgrader-generator.js"></script>
     <script src="luck-crate-generator.js"></script>
     <script src="feedback.js"></script>
+    <script src="help.js"></script>
   </body>
 </html>
