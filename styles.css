@@ -588,6 +588,7 @@ body.mode-generation .live-ore-tracker { display: none; }
 .capgrader-edit-setup[hidden] { display: none; }
 
 .capgrader-results { display: flex; flex-direction: column; gap: 22px; }
+.capgrader-results[hidden] { display: none; }
 .capgrader-result-table-wrap { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
 .capgrader-result-heading { margin: 0; padding: 14px 18px; font-size: 1rem; font-weight: 800; color: var(--accent); background: var(--surface-raised); border-bottom: 1px solid var(--line); }
 .capgrader-result-table-scroll { overflow-x: auto; }
@@ -729,6 +730,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .luck-time-row strong { color: var(--text); }
 
 .calc-tool { display: flex; flex-direction: column; gap: 14px; max-width: 480px; margin: 0 auto; }
+.calc-tool[hidden] { display: none; }
 .calc-intro { margin: 0; color: var(--muted); font-size: .84rem; line-height: 1.5; }
 .calc-intro code { padding: 1px 5px; border-radius: 4px; background: #10212b; color: var(--accent); font-size: .82em; }
 .calc-panel { display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }

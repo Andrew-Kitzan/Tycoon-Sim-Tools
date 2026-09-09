@@ -507,6 +507,10 @@
     capgraderLayoutEl?.classList.toggle('is-results-only', isResultsMode);
     if (generateButton) generateButton.hidden = isResultsMode;
     if (editSetupButton) editSetupButton.hidden = !isResultsMode;
+    // Going back to "Edit setup" must hide the previous run's table, not just
+    // bring the setup panels back — otherwise stale results stay visible
+    // alongside the toggle lists until the next Generate.
+    if (resultsEl) resultsEl.hidden = !isResultsMode;
   }
   editSetupButton?.addEventListener('click', () => setResultsMode(false));
 
