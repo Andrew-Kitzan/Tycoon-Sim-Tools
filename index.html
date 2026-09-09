@@ -261,6 +261,46 @@
           </div>
         </div>
       </section>
+
+      <section id="calc-tool" class="calc-tool" aria-label="Calculator" hidden>
+        <p class="calc-intro">A scientific calculator that understands the game's number abbreviations. Type an expression (like <code>1.5B * 1.54</code> or <code>sqrt(2)^10</code>) or use the buttons below — parentheses, multiplication, division, addition, subtraction, powers (<code>^</code>), and square roots (<code>sqrt(...)</code>) are all supported.</p>
+        <div class="calc-panel">
+          <input id="calc-input" class="calc-input" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="e.g. 1.5B * 1.54" aria-label="Calculator expression" />
+          <p id="calc-error" class="calc-error" role="alert" hidden></p>
+          <div id="calc-result" class="calc-result" hidden>
+            <div class="calc-result-row"><span>Abbreviated</span><strong id="calc-result-abbrev"></strong></div>
+            <div class="calc-result-row"><span>Full number</span><strong id="calc-result-full"></strong></div>
+          </div>
+          <div class="calc-buttons" role="group" aria-label="Calculator buttons">
+            <button type="button" class="calc-key calc-key-op" data-calc-key="(">(</button>
+            <button type="button" class="calc-key calc-key-op" data-calc-key=")">)</button>
+            <button type="button" class="calc-key calc-key-op" data-calc-key="^">^</button>
+            <button type="button" class="calc-key calc-key-op" data-calc-key="sqrt(">√</button>
+            <button type="button" class="calc-key calc-key-clear" data-calc-action="clear">C</button>
+
+            <button type="button" class="calc-key" data-calc-key="7">7</button>
+            <button type="button" class="calc-key" data-calc-key="8">8</button>
+            <button type="button" class="calc-key" data-calc-key="9">9</button>
+            <button type="button" class="calc-key calc-key-op" data-calc-key="/">÷</button>
+            <button type="button" class="calc-key calc-key-clear" data-calc-action="backspace">⌫</button>
+
+            <button type="button" class="calc-key" data-calc-key="4">4</button>
+            <button type="button" class="calc-key" data-calc-key="5">5</button>
+            <button type="button" class="calc-key" data-calc-key="6">6</button>
+            <button type="button" class="calc-key calc-key-op" data-calc-key="*">×</button>
+            <button type="button" class="calc-key calc-key-op" data-calc-key="-">−</button>
+
+            <button type="button" class="calc-key" data-calc-key="1">1</button>
+            <button type="button" class="calc-key" data-calc-key="2">2</button>
+            <button type="button" class="calc-key" data-calc-key="3">3</button>
+            <button type="button" class="calc-key" data-calc-key="0">0</button>
+            <button type="button" class="calc-key calc-key-op" data-calc-key="+">+</button>
+
+            <button type="button" class="calc-key-wide" data-calc-key=".">.</button>
+          </div>
+          <p class="calc-suffix-note">Abbreviations understood in input: K, M, B, T, Qd, Qn, Sx, Sp, Oc, No (e.g. <code>2.4Qd</code>).</p>
+        </div>
+      </section>
     </main>
 
     <dialog id="luck-item-dialog" class="luck-item-dialog" aria-labelledby="luck-item-dialog-title">
@@ -293,6 +333,10 @@
           <button type="button" class="tool-nav-item" data-tool="luck" aria-current="false">
             <strong>Luck Simulator</strong>
             <span>See what you can pull from any crate at your current luck</span>
+          </button>
+          <button type="button" class="tool-nav-item" data-tool="calculator" aria-current="false">
+            <strong>Calculator</strong>
+            <span>Scientific calculator with in-game number abbreviations</span>
           </button>
         </div>
       </div>
@@ -495,6 +539,22 @@
             <p>Click a crate in the grid to open it. Switch between <strong>Base / Shiny / Mythic / Shiny Mythic</strong> variant tabs, browse the item grid, and click any item to see its full odds breakdown and an estimate of how long it'll take to get at your current stats.</p>
           </details>
         </div>
+
+        <div id="help-content-calculator" class="help-content" hidden>
+          <p class="feedback-intro">A scientific calculator that understands the game's number abbreviations, for quickly working out multiplier chains and comparisons.</p>
+          <details class="help-section" open>
+            <summary>1. Type or click an expression</summary>
+            <p>Type directly into the box (e.g. <strong>1.5B * 1.54</strong>, <strong>sqrt(2)^10</strong>) or use the on-screen buttons. Supported: parentheses, multiplication (<strong>*</strong>), division (<strong>/</strong>), addition, subtraction, powers (<strong>^</strong>), and square roots (<strong>sqrt(...)</strong> or the √ button).</p>
+          </details>
+          <details class="help-section">
+            <summary>2. Use in-game abbreviations directly</summary>
+            <p>Numbers can be typed with their in-game suffix attached — <strong>K</strong>, <strong>M</strong>, <strong>B</strong>, <strong>T</strong>, <strong>Qd</strong>, <strong>Qn</strong>, <strong>Sx</strong>, <strong>Sp</strong>, <strong>Oc</strong>, <strong>No</strong> — no spaces, e.g. <strong>2.4Qd</strong> for 2.4 quadrillion.</p>
+          </details>
+          <details class="help-section">
+            <summary>3. Read the result</summary>
+            <p>The answer updates live as you type, shown both abbreviated (to 2 decimal places) and as a full number. If the expression is invalid, an error appears once you pause typing.</p>
+          </details>
+        </div>
       </div>
     </dialog>
 
@@ -509,6 +569,7 @@
     <script src="app.js"></script>
     <script src="capgrader-generator.js"></script>
     <script src="luck-crate-generator.js"></script>
+    <script src="abbrev-calculator.js"></script>
     <script src="feedback.js"></script>
     <script src="help.js"></script>
   </body>

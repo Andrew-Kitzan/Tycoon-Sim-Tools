@@ -12,6 +12,7 @@
   const contentByTool = {
     capgrader: document.querySelector('#help-content-capgrader'),
     luck: document.querySelector('#help-content-luck'),
+    calculator: document.querySelector('#help-content-calculator'),
   };
 
   function currentTool() {
