@@ -8,11 +8,101 @@ now wrong, correct it in place and say why.
 
 ## Last worked on
 
-2026-09-10 — see "2026-09-10 MPA / Chopping Block graduates from WIP + a
-real Portable Upgrader bugfix" below. Closes out the MPA tool's WIP status
-and fixes a long-standing pre-existing `engine.test.mjs` failure along the
-way. The 2026-09-11 MPA build entry right below it (dated after this one in
-the file, but written the session before — timestamps in this file are not
+2026-09-11 — see "2026-09-11 Capgrader Generator: mix Base/Shiny variants of
+the same capgrader within one chain" below. A real capability gap, not a
+small tweak — the search previously collapsed every capgrader to one "best"
+owned variant for the whole chain, which made some real legal chains
+(reported and verified by a player) structurally impossible to find.
+
+## 2026-09-11 Capgrader Generator: mix Base/Shiny variants of the same capgrader within one chain
+
+**The bug, reported by a player:** a chain reaching Sunflower Fields
+(500B-1T) was found by hand using **2x Base Fragrant Passage + 1x Shiny
+Fragrant Passage** in a row (Base's weaker ×1.4 lands precisely, Shiny's
+×1.54 finishes just past the 500B floor) — a real, verified-legal chain (see
+the previous session's discovery of a genuine 350B-500B capgrader range gap
+that only variant-mixing can bridge). The generator could never find it,
+because `legalPool()` called `bestOwnedVariant()` for every capgrader,
+collapsing straight to whichever single variant ranked highest (Shiny beats
+Base) — the search literally never saw Base Fragrant Passage as a usable
+move once Shiny was owned too.
+
+**The fix — toggle state now tracks owned count per variant, not one shared
+count + an allow-list:**
+- Old shape: `{ owned, ownedCount, ownedVariants }` (one shared count, plus
+  which variants are "allowed" — but only ever the single best allowed
+  variant ever entered the search).
+- New shape: `{ owned, variantCounts }` where `variantCounts` is `{ Base: 2,
+  Shiny: null, ... }` — a number is an exact owned-copy cap for JUST that
+  variant, `null`/absent means unlimited (the default), and explicit `0`
+  excludes that variant. Every variant with a non-zero count is now pushed
+  into `legalPool().capgraders` as its own independently-usable record
+  (`ownedVariantRecords()`), not just one "best" pick.
+- Usage tracking (`state.uses`) is now keyed by `` `${name}::${variant}` ``
+  (`usageKey()`) instead of just `name`, so Base and Shiny copies of the
+  same item track separate remaining-use budgets — this is what actually
+  lets the beam search interleave e.g. 2 Base + 1 Shiny Fragrant Passage as
+  three independent moves within one chain. `paretoKey()` needed no change,
+  since it already just serializes whatever keys are present in `state.uses`.
+- `bestOwnedVariant()` is kept (renamed usage: now built on top of
+  `ownedVariantRecords()`) for additives, Lunar Landing, and scanners, which
+  only ever apply once or as a one-time opening move — no benefit to
+  offering more than the single strongest legal choice there, unlike
+  capgraders which chain many times.
+- **UI**: replaced the single shared "Owned count" input + a row of
+  Base/Shiny/etc. checkboxes with **one number input per variant** directly
+  (`renderVariantCounts()`, `data-variant-counts` container) — blank means
+  unlimited, 0 excludes that variant, any other number is that variant's
+  exact cap. Old `[data-count-name]`/`[data-variant-checkbox]` handlers and
+  `renderVariantCheckboxes()` removed entirely.
+- **Persistence bumped to version 2** (`tycoon-sim-2:capgrader-tool:v1`'s
+  stored `version` field). `restoreCapgraderState()` migrates version-1 saves
+  on the fly: the old shared `ownedCount` is applied to every variant that
+  was in the old `ownedVariants` allow-list, and `0` to every variant that
+  wasn't — a reasonable one-time default (not a perfect equivalent, since v1
+  could never actually distinguish "how many of each variant" anyway), which
+  the player can then refine per-variant same as anyone starting fresh.
+
+**Verified three ways, not just "tests pass":**
+1. Hand-computed the player's exact reported chain step-by-step against the
+   real database ranges/mainStats first, confirming it's genuinely legal
+   before writing any code (see the previous session's investigation).
+2. New test in `tests/capgrader-generator.test.mjs`: with the relevant items
+   owned at their defaults (unlimited, every variant — no manual variant
+   restriction needed), `optimizeCapgraderChain()` must actually produce a
+   chain that reaches Sunflower Fields — this is the real regression
+   guard, not just a pool-membership check. It does, using exactly the
+   Base-then-Shiny Fragrant Passage pattern, without any depth/width tuning
+   being necessary.
+3. Reproduced the player's *exact* chain (same items, same per-variant
+   counts as they reported owning) via the debug hook outside the test
+   suite — the generator's output matches their reported chain move-for-move
+   and lands within a rounding hair of the hand-computed final value
+   ($1,094,649,971,703).
+
+**Real bug found and fixed while writing the new tests**: `ownNothing()`
+only reset `toggle.owned`, not `toggle.variantCounts` — since toggle objects
+are shared/persistent across test blocks in the same suite run, an earlier
+test's explicit per-variant override (`{ Base: 0 }`) was silently leaking
+into a later, unrelated test against the same item name. Fixed by having
+`ownNothing()` reset both fields. Worth remembering if a future test in this
+file behaves correctly in isolation but not as part of the full suite.
+
+**Regression band raised again, for a real reason, not a quality
+regression**: `tests/capgrader-generator.test.mjs`'s "own everything" search
+ceiling jumped from $3.0T-$3.3T to **$19T-$22T** (measured: ~$20.56T) —
+"own everything" now has strictly more legal moves available than before
+(every variant of every capgrader, not just one each), so a higher ceiling
+is the expected, correct outcome of this fix, not something to chase back
+down.
+
+**Not done / worth considering later**: additives, Lunar Landing, and
+scanners still collapse to one "best" owned variant each (unchanged
+behavior) — flagged in the code as intentional for now, since none of them
+chain repeatedly like a capgrader does, but revisit if a similar
+variant-mixing case is ever reported for one of those.
+
+## 2026-09-10 MPA / Chopping Block graduates from WIP + a real Portable Upgrader bugfix
 strictly chronological across sessions, trust the content) is still the one
 to read first for the tool's original design/decisions.
 

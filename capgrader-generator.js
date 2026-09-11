@@ -168,11 +168,22 @@
     return [...seen.values()];
   }
 
-  // ---- Toggle state: Map<name, { owned, ownedCount, ownedVariants }> -------
+  // ---- Toggle state: Map<name, { owned, variantCounts }> -------------------
+  // `variantCounts` is a plain object keyed by variant name, e.g.
+  // `{ Base: 2, Shiny: null }` — a number is that many owned copies of that
+  // specific variant, `null`/absent means "unlimited" (the default for any
+  // variant the player hasn't explicitly set a count on). A variant is only
+  // excluded from the search if its count is explicitly 0 — this is what
+  // lets a player own, say, 2 Base + 1 Shiny of the same capgrader as two
+  // independently-usable items, instead of collapsing to one "best" variant
+  // for the whole chain (see the 2026-09-11 AI_HANDOFF entry on why this
+  // matters: some legal chains only work by using a weaker variant first to
+  // land precisely in a later capgrader's range, then a stronger one to
+  // finish — impossible to find if only one variant is ever considered).
 
   const toggleState = new Map();
   function getToggle(name) {
-    if (!toggleState.has(name)) toggleState.set(name, { owned: false, ownedCount: null, ownedVariants: null });
+    if (!toggleState.has(name)) toggleState.set(name, { owned: false, variantCounts: null });
     return toggleState.get(name);
   }
 
@@ -185,10 +196,9 @@
     try {
       const toggles = [...toggleState.entries()].map(([name, toggle]) => [name, {
         owned: toggle.owned,
-        ownedCount: toggle.ownedCount,
-        ownedVariants: toggle.ownedVariants ? [...toggle.ownedVariants] : null,
+        variantCounts: toggle.variantCounts,
       }]);
-      localStorage.setItem(CAPGRADER_STORAGE_KEY, JSON.stringify({ version: 1, dropperRows, nextRowId, toggles }));
+      localStorage.setItem(CAPGRADER_STORAGE_KEY, JSON.stringify({ version: 2, dropperRows, nextRowId, toggles }));
     } catch {
       // Storage unavailable (private browsing, quota, etc.) — settings just won't persist.
     }
@@ -197,18 +207,33 @@
   function restoreCapgraderState() {
     try {
       const saved = JSON.parse(localStorage.getItem(CAPGRADER_STORAGE_KEY));
-      if (!saved || saved.version !== 1) return;
+      if (!saved) return;
       if (Array.isArray(saved.dropperRows) && saved.dropperRows.length) {
         dropperRows = saved.dropperRows;
         nextRowId = Number.isFinite(saved.nextRowId) ? saved.nextRowId : Math.max(...dropperRows.map((row) => row.id)) + 1;
       }
       if (Array.isArray(saved.toggles)) {
         for (const [name, toggle] of saved.toggles) {
-          toggleState.set(name, {
-            owned: Boolean(toggle.owned),
-            ownedCount: toggle.ownedCount ?? null,
-            ownedVariants: Array.isArray(toggle.ownedVariants) ? new Set(toggle.ownedVariants) : null,
-          });
+          if (saved.version === 2) {
+            toggleState.set(name, {
+              owned: Boolean(toggle.owned),
+              variantCounts: toggle.variantCounts && typeof toggle.variantCounts === 'object' ? toggle.variantCounts : null,
+            });
+          } else {
+            // Migrating from version 1 (one shared ownedCount + an
+            // ownedVariants allow-list): apply that same count to every
+            // variant that was allowed, and 0 to every variant that wasn't
+            // — a reasonable one-time default, not a perfect equivalent,
+            // since v1 could never actually distinguish "how many of each
+            // variant" anyway. The player can refine per-variant counts
+            // afterward same as anyone starting fresh.
+            const allowed = Array.isArray(toggle.ownedVariants) ? new Set(toggle.ownedVariants) : null;
+            const variantCounts = {};
+            for (const record of variantsFor(name)) {
+              variantCounts[record.variant] = !allowed || allowed.has(record.variant) ? (toggle.ownedCount ?? null) : 0;
+            }
+            toggleState.set(name, { owned: Boolean(toggle.owned), variantCounts });
+          }
         }
       }
     } catch {
@@ -216,20 +241,38 @@
     }
   }
 
-  // Effective per-item placement cap for the search: how many copies the
-  // player can actually place = min(what they told us they own, the item's
-  // own real limitedUses cap — e.g. Ore Flamethrower is capped at 3 no matter
-  // what "unlimited" ownership means).
-  function effectiveCap(record, toggle) {
-    const owned = toggle.ownedCount == null ? Infinity : toggle.ownedCount;
-    return Math.min(owned, integerUseLimit(record.limitedUses));
+  // How many of one specific variant the player told us they own — null
+  // means unlimited (the default for a variant with no explicit count yet).
+  function variantCount(toggle, variant) {
+    const value = toggle.variantCounts?.[variant];
+    return value == null ? null : value;
   }
 
+  // Effective per-item-per-variant placement cap for the search: how many
+  // copies of THIS SPECIFIC VARIANT the player can actually place = min(what
+  // they told us they own of it, the item's own real limitedUses cap — e.g.
+  // Ore Flamethrower is capped at 3 no matter what "unlimited" ownership
+  // means). Each variant of an item tracks its own cap independently.
+  function effectiveCap(record, toggle) {
+    const owned = variantCount(toggle, record.variant);
+    return Math.min(owned == null ? Infinity : owned, integerUseLimit(record.limitedUses));
+  }
+
+  // Every variant the player hasn't explicitly zeroed out, as separate,
+  // independently-usable records — used for capgraders, where mixing
+  // variants of the same item within one chain is a real, legal strategy.
+  function ownedVariantRecords(name, toggle) {
+    return variantsFor(name).filter((record) => variantCount(toggle, record.variant) !== 0);
+  }
+
+  // Single "best" owned variant — still used for additives/Lunar Landing/
+  // scanners, which (unlike capgraders) only ever get used once per chain
+  // or as a one-off opening move, so there's no benefit to offering more
+  // than the strongest legal choice.
   function bestOwnedVariant(name, toggle) {
-    const all = variantsFor(name);
-    const rank = ['Shiny Mythic', 'Mythic', 'Shiny', 'Base'];
-    const allowed = toggle.ownedVariants ? all.filter((r) => toggle.ownedVariants.has(r.variant)) : all;
+    const allowed = ownedVariantRecords(name, toggle);
     if (!allowed.length) return null;
+    const rank = ['Shiny Mythic', 'Mythic', 'Shiny', 'Base'];
     return [...allowed].sort((a, b) => rank.indexOf(a.variant) - rank.indexOf(b.variant))[0];
   }
 
@@ -242,6 +285,14 @@
   // length, and uses all scale with `count`; the value transformation itself
   // does not (a "hit" is a hit regardless of how many units it took to get
   // one), except that scanners always apply their full mainStat exactly once.
+  // Base and Shiny (etc.) copies of the same item are tracked as separate
+  // usage buckets — see the toggle-state comment above for why (mixing
+  // variants within one chain is a deliberate, legal strategy this tool
+  // needs to be able to find).
+  function usageKey(record) {
+    return `${record.name}::${record.variant}`;
+  }
+
   function applyItem(record, state, count = 1) {
     const before = state.value;
     let value = before;
@@ -258,19 +309,20 @@
     if (record.name === 'Oasis Cleanser') hasFire = false;
     const timeSeconds = state.timeSeconds + crossingSeconds(record) * count;
     const length = state.length + record.size.length * count;
+    const key = usageKey(record);
     return {
       value,
       oreSize: state.oreSize,
       hasFire,
       timeSeconds,
       length,
-      uses: { ...state.uses, [record.name]: (state.uses[record.name] ?? 0) + count },
+      uses: { ...state.uses, [key]: (state.uses[key] ?? 0) + count },
       chain: [...state.chain, { record, before, after: value, count, timeAfter: timeSeconds, lengthAfter: length }],
     };
   }
 
   function useAllowed(record, state, toggle, count = 1) {
-    const used = state.uses[record.name] ?? 0;
+    const used = state.uses[usageKey(record)] ?? 0;
     return used + count <= effectiveCap(record, toggle);
   }
 
@@ -303,9 +355,13 @@
     for (const name of capgraderNames) {
       const toggle = getToggle(name);
       if (!toggle.owned) continue;
-      const record = bestOwnedVariant(name, toggle);
-      if (!record || !parseRange(record.range)) continue;
-      (isFinisherRecord(record) ? pool.finishers : pool.capgraders).push(record);
+      // Every owned variant goes in as its own independently-usable
+      // capgrader — NOT just the single "best" one — so the search can mix
+      // e.g. Base and Shiny copies of the same item within one chain.
+      for (const record of ownedVariantRecords(name, toggle)) {
+        if (!parseRange(record.range)) continue;
+        (isFinisherRecord(record) ? pool.finishers : pool.capgraders).push(record);
+      }
     }
     for (const name of additiveNames) {
       const toggle = getToggle(name);
@@ -651,10 +707,7 @@
         <span class="capgrader-toggle-name">${name}</span>
         ${rangeText ? `<span class="capgrader-toggle-range">${rangeText}</span>` : ''}
         <button type="button" class="capgrader-toggle-pill" data-toggle-name="${name}" aria-pressed="false">Off</button>
-        <div class="capgrader-toggle-options">
-          <label>Owned count <input type="number" min="0" step="1" placeholder="unlimited" data-count-name="${name}" /></label>
-          <span class="capgrader-toggle-variants" data-variants-name="${name}"></span>
-        </div>
+        <div class="capgrader-toggle-options" data-variant-counts="${name}"></div>
       </div>
     `;
   }
@@ -690,15 +743,8 @@
         button.textContent = toggle.owned ? 'On' : 'Off';
         const item = document.querySelector(`[data-toggle-item="${CSS.escape(name)}"]`);
         item?.classList.toggle('is-owned', toggle.owned);
-        if (toggle.owned) renderVariantCheckboxes(name);
+        if (toggle.owned) renderVariantCounts(name);
         if (item) updatePanelAccent(groupForElement(item));
-        persistCapgraderState();
-      });
-    });
-    document.querySelectorAll('[data-count-name]').forEach((input) => {
-      input.addEventListener('input', () => {
-        const toggle = getToggle(input.dataset.countName);
-        toggle.ownedCount = input.value === '' ? null : Math.max(0, Number(input.value));
         persistCapgraderState();
       });
     });
@@ -756,7 +802,7 @@
       button.setAttribute('aria-pressed', String(owned));
       button.textContent = owned ? 'On' : 'Off';
       item.classList.toggle('is-owned', owned);
-      if (owned) renderVariantCheckboxes(item.dataset.toggleItem);
+      if (owned) renderVariantCounts(item.dataset.toggleItem);
     }
     updatePanelAccent(groupForElement(container));
     persistCapgraderState();
@@ -778,26 +824,30 @@
       button.textContent = toggle.owned ? 'On' : 'Off';
       const item = document.querySelector(`[data-toggle-item="${CSS.escape(name)}"]`);
       item?.classList.toggle('is-owned', toggle.owned);
-      const countInput = document.querySelector(`[data-count-name="${CSS.escape(name)}"]`);
-      if (countInput) countInput.value = toggle.ownedCount ?? '';
-      if (toggle.owned) renderVariantCheckboxes(name);
+      if (toggle.owned) renderVariantCounts(name);
     });
     updateAllPanelAccents();
   }
 
-  function renderVariantCheckboxes(name) {
-    const container = document.querySelector(`[data-variants-name="${CSS.escape(name)}"]`);
+  // One number input per variant the item has (Base/Shiny/Mythic/Shiny
+  // Mythic, whichever actually exist) — blank means unlimited, 0 excludes
+  // that variant from the search entirely, any other number is an exact
+  // owned-copy cap for just that variant. Each is tracked independently so
+  // a chain can legally mix e.g. Base and Shiny copies of the same item.
+  function renderVariantCounts(name) {
+    const container = document.querySelector(`[data-variant-counts="${CSS.escape(name)}"]`);
     if (!container) return;
-    const variants = variantsFor(name).map((r) => r.variant);
     const toggle = getToggle(name);
+    const variants = variantsFor(name).map((r) => r.variant);
     container.innerHTML = variants.map((variant) => `
-      <label><input type="checkbox" data-variant-checkbox="${name}" value="${variant}" ${!toggle.ownedVariants || toggle.ownedVariants.has(variant) ? 'checked' : ''} /> ${variant}</label>
+      <label>${variant} <input type="number" min="0" step="1" placeholder="unlimited"
+        data-variant-count-name="${name}" data-variant-count-variant="${variant}"
+        value="${variantCount(toggle, variant) ?? ''}" /></label>
     `).join('');
-    container.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-      checkbox.addEventListener('change', () => {
-        const boxes = [...container.querySelectorAll('input[type="checkbox"]')];
-        const checked = boxes.filter((b) => b.checked).map((b) => b.value);
-        toggle.ownedVariants = checked.length === boxes.length ? null : new Set(checked);
+    container.querySelectorAll('input[type="number"]').forEach((input) => {
+      input.addEventListener('input', () => {
+        toggle.variantCounts = toggle.variantCounts ?? {};
+        toggle.variantCounts[input.dataset.variantCountVariant] = input.value === '' ? null : Math.max(0, Number(input.value));
         persistCapgraderState();
       });
     });

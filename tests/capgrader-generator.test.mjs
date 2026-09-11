@@ -81,7 +81,14 @@ function ownEverything() {
   for (const name of allItemNames) getToggle(name).owned = true;
 }
 function ownNothing() {
-  for (const name of allItemNames) getToggle(name).owned = false;
+  // Also clears variantCounts, not just `owned` — otherwise a later test
+  // block's explicit per-variant overrides (e.g. { Base: 0 }) leak into
+  // whichever test runs next against the same shared toggle object.
+  for (const name of allItemNames) {
+    const toggle = getToggle(name);
+    toggle.owned = false;
+    toggle.variantCounts = null;
+  }
 }
 
 // ---- legalPool() --------------------------------------------------------
@@ -111,16 +118,62 @@ function ownNothing() {
 }
 
 {
-  // Owning only one capgrader variant of several must not accidentally pull in others.
+  // Owning only one capgrader (by name) must not accidentally pull in any
+  // other capgrader — but SHOULD contribute one pool entry per variant of
+  // that item by default (Base + Shiny, etc.), since every owned variant is
+  // now independently usable (see legalPool()'s ownedVariantRecords) rather
+  // than collapsed to a single "best" one.
   ownNothing();
   const soleCapgrader = capgraderNames[0];
   getToggle(soleCapgrader).owned = true;
   const pool = legalPool();
-  const owned = [...pool.capgraders, ...pool.finishers].map((record) => record.name);
-  assert.deepEqual(owned, [soleCapgrader], 'only the toggled-on capgrader should appear in the pool');
+  const owned = [...pool.capgraders, ...pool.finishers];
+  assert(owned.length > 0, 'the toggled-on capgrader should appear in the pool at least once');
+  assert(owned.every((record) => record.name === soleCapgrader), 'only the toggled-on capgrader should appear in the pool');
   assert.equal(pool.additives.length, 0);
   assert.equal(pool.scanners.length, 0);
   assert.equal(pool.lunar, null);
+}
+
+{
+  // Explicitly zeroing one variant's count excludes just that variant, not
+  // the whole item — the other variant(s) stay usable.
+  ownNothing();
+  const mixedCapgrader = capgraderNames.find((name) => name === 'Fragrant Passage') ?? capgraderNames[0];
+  const toggle = getToggle(mixedCapgrader);
+  toggle.owned = true;
+  toggle.variantCounts = { Base: 0 };
+  const pool = legalPool();
+  const variants = [...pool.capgraders, ...pool.finishers].filter((r) => r.name === mixedCapgrader).map((r) => r.variant);
+  assert(!variants.includes('Base'), 'a variant explicitly set to 0 owned must not appear in the pool');
+  assert(variants.includes('Shiny'), 'an untouched variant (default unlimited) must still appear in the pool');
+}
+
+{
+  // The actual motivating case, end to end: there is a real ~350B-400B gap
+  // in capgrader range coverage that only Base-then-Shiny Fragrant Passage
+  // mixing can bridge into Sunflower Fields (500B-1T) — a real player
+  // reported and verified this chain by hand before this test was written
+  // (see AI_HANDOFF.md). With every relevant item owned (unlimited, both
+  // variants — the default), the search must actually find a chain that
+  // reaches Sunflower Fields' range, which was impossible before this
+  // feature since only one "best" variant per item was ever considered.
+  ownNothing();
+  for (const name of [
+    'Anchor Upgrader', 'Rocketship Upgrader', '8-Ball Refiner', 'Blocky Refiner',
+    'Fragrant Passage', 'Sunflower Fields',
+  ]) getToggle(name).owned = true;
+  getToggle(lunarName).owned = true;
+  const pool = legalPool();
+  const fragrantBase = pool.capgraders.find((r) => r.name === 'Fragrant Passage' && r.variant === 'Base');
+  const fragrantShiny = pool.capgraders.find((r) => r.name === 'Fragrant Passage' && r.variant === 'Shiny');
+  assert(fragrantBase && fragrantShiny, 'both Fragrant Passage variants must be independently present in the pool');
+  assert(fragrantBase.mainStat < fragrantShiny.mainStat, 'Base must be the weaker multiplier here');
+  const result = optimizeCapgraderChain(37500000, 1.4, pool, false);
+  assert(
+    result.chain.some((entry) => entry.record.name === 'Sunflower Fields'),
+    `expected the search to find a chain reaching Sunflower Fields, but it didn't — final value was ${result.finalValue}`,
+  );
 }
 
 // ---- optimizeCapgraderChain(): regression benchmark ----------------------
@@ -137,8 +190,17 @@ function ownNothing() {
 // 150B-350B, Canyon Refiner 1T-3T, Fungal Enhancer 1T-3T, Glistening Falls
 // 6T-10T) were added to CAPGRADER_NAMES — real new bridging options that
 // legitimately extend the optimal chain further before falling back to
-// generic multi-spam, not a search-quality change. Measured actual result:
-// ~$3.1536T.
+// generic multi-spam, not a search-quality change.
+//
+// Band raised again to $19T-$22T on 2026-09-11 after legalPool() started
+// offering every owned VARIANT of a capgrader as an independently-usable
+// item (ownedVariantRecords), instead of collapsing to one "best" variant
+// per name — a real player found a legal chain that only works by mixing
+// Base and Shiny copies of the same capgrader (weaker Base first to land
+// precisely in a later range, Shiny to finish), which was structurally
+// impossible to find before this change. "Own everything" now has strictly
+// more legal options than before, so a higher ceiling here is expected, not
+// a search-quality regression. Measured actual result: ~$20.56T.
 
 {
   ownEverything();
@@ -146,8 +208,8 @@ function ownNothing() {
   const result = optimizeCapgraderChain(10, 1, pool, false);
   assert(result.chain.length > 0, 'a fully-owned pool must produce a non-empty chain');
   assert(
-    result.finalValue >= 3.0e12 && result.finalValue <= 3.3e12,
-    `expected final value in the $3.0T-$3.3T regression band, got ${result.finalValue}`,
+    result.finalValue >= 19e12 && result.finalValue <= 22e12,
+    `expected final value in the $19T-$22T regression band, got ${result.finalValue}`,
   );
 
   // Every step must be legal: value must move the expected direction (up for
