@@ -653,6 +653,12 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .help-section p { margin: 0 14px 12px; color: var(--muted); font-size: .82rem; line-height: 1.55; }
 .help-section p + p { margin-top: -4px; }
 
+.help-abbrev-table { width: calc(100% - 28px); margin: 0 14px 12px; border-collapse: collapse; font-size: .78rem; }
+.help-abbrev-table th, .help-abbrev-table td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+.help-abbrev-table th { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; }
+.help-abbrev-table td:first-child { font-weight: 800; color: var(--accent); }
+.help-abbrev-table tbody tr:last-child td { border-bottom: none; }
+
 /* ---- Luck / Crate Simulator ---- */
 
 .luck-tool { display: flex; flex-direction: column; gap: 18px; max-width: 1400px; }

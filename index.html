@@ -586,11 +586,44 @@
           </details>
           <details class="help-section">
             <summary>2. Use in-game abbreviations directly</summary>
-            <p>Numbers can be typed with their in-game suffix attached — <strong>K</strong>, <strong>M</strong>, <strong>B</strong>, <strong>T</strong>, <strong>Qd</strong>, <strong>Qn</strong>, <strong>Sx</strong>, <strong>Sp</strong>, <strong>Oc</strong>, <strong>No</strong> — no spaces, e.g. <strong>2.4Qd</strong> for 2.4 quadrillion.</p>
+            <p>Attach any of these suffixes directly to a number, no space — e.g. <strong>2.4Qd</strong> for 2.4 quadrillion, <strong>1.5B * 1.54</strong> to multiply 1.5 billion by 1.54. Results are shown using the same abbreviations.</p>
+            <table class="help-abbrev-table">
+              <thead><tr><th>Suffix</th><th>Name</th><th>Value</th></tr></thead>
+              <tbody>
+                <tr><td>K</td><td>Thousand</td><td>1,000</td></tr>
+                <tr><td>M</td><td>Million</td><td>1,000,000</td></tr>
+                <tr><td>B</td><td>Billion</td><td>1,000,000,000</td></tr>
+                <tr><td>T</td><td>Trillion</td><td>1,000,000,000,000</td></tr>
+                <tr><td>Qd</td><td>Quadrillion</td><td>10<sup>15</sup></td></tr>
+                <tr><td>Qn</td><td>Quintillion</td><td>10<sup>18</sup></td></tr>
+                <tr><td>Sx</td><td>Sextillion</td><td>10<sup>21</sup></td></tr>
+                <tr><td>Sp</td><td>Septillion</td><td>10<sup>24</sup></td></tr>
+                <tr><td>Oc</td><td>Octillion</td><td>10<sup>27</sup></td></tr>
+                <tr><td>No</td><td>Nonillion</td><td>10<sup>30</sup></td></tr>
+              </tbody>
+            </table>
           </details>
           <details class="help-section">
             <summary>3. Read the result</summary>
             <p>The answer updates live as you type, shown both abbreviated (to 2 decimal places) and as a full number. If the expression is invalid, an error appears once you pause typing.</p>
+          </details>
+        </div>
+
+        <div id="help-content-mpa" class="help-content" hidden>
+          <p class="feedback-intro">Browse upgrader efficiency (MPU/MPA/MPS), and get help deciding which weaker upgraders to trim from your setup. This tool is still a work in progress.</p>
+          <details class="help-section" open>
+            <summary>1. Browse the MPU / MPA / MPS list</summary>
+            <p><strong>MPU</strong>, <strong>MPA</strong>, and <strong>MPS</strong> measure how efficiently an upgrader's multiplier compounds — per tile of <strong>length</strong>, per tile of <strong>area</strong>, and per <strong>second</strong>, respectively. Toggle between them at the top of the list; the list re-sorts to match, worst at the top and best at the bottom. A few items (Incremental Upgrader, Tiki Evaluator, Lambda Upgrader, Dream Machine, Dragon's Breath) show their best possible number here, with a small note explaining the assumption — Chopping Block asks for your actual numbers instead.</p>
+          </details>
+          <details class="help-section">
+            <summary>2. Chopping Block: mark what you own</summary>
+            <p>Click <strong>Chopping Block</strong> (top-right of the list) to open the ownership screen. Toggle on every upgrader you currently own, organized by how you get them — <strong>Crate</strong> (grouped by crate), <strong>Merchant / Achievement / Rebirth</strong> (plus Codes), and <strong>P2W</strong> (grouped by pack). Use <strong>Select all / Deselect all</strong> on a subcategory, or on a whole category at once, to save time.</p>
+            <p>A handful of upgraders ask for one more detail once you toggle them on — how many uses (Incremental/Tiki/Lambda), how many effects are currently active (Dream Machine), or which configuration you're using (Dragon's Breath, e.g. looped vs. two separate) — since that changes their real efficiency.</p>
+          </details>
+          <details class="help-section">
+            <summary>3. Figure out what's getting chopped</summary>
+            <p>Click <strong>Figure out what's getting chopped</strong> to start the keep/chop loop. It always suggests your worst-MPA owned upgrader first, skipping anything still required by another upgrader you own (like Ore Wash for Acid Plant) until that requirement is gone. Some items get a "switch configuration first" suggestion instead, if a better setup (like looping Dragon's Breath) would fix their MPA without chopping anything.</p>
+            <p>Choose <strong>Keep</strong> to move to the next-worst item, or <strong>Chop</strong> to remove it (for Incremental/Tiki this removes all copies at once; for Lambda it removes just one). Your choices are saved automatically, and you can back out to the previous screen at any point without losing progress.</p>
           </details>
         </div>
       </div>
