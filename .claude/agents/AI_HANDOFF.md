@@ -277,19 +277,96 @@ two references before patching, and that both now read "Rubik's Polisher" in
 resyncing. `database:sync`/`database:lint` still clean (390 records, 0
 errors), same three test files still pass.
 
-## Note: a Calculator tool exists but was never documented here
+## 2026-09-09 Calculator tool
 
-Between the last entry below (2026-08-27) and this session, a prior session
-added a **fourth tool, the Calculator** (`abbrev-calculator.js`, commits
-`fbd6f24` "Add Calculator tool: scientific calc with in-game number
-abbreviations" and `d8bc12b` "Fix hidden-attribute bugs: Calculator leaking
-into other tools, stale Capgrader results after Edit setup") — both already
-on `main`. That session never wrote a handoff entry for it, so treat this
-paragraph as the placeholder: read `abbrev-calculator.js` and the two commits
-directly if you need the architecture, since nothing further is recorded
-here. Wired in the same way as the other tools: `data-tool="calculator"` nav
-button in `index.html`, `activeTool` in `app.js` (title "Calculator",
-`calc-tool:activated` event, `calcToolSection.hidden`).
+Fourth nav tool (`data-tool="calculator"`), same self-contained-IIFE pattern
+as the other three. A scientific calculator that understands the game's
+number abbreviations as input, so players can type things like `1.5B * 1.54`
+directly instead of typing out full digit strings. (A prior session shipped
+this without writing a handoff entry — this entry backfills that gap.)
+
+**Files:** `abbrev-calculator.js` (new — the whole engine + UI wiring),
+`index.html` (`#calc-tool` section, nav button, `#help-content-calculator`),
+`styles.css` (`.calc-*` rules), `app.js` (`activeTool` extended to a 4th
+value, `toolNavItemCalculator`, `calcToolSection`), `help.js`
+(`contentByTool.calculator`).
+
+**Engine:** hand-written tokenizer + recursive-descent parser (no libraries —
+same zero-dependency philosophy as the rest of the site). Grammar:
+`expression := term (('+'|'-') term)*`, `term := power (('*'|'/') power)*`,
+`power := unary ('^' power)?` (right-associative), `unary := '-' unary |
+primary`, `primary := number | '(' expression ')' | 'sqrt(' expression ')'`.
+Numbers can carry an attached suffix (`1.5B`, `24sx`, case-insensitive) using
+the **same suffix scale already used elsewhere on the site**
+(K/M/B/T/Qd/Qn/Sx/Sp/Oc/No — see `app.js`'s `abbreviatedRate` and
+`capgrader-generator.js`'s money-parsing `powers` map). As of the 2026-09-11
+MPA tool work above, this file's own `UNITS`/`DISPLAY_UNITS` tables were
+separately extended to Dc/Ud/Dd/Td (up to 1e42) — not yet reflected in
+`app.js`/`capgrader-generator.js`'s copies, so those three places have now
+drifted out of sync. If the scale needs to grow again, update all of them
+together (or better, finally centralize this into one shared table — it's
+duplicated in at least three files now). Uses plain `Number` (floating point) throughout —
+deliberately NOT arbitrary-precision, per an explicit user choice
+("good-enough estimates" over "exact precision at any scale") since ~15-16
+significant digits covers every real in-game comparison and stays consistent
+with how the rest of the site already does money math.
+
+**UI decisions, several changed after initial ship based on user feedback:**
+- **No equals/submit button.** Originally had one; removed because the result
+  already live-updates on every keystroke, making it redundant for anything
+  that parses successfully. Its only real job (surfacing an error for a
+  genuinely broken expression) is now handled by a **600ms debounce timer**:
+  typing keeps re-evaluating silently (clearing the result on failure without
+  showing an error, since mid-typing is naturally often incomplete), and only
+  shows an error banner if the expression is *still* invalid once typing
+  pauses. Enter still forces an immediate check, bypassing the debounce.
+- **Abbreviated result always shows exactly 2 decimal places** (`9.00`,
+  `2.31B`), not trimmed — an explicit user correction from an earlier
+  trailing-zero-trimming version.
+- **Full number formatting** needed manual digit-string construction for
+  values >= 1e21, since `Number.prototype.toFixed` silently switches to
+  exponential-string behavior at that scale in the JS spec and can't be
+  coerced back to a fixed decimal string normally — see
+  `formatFullNumber`'s `toExponential(15)` + manual digit-padding logic if
+  this needs touching.
+- Button grid inserts text at the input's cursor position (not just
+  appending), so typing and clicking can be freely mixed.
+
+**Real hidden-attribute bug found and fixed — likely to bite again if not
+watched for:** `.calc-tool { display: flex; ... }` had no `.calc-tool[hidden]
+{ display: none; }` companion rule, so setting `calcToolSection.hidden = true`
+(the mechanism every tool section uses to hide itself) did nothing — the
+Calculator visually leaked in underneath whichever tool was actually active.
+The other three top-level tool sections (`.workspace`, `.capgrader-tool`,
+`.luck-tool`) already had this companion rule; `.calc-tool` was just missed
+when it was added. **Root cause, worth remembering for any future new
+section:** an author stylesheet's `display:` rule beats the browser's default
+`[hidden] { display: none }` rule for elements toggled via the `.hidden`
+property/attribute, *unless* you add an explicit `<selector>[hidden] {
+display: none; }` override — CSS specificity alone doesn't save you here,
+author-origin rules just win the cascade. **Any new top-level section (or any
+other element ever toggled via `el.hidden = ...`) needs this companion rule,
+or it will silently render even while "hidden."** (The MPA tool above already
+got this right — worth double-checking if it or any future tool ever adds
+another top-level section.) While tracking this down, the same class of bug
+was found completely unrelated to the Calculator: `#capgrader-results`
+(Capgrader Generator's results table) had never had this override either, and
+`setResultsMode(false)` (the "Edit setup" button) never even toggled its
+`hidden` attribute in the first place — so the previous run's table stayed
+visible underneath the setup panels after clicking "Edit setup." Both fixed
+together (commit `d8bc12b`): added the two missing `[hidden]` CSS overrides,
+added `resultsEl.hidden` toggling to `setResultsMode`, and gave
+`#capgrader-results` a default `hidden` attribute in the markup so it's not
+visible before the first Generate either.
+
+**Not covered:** no automated tests exist for this tool (same as Luck
+Simulator) — verified manually in-browser only (parenthesized/power/sqrt
+expressions, abbreviation parsing, division-by-zero error path, debounced
+auto-error, button-click input path, >=1e21 full-number formatting).
+
+**Commits:** `fbd6f24` (initial tool), `d8bc12b` (the hidden-attribute fixes
+above — bundled with an unrelated capgrader-generator.js fix since both were
+found in the same debugging session).
 
 ## 2026-09-11 Database resync (nature-update workbook)
 

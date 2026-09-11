@@ -171,3 +171,10 @@ later item leans on the data/work from the ones before it):
   no backend. `feedback.js`. Fixed one real Android "forced dark mode" bug
   this surfaced live (form text was invisible on some phones — see
   AI_HANDOFF.md). Working live, no known open issues.
+- **Calculator tool.** Fourth nav tool — a scientific calculator that
+  understands the game's number abbreviations as input (e.g. `1.5B * 1.54`).
+  `abbrev-calculator.js`. Pushed (`fbd6f24`, `d8bc12b`). Full detail in
+  `AI_HANDOFF.md` → "2026-09-09 Calculator tool", including a hidden-attribute
+  CSS bug class fixed there that's worth reading before adding any future new
+  top-level tool section (easy to accidentally repeat). No automated tests
+  exist (same as Luck Simulator) — verified manually in-browser only.
