@@ -1504,7 +1504,7 @@ globalThis.MpuStatsData = {
       "mpa": 1.160951942,
       "mpu": 1.816590212,
       "mps": 118.5921,
-      "notes": "Only works if it is the first upgrader — opening-only, same as Additive Upgraders (see Capgrader Generator's own handling of this rule). Not in the MPU sheet; added per the user's request, computed from its real stats (Multi 3.3, 4x2, Conveyor Speed 24, Limited Uses 1) using the standard MPU/MPA/MPS formulas.",
+      "notes": null,
       "category": "crate",
       "subcategory": "Space"
     }
