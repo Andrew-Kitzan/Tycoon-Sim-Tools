@@ -49,12 +49,20 @@
     'Orbital Messenger', 'Sugar Churner', 'Anchor Upgrader', 'Ore Purifier', 'Blocky Refiner',
     'Hydrothermal Vent', 'Observatory Refiner', 'Fine Point Upgrader', "Rubik's Polisher",
     'Rocketship Upgrader', 'Surfboard Polisher', 'Gumball Enhancer', 'Toybox Express',
+    'Nuclear Upgrader', 'Chartreuse Collider',
   ]);
   // Wide-range, single-use "finisher" capgraders (range floor 0, ceiling in
   // the quadrillions+) aren't part of the sequential chain — they cascade on
   // top at the very end regardless of order, same distinction
   // capgrader-generator.js's own isFinisherRecord() makes.
   const FINISHER_CEILING_THRESHOLD = 1e15;
+  // Nuclear Upgrader (range 0-50K — too low to trip the ceiling threshold
+  // above) and Chartreuse Collider both apply a destructive/overriding
+  // effect (Nuclear effect, Overcharged) rather than bridging cleanly to a
+  // next capgrader — capgrader-generator.js excludes them from its search
+  // entirely for the same reason. Per the user, treat both as finishers here
+  // too: manually forced regardless of what their own range would imply.
+  const MANUAL_FINISHER_NAMES = new Set(['Nuclear Upgrader', 'Chartreuse Collider']);
   const RANGE_UNITS = [
     ['no', 1e30], ['oc', 1e27], ['sp', 1e24], ['sx', 1e21], ['qn', 1e18],
     ['qd', 1e15], ['t', 1e12], ['b', 1e9], ['m', 1e6], ['k', 1e3],
@@ -83,6 +91,7 @@
   }
 
   function isFinisherCapgrader(name) {
+    if (MANUAL_FINISHER_NAMES.has(name)) return true;
     const bounds = capgraderRangeBounds(name);
     return Boolean(bounds && bounds.lo === 0 && bounds.hi >= FINISHER_CEILING_THRESHOLD);
   }
