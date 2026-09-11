@@ -51,12 +51,6 @@ select {
   gap: 16px;
   margin-bottom: 24px;
 }
-/* Clears the fixed hamburger button (left:20px, width:34px -> right edge at
-   54px) which otherwise overlaps the "TYCOON SIM" eyebrow/title text — this
-   header markup is shared across every tool, so this fixes all of them at
-   once. 48px comfortably clears the button at both the desktop (28px
-   .app-shell padding) and mobile (16px) breakpoints. */
-.planner-brand { padding-left: 48px; }
 .topbar-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
 .topbar-actions[hidden] { display: none; }
 .planner-loadout-actions { display: flex; align-items: center; gap: 7px; margin-top: 10px; }
