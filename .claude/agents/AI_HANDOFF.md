@@ -142,6 +142,16 @@ comboInfoOnly).
   Scanners (`SCANNER_NAMES` in capgrader-generator.js) are **not** included
   in this ordering — the user's report was specifically about capgraders,
   and scanners aren't part of the same sequential range chain the same way.
+  **Immediate follow-up, same day**: per the user, Nuclear Upgrader and
+  Chartreuse Collider are also finisher-type — added both to
+  `CAPGRADER_NAMES` plus a new `MANUAL_FINISHER_NAMES` override in
+  `isFinisherCapgrader()`, since Nuclear Upgrader's real range (0-50K) is
+  far too low to trip the automatic ceiling-based finisher check (matches
+  capgrader-generator.js's own reasoning for excluding both from its search
+  entirely — they apply a destructive/overriding effect, Nuclear
+  effect/Overcharged, instead of bridging cleanly). Verified neither locks
+  other capgraders nor gets chain-locked itself, live and via the smoke
+  test.
 - **RESOLVED (2026-09-11, same day, right after the user reviewed the first
   build): the "Other" category and the Fidget Pack naming question are both
   fixed, not open anymore.** Checked both items' real obtainment text
