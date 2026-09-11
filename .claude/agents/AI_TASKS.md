@@ -48,14 +48,6 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
 
 ## Not started
 
-- **Fix "Rubix's Polisher" → "Rubik's Polisher" in the `Ore SizeHeight`
-  sheet's restrictions table** (source spreadsheet, not generated files).
-  Currently harmless since nothing looks up `oreSizeHeight.restrictions[]`
-  by name yet, but it's the same typo class already fixed once in
-  `capgrader-generator.js` — see `AI_HANDOFF.md`'s "2026-09-11 Database
-  resync" entry. Needs the user to fix it in their master workbook (Ore
-  SizeHeight row 13, "Name" column) since this repo's copy is meant to
-  mirror that source.
 - **The actual engine/UI geometry revamp.** The worksheet is currently pure
   staged data — nothing in `engine/*.mjs`, `planner-core.js`, or `app.js`
   reads it yet. Once the upgraders audit is far enough along, design and wire
@@ -154,6 +146,9 @@ later item leans on the data/work from the ones before it):
   reasonable default guess, not sourced from the spreadsheet (confirmed no
   such data exists there — no per-cell fills or conditional formatting on
   the Rarity column).
+- **"Rubix's Polisher" → "Rubik's Polisher" spelling fix.** Fixed at the
+  source workbook in both places it appeared (`Ore SizeHeight!K10` and
+  `MPU!B78`) — see `AI_HANDOFF.md`'s "2026-09-11 follow-up" entry.
 - **Feedback widget.** A "Feedback" button visible on every tool, opening a
   form (bug report/feedback/suggestion + optional image/video attachment)
   that relays through FormSubmit since the site is static GitHub Pages with

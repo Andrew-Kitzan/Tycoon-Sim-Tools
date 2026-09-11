@@ -8,7 +8,31 @@ now wrong, correct it in place and say why.
 
 ## Last worked on
 
-2026-09-11 — see "2026-09-11 Database resync (nature-update workbook)" below.
+2026-09-11 — see "2026-09-11 Database resync (nature-update workbook)" below,
+plus its immediate follow-up fixing the "Rubix's"/"Rubik's Polisher" typo
+(same session, user asked right after the resync landed).
+
+## 2026-09-11 follow-up: fixed "Rubix's Polisher" typo at the source
+
+The resync entry below flagged this as a still-open, harmless-for-now
+spreadsheet typo and left it to the user. They asked to fix it immediately
+after, so it's done — no longer an open item in AI_TASKS.md.
+
+Found **two** occurrences of the misspelling once actually searched for (the
+resync entry only mentioned the one in Ore SizeHeight): `Ore SizeHeight!K10`
+and **`MPU!B78`** — the MPU sheet is the one the user said had just been
+filled out with "each item now instead of just some," so the same typo had
+propagated there too. Both cells shared the same shared-string index (321,
+"Rubix's Polisher"); a correctly-spelled "Rubik's Polisher" already existed
+elsewhere in the shared-string table at index 1421 (used by e.g. `Capgrader`
+sheet), so the fix was repointing both cells' `t="s"` value from `321` to
+`1421` — zero shared-string content touched, same targeted-zip-entry-patch
+method as the resync entry's Dream Machine fix. Verified via `grep -o
+'t="s"><v>321</v>'` across all `xl/worksheets/*.xml` that those were the only
+two references before patching, and that both now read "Rubik's Polisher" in
+`data/items.generated.js` / `data/ore-size-height.index.json` after
+resyncing. `database:sync`/`database:lint` still clean (390 records, 0
+errors), same three test files still pass.
 
 ## Note: a Calculator tool exists but was never documented here
 

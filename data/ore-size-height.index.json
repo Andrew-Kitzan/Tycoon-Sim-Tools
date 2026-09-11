@@ -1,8 +1,8 @@
 {
   "importerVersion": 5,
-  "generatedAt": "2026-09-11T00:03:07.233Z",
+  "generatedAt": "2026-09-11T00:36:01.391Z",
   "sourceWorkbook": "data/Tycoon Sim Database.xlsx",
-  "sourceHash": "bb0a245d8a2ad7053d4c2ba34d4688fb14a9be5b7ce5c84e24d6470530a2387d",
+  "sourceHash": "3e031f86d5e433f52e00b13660382d5de30c4d492e44a0504fe6442a7913d03e",
   "sheet": "Ore SizeHeight",
   "paths": [
     {
@@ -2703,7 +2703,7 @@
       "row": 9
     },
     {
-      "name": "Rubix's Polisher",
+      "name": "Rubik's Polisher",
       "rarity": "Rare",
       "size": {
         "width": 4,
