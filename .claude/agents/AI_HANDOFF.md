@@ -9,8 +9,13 @@ now wrong, correct it in place and say why.
 ## Last worked on
 
 2026-09-11 — see "2026-09-11 MPA / Chopping Block tool (fifth tool, WIP)"
-below — the newest and most involved entry. The database-resync and
-Rubik's-Polisher-typo entries right below it are from earlier the same day.
+below — the newest and most involved entry, plus its several same-day
+follow-up fixes/refinements from the user actually using it live (icon
+caption, category-level select-all, "Own"→"In Base" wording, and — the
+biggest one — a capgrader chain-order lock, all folded into that same entry
+below since they're all part of the same tool's ongoing WIP polish). The
+database-resync and Rubik's-Polisher-typo entries right below it are from
+earlier the same day.
 
 ## 2026-09-11 MPA / Chopping Block tool (fifth tool, WIP)
 
@@ -115,6 +120,28 @@ comboInfoOnly).
   the user actually wanted the stricter version.) More dependencies are
   expected from the user later — this table is meant to be trivially
   appendable, not hardcoded per-item branches.
+- **Capgrader chain-order lock (added 2026-09-11, same day, after the user
+  hit this live)**: reported via a real screenshot — with both 8-Ball
+  Refiner (range 10B-50B) and Blocky Refiner (30B-100B) in the base,
+  Chopping Block was suggesting 8-Ball first, but 8-Ball is only useful as a
+  bridge toward Blocky's range, so chopping it first would strand Blocky.
+  Fixed by adding a second lock rule in `isLocked()` alongside the combo/
+  dependency table: any of the 23 real capgraders (same hardcoded
+  `CAPGRADER_NAMES` list as `capgrader-generator.js` — **keep both lists in
+  sync if capgraders are ever added**) is locked while a *higher-range*
+  capgrader is also in the base, ranges parsed from `TycoonDatabase`'s own
+  `range` field (`"10B-50B"` → `{lo, hi}` via a small suffix parser mirroring
+  the Calculator's unit table). **Excludes finisher capgraders** (Toybox
+  Express, Rubik's Polisher — range floor 0, ceiling ≥ 1e15) in both
+  directions, matching `capgrader-generator.js`'s own `isFinisherRecord()`
+  distinction: they cascade on top at the end regardless of chain order, so
+  they neither lock normal capgraders nor get chain-locked themselves.
+  Verified with a smoke test extending the existing ad hoc suite (8-Ball
+  locked while Blocky owned, unlocks once Blocky is gone, finishers exempt)
+  and live in a real browser reproducing the exact screenshot scenario.
+  Scanners (`SCANNER_NAMES` in capgrader-generator.js) are **not** included
+  in this ordering — the user's report was specifically about capgraders,
+  and scanners aren't part of the same sequential range chain the same way.
 - **RESOLVED (2026-09-11, same day, right after the user reviewed the first
   build): the "Other" category and the Fidget Pack naming question are both
   fixed, not open anymore.** Checked both items' real obtainment text
