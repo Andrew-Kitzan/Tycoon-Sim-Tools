@@ -90,17 +90,71 @@ file behaves correctly in isolation but not as part of the full suite.
 
 **Regression band raised again, for a real reason, not a quality
 regression**: `tests/capgrader-generator.test.mjs`'s "own everything" search
-ceiling jumped from $3.0T-$3.3T to **$19T-$22T** (measured: ~$20.56T) —
+ceiling moved from $3.0T-$3.3T to **$3.3T-$3.6T** (measured: ~$3.43T) —
 "own everything" now has strictly more legal moves available than before
-(every variant of every capgrader, not just one each), so a higher ceiling
-is the expected, correct outcome of this fix, not something to chase back
-down.
+(every variant of every capgrader, not just one each), so a slightly higher
+ceiling is the expected, correct outcome of this fix. (An initial version of
+this change measured ~$20.56T here — that number was wrong, produced by the
+`limitedUses`-sharing bug below; see that section for the real story of how
+this number was arrived at.)
 
 **Not done / worth considering later**: additives, Lunar Landing, and
 scanners still collapse to one "best" owned variant each (unchanged
 behavior) — flagged in the code as intentional for now, since none of them
 chain repeatedly like a capgrader does, but revisit if a similar
 variant-mixing case is ever reported for one of those.
+
+## 2026-09-11 follow-up: variant-mixing broke the shared `limitedUses` rule (caught by the player, not the test suite)
+
+**The bug, reported by the player with a screenshot**: a generated chain used
+both Base and Shiny Rubik's Polisher, and both Base and Shiny Toybox
+Express — each a `limitedUses: 1` item. In the real game, `limitedUses` is a
+base-game rule on the item **name**, shared across every variant of it: you
+can only ever use it once, total, no matter how many variants you own. The
+first version of the variant-mixing fix above tracked usage per
+`name::variant` only (`usageKey()`), so each variant got its own independent
+`limitedUses` budget — letting a limited-use item fire twice. This is what
+originally inflated the "own everything" regression figure to the wrong
+~$20.56T noted above.
+
+**The fix — two independent caps, checked together:**
+- `effectiveCap()` renamed to `ownedVariantCap()` and narrowed back to *only*
+  the per-variant owned-copy cap (how many copies of *this* variant you
+  said you own) — no longer conflated with `limitedUses`.
+- Added `state.nameUses` alongside the existing `state.uses`: `state.uses` is
+  still keyed by `name::variant` (for the owned-copy cap), `state.nameUses`
+  is keyed by `name` alone and sums uses across every variant (for the
+  shared `limitedUses` cap). Both are updated together in `applyItem()`.
+- `useAllowed()` now checks both: the move must stay under its variant's
+  owned-copy cap *and* under the item name's total `limitedUses` ceiling
+  before it's legal.
+
+**A second bug this exposed, in the finisher cascade**: fixing the above
+first produced ~$2.83T for "own everything" — *lower* than the $3.15T
+pre-variant-mixing baseline, which made no sense (variant-mixing should only
+add options, never remove value). Root cause: the end-of-chain finisher
+cascade looped over every finisher **variant record** in raw ascending
+`mainStat` order, so a weak Base copy of a `limitedUses: 1` finisher (e.g.
+Rubik's Polisher, Toybox Express) could consume the item's one shared use
+before the stronger Shiny copy was ever tried. Fixed by grouping the cascade
+by finisher **name** and always applying the single best-ranked owned
+variant (`bestFinisherVariant()`, rank order `Shiny Mythic > Mythic > Shiny >
+Base`), repeated only as many times as both caps in `useAllowed()` allow.
+This is what produced the final, correct ~$3.43T figure.
+
+**New regression test** in `tests/capgrader-generator.test.mjs`: owns both
+Base and Shiny of Toybox Express and Rubik's Polisher (both
+`limitedUses: 1`), asserts each name appears **at most once total** across
+both variants in a generated chain, and that when used, the chosen variant
+is the stronger Shiny one — not whichever was tried first.
+
+**Lesson for future variant-mixing-style features**: when an item property
+is a base-game rule on the item name (not something that varies by
+variant — `limitedUses` is the only one currently in the data), any per-variant
+usage tracking added for one feature must still be checked against a
+separate per-name aggregate for that property. Per-variant granularity for
+"how many do you own" and per-name granularity for "how many times can this
+ever be used" are not the same axis and must never be merged into one cap.
 
 ## 2026-09-10 MPA / Chopping Block graduates from WIP + a real Portable Upgrader bugfix
 strictly chronological across sessions, trust the content) is still the one

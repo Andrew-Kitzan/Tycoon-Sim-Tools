@@ -176,6 +176,34 @@ function ownNothing() {
   );
 }
 
+{
+  // limitedUses is a base-game rule SHARED across every variant of an item —
+  // real bug (caught by the user, not this test suite, the first time this
+  // shipped): owning both Base and Shiny of a limitedUses:1 item must never
+  // let it be used twice (once per variant). Toybox Express/Rubik's
+  // Polisher are both limitedUses:1 finishers — cascading both variants of
+  // each on top of a chain must still only apply ONE of them, total.
+  ownNothing();
+  getToggle('Toybox Express').owned = true;
+  getToggle("Rubik's Polisher").owned = true;
+  const pool = legalPool();
+  assert(
+    pool.finishers.filter((r) => r.name === 'Toybox Express').length === 2,
+    'both Toybox Express variants should be in the pool (this is fine — the shared cap is enforced at use time, not pool membership)',
+  );
+  const result = optimizeCapgraderChain(10, 1, pool, false);
+  for (const name of ['Toybox Express', "Rubik's Polisher"]) {
+    const uses = result.chain.filter((entry) => entry.record.name === name).length;
+    assert(uses <= 1, `${name} is limitedUses:1 shared across variants — must appear at most once total in the chain, appeared ${uses} times`);
+  }
+  // And it must be the STRONGER (Shiny) variant that gets used, not
+  // whichever one a naive ascending-mainStat cascade order happens to try
+  // first — a finisher's range floor of 0 means there's never a reason to
+  // prefer the weaker one.
+  const toybox = result.chain.find((entry) => entry.record.name === 'Toybox Express');
+  if (toybox) assert.equal(toybox.record.variant, 'Shiny', 'the finisher cascade must pick the strongest owned variant, not the first one tried');
+}
+
 // ---- optimizeCapgraderChain(): regression benchmark ----------------------
 // Locks in the known-good "own everything" result from the 2026-08-26
 // beam-search quality fixes (AI_HANDOFF.md) — a Dropper starting at $10
@@ -192,15 +220,38 @@ function ownNothing() {
 // legitimately extend the optimal chain further before falling back to
 // generic multi-spam, not a search-quality change.
 //
-// Band raised again to $19T-$22T on 2026-09-11 after legalPool() started
+// Band adjusted to $3.3T-$3.6T on 2026-09-11 after legalPool() started
 // offering every owned VARIANT of a capgrader as an independently-usable
 // item (ownedVariantRecords), instead of collapsing to one "best" variant
 // per name — a real player found a legal chain that only works by mixing
 // Base and Shiny copies of the same capgrader (weaker Base first to land
 // precisely in a later range, Shiny to finish), which was structurally
-// impossible to find before this change. "Own everything" now has strictly
-// more legal options than before, so a higher ceiling here is expected, not
-// a search-quality regression. Measured actual result: ~$20.56T.
+// impossible to find before this change.
+//
+// This band went through two wrong values before landing here, both from
+// the same real bug (caught by the user, not by this test — worth noting):
+// an initial pass first measured ~$20.56T, but that number was itself
+// inflated by a genuine correctness bug — `limitedUses` is a BASE-GAME rule
+// shared across every variant of an item (e.g. Rubik's Polisher/Toybox
+// Express are limitedUses:1 TOTAL, not 1-per-variant), and the finisher
+// cascade at the end of optimizeCapgraderChain() was applying finishers in
+// raw ascending-mainStat order across ALL variant-records, which let a
+// weak Base copy burn a shared single-use slot before the stronger Shiny
+// copy ever got a turn. Fixing that (finisher cascade now always uses the
+// single best owned variant per finisher NAME, since a finisher's range
+// floor of 0 means there's never a range reason to prefer a weaker variant
+// there) dropped the measured value to ~$2.83T — LOWER than the original
+// pre-mixing $3.15T baseline, which was the tell that something was still
+// off, since correct variant-mixing should only ever add options, never
+// remove them. Root cause of that second wrong number turned out to be the
+// same bug, just not fully diagnosed yet: it takes a moment of "wait, this
+// went down, that's backwards" to catch. Once the shared-limitedUses fix
+// was in fully, the correct measured result came out to ~$3.43T — legitimately
+// a bit above the $3.15T pre-mixing baseline (from mid-chain, unlimited-use
+// capgraders like Fragrant Passage still benefiting from mixing), not the
+// dramatic jump the buggy number suggested. **If this number is ever "too
+// high" again, suspect a finisher/limited-use variant being double-counted
+// before suspecting the search itself.**
 
 {
   ownEverything();
@@ -208,8 +259,8 @@ function ownNothing() {
   const result = optimizeCapgraderChain(10, 1, pool, false);
   assert(result.chain.length > 0, 'a fully-owned pool must produce a non-empty chain');
   assert(
-    result.finalValue >= 19e12 && result.finalValue <= 22e12,
-    `expected final value in the $19T-$22T regression band, got ${result.finalValue}`,
+    result.finalValue >= 3.3e12 && result.finalValue <= 3.6e12,
+    `expected final value in the $3.3T-$3.6T regression band, got ${result.finalValue}`,
   );
 
   // Every step must be legal: value must move the expected direction (up for

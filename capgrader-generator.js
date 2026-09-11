@@ -252,10 +252,17 @@
   // copies of THIS SPECIFIC VARIANT the player can actually place = min(what
   // they told us they own of it, the item's own real limitedUses cap — e.g.
   // Ore Flamethrower is capped at 3 no matter what "unlimited" ownership
-  // means). Each variant of an item tracks its own cap independently.
-  function effectiveCap(record, toggle) {
+  // means). `limitedUses` is a BASE-GAME rule shared across every variant of
+  // the item, not a per-variant allowance — a "Limited Uses: 1" item is only
+  // ever usable once total, whether that one use is its Base or its Shiny
+  // copy, never once each. Owned-copy counts, in contrast, genuinely are
+  // per-variant (you can own 2 Base + 1 Shiny as distinguishable physical
+  // items) — see useAllowed() below for how both constraints are enforced
+  // together (per-variant owned cap AND the shared per-name limitedUses
+  // cap, whichever binds first).
+  function ownedVariantCap(record, toggle) {
     const owned = variantCount(toggle, record.variant);
-    return Math.min(owned == null ? Infinity : owned, integerUseLimit(record.limitedUses));
+    return owned == null ? Infinity : owned;
   }
 
   // Every variant the player hasn't explicitly zeroed out, as separate,
@@ -316,14 +323,21 @@
       hasFire,
       timeSeconds,
       length,
+      // Two separate counters: `uses` (per name+variant) enforces "you only
+      // own N copies of THIS variant"; `nameUses` (per name only) enforces
+      // the shared, base-game limitedUses cap across all variants combined
+      // — see ownedVariantCap()'s comment for why both are needed.
       uses: { ...state.uses, [key]: (state.uses[key] ?? 0) + count },
+      nameUses: { ...state.nameUses, [record.name]: (state.nameUses[record.name] ?? 0) + count },
       chain: [...state.chain, { record, before, after: value, count, timeAfter: timeSeconds, lengthAfter: length }],
     };
   }
 
   function useAllowed(record, state, toggle, count = 1) {
-    const used = state.uses[usageKey(record)] ?? 0;
-    return used + count <= effectiveCap(record, toggle);
+    const usedThisVariant = state.uses[usageKey(record)] ?? 0;
+    if (usedThisVariant + count > ownedVariantCap(record, toggle)) return false;
+    const usedThisName = state.nameUses[record.name] ?? 0;
+    return usedThisName + count <= integerUseLimit(record.limitedUses);
   }
 
   function withinRange(record, value) {
@@ -454,7 +468,7 @@
   }
 
   function optimizeCapgraderChain(initialValue, initialOreSize, pool, initialHasFire) {
-    const initial = { value: initialValue, oreSize: initialOreSize, hasFire: initialHasFire, timeSeconds: 0, length: 0, uses: {}, chain: [] };
+    const initial = { value: initialValue, oreSize: initialOreSize, hasFire: initialHasFire, timeSeconds: 0, length: 0, uses: {}, nameUses: {}, chain: [] };
     let openingStates = [initial];
 
     if (pool.lunar) {
@@ -527,12 +541,29 @@
     const terminalScore = (s) => Math.log(Math.max(1, s.value)) * 100 - s.timeSeconds * 2 - s.length * 0.3;
     let best = terminals.sort((a, b) => terminalScore(b) - terminalScore(a))[0];
     // Cascade every owned, still-eligible finisher on top, in ascending mainStat
-    // order — order among finishers themselves never affects the total (each has
+    // order — order among finisher NAMES never affects the total (each has
     // a range floor of 0, so none of them can be blocked by an earlier one's
     // result) and there's nothing after this to keep in range for.
-    for (const finisher of [...pool.finishers].sort((a, b) => a.mainStat - b.mainStat)) {
-      const toggle = getToggle(finisher.name);
-      if (withinRange(finisher, best.value) && useAllowed(finisher, best, toggle)) {
+    //
+    // pool.finishers can now hold multiple variant-records per name (see the
+    // 2026-09-11 variant-mixing change) — but a finisher's range floor is
+    // always 0, so unlike a normal capgrader there's never a range reason to
+    // prefer a weaker variant. Always apply the single strongest owned
+    // variant per name, never split a shared limitedUses budget across
+    // variants here (that would waste it on the weaker one first — a real
+    // bug this fixed: Rubik's Polisher/Toybox Express are both
+    // limitedUses:1, so naively trying Base before Shiny in mainStat order
+    // burned the one shared use on Base and Shiny never got a turn).
+    const variantRank = ['Shiny Mythic', 'Mythic', 'Shiny', 'Base'];
+    const bestFinisherVariant = (name) => pool.finishers
+      .filter((r) => r.name === name)
+      .sort((a, b) => variantRank.indexOf(a.variant) - variantRank.indexOf(b.variant))[0];
+    const finisherNames = [...new Set(pool.finishers.map((r) => r.name))]
+      .sort((a, b) => bestFinisherVariant(a).mainStat - bestFinisherVariant(b).mainStat);
+    for (const name of finisherNames) {
+      const finisher = bestFinisherVariant(name);
+      const toggle = getToggle(name);
+      while (withinRange(finisher, best.value) && useAllowed(finisher, best, toggle)) {
         best = applyItem(finisher, best);
       }
     }
