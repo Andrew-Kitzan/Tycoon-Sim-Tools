@@ -8,9 +8,188 @@ now wrong, correct it in place and say why.
 
 ## Last worked on
 
-2026-09-11 — see "2026-09-11 Database resync (nature-update workbook)" below,
-plus its immediate follow-up fixing the "Rubix's"/"Rubik's Polisher" typo
-(same session, user asked right after the resync landed).
+2026-09-11 — see "2026-09-11 MPA / Chopping Block tool (fifth tool, WIP)"
+below — the newest and most involved entry. The database-resync and
+Rubik's-Polisher-typo entries right below it are from earlier the same day.
+
+## 2026-09-11 MPA / Chopping Block tool (fifth tool, WIP)
+
+Added a fifth tool to the hamburger nav (`data-tool="mpa"`), explicitly
+marked **WIP** (a `.wip-badge` next to its name in the nav list, and the
+shared `#wip-badge` element in the header — repurposed/generalized, see
+below — shown whenever this tool is active) since the user asked for it to
+read as still-in-progress. Full design doc (read this first if touching the
+tool again): `.claude/plans/mpa-chopping-block-plan.md` — **not committed**,
+`.claude/*` is gitignored except `.claude/agents/` (same as the existing
+`.claude/plans/cheerful-splashing-dewdrop.md` reference from the Capgrader
+Generator entry below), so that plan only exists in this local working tree
+unless the user asks for it to be preserved elsewhere.
+
+**What it does — two screens:**
+1. **MPU/MPA/MPS browsing list** (the tool's landing view): every tracked
+   upgrader's icon, name, and whichever of the three efficiency stats is
+   toggled (MPU = multi^(1/length), MPA = multi^(1/area), MPS =
+   multi^(1/time)), sorted ascending (worst at top, best at bottom) —
+   confirmed by the user, not assumed.
+2. **Chopping Block** (button top-right of the list): pick every upgrader
+   you own, organized into Crate / Merchant-Achievement-Rebirth / P2W-by-pack
+   / **Other** categories (see below for why a 4th "Other" category exists
+   beyond the user's original 3), each subcategory with Select All/Deselect
+   All, then a "Figure out what's getting chopped" button runs a worst-MPA-
+   first keep/chop loop respecting combo/dependency locks.
+
+**Data: `data/mpu-stats.js` (new, one-time hand-maintained seed, NOT
+auto-regenerated)** — per the user's explicit decision, this does not run
+through `database:sync`; it was built once from the spreadsheet's MPU sheet
+(84 tabulated rows) plus Lunar Landing (computed from its real stats via the
+standard formula — not in the MPU sheet, added because the user said it was
+"pretty simple" to include) and structured Lambda/Incremental/Tiki/Dream
+Machine/Dragon's Breath entries. 83 total items (82 choppable + 1 list-only
+combo). Edit this file directly (or ask) to add/update items going forward —
+see its own header comment for the full schema (`kind`:
+straight/scalesWithUses/scalesWithEffects/scalesWithConfiguration/
+comboInfoOnly).
+
+**Key design decisions, confirmed with the user across a long back-and-forth
+— read before changing any of this:**
+- **Scope is Multiplicative/Mixed upgraders only.** Additive-type upgraders
+  (17 of them — Whimsical Palace, Basic Upgrader, Oasis Cleanser, etc.) have
+  no stacking multiplier, so MPU/MPA/MPS don't apply; they're excluded from
+  both screens entirely, including Chopping Block's ownership toggle.
+- **"Highest form only"**: one entry per item, whichever variant the MPU
+  sheet itself already used (Shiny for Common-Epic and P2W items, Shiny
+  Mythic for non-P2W Legendary/Secret) — mirrored as-is from the sheet's own
+  Variant column, not re-derived.
+- **Lambda Upgrader's MPA gets *worse* with more uses** (1.070 at 1 use →
+  1.041 at 3), the opposite of Incremental (1.024→1.050, best at 3) and Tiki
+  (1.031→1.046, best at 2). The browsing list shows Lambda's actual best (1
+  use), with the 3-Lambda numbers folded into that row's note — do not
+  "fix" this to show 3 uses as if it matched the other two; it's a real,
+  confirmed-correct asymmetry, not a bug.
+- **Lambda's uses are capped at 3 in this tool** even though the database
+  says "Unlimited" — per the user, real play never goes past 3. If a player
+  types 4+ in Chopping Block's input, the UI clamps it to 3 and shows an
+  alert explaining why (`window.alert` in the `change` handler for
+  `data-mpa-input="uses"` — the only item this clamp applies to, via
+  `maxUsesAllowed`).
+- **Dream Machine's formula is real, not guessed**: found in the "Stats for
+  Nerds" sheet, `multiplier = 1 + effects × perEffectBonus` (perEffectBonus
+  0.75 for the tracked Shiny Mythic variant), verified against all three
+  tabulated sample rows (4/5/6 effects) before being written into the data
+  file. 6 effects exist in-game but only 5 are simultaneously obtainable —
+  that's the practical max shown on the browsing list, but Chopping Block
+  still takes a live count since a player may have fewer active.
+- **Dragon's Breath's best MPA configuration is "Looped" (1.193), not "2
+  Uses" (1.159)** — looping one Dragon's Breath twice via routing has a
+  smaller footprint (area 15 vs. 18) than owning two separately, for the
+  same multiplier. Chopping Block checks this before ever offering removal:
+  if the player's current configuration isn't the best one, it suggests
+  switching configuration first (a real, distinct decision-card state,
+  `switch-config`/`evaluate-anyway` actions) rather than jumping straight to
+  keep/chop.
+- **Portable Spinner — found in the spreadsheet while building this, never
+  discussed with the user before being added.** Same `scalesWithConfiguration`
+  shape as Dragon's Breath (1 Use vs. Looped), and here looping costs *zero*
+  extra footprint (both configs are 2x2) while roughly doubling the
+  multiplier (1.76 → 3.0976, almost exactly squared) — Looped is clearly
+  correct as the best config, but this item was never explicitly confirmed
+  with the user the way Dragon's Breath was. **Flag this to the user and
+  confirm it's handled the way they'd expect** — noted in the item's own
+  `notes` field in the data file too, so it isn't lost.
+- **The Ore Replicator + Dual Plasma combo row is browsing-list-only** — one
+  fixed MPU-sheet row (`kind: 'comboInfoOnly'`, `excludeFromChopping: true`),
+  never appears in Chopping Block at all, per the user's explicit
+  instruction after initially discussing giving it its own toggle logic.
+  Ore Replicator and Dual Plasma Upgrader still each appear individually and
+  normally in Chopping Block.
+- **Combo/dependency locks** (`data.dependencies` in the data file): Ore
+  Wash↔Acid Plant and Leviathans' Wrath↔Atlantis Remnant are simple
+  single-prerequisite locks. Hoarded Treasure/Electric Overdrive→Alien
+  Invasion is an OR-lock — **implemented as true OR semantics**: either one
+  is choppable while the other still satisfies Alien Invasion's
+  requirement, and only the *last remaining* one locks. (The plan doc's
+  draft wording said "releases only once both are gone," which is stricter
+  than this — that was this agent's own inference while writing the plan,
+  never separately confirmed by the user, and true-OR is what real game
+  logic calls for. Flagging this interpretation choice explicitly in case
+  the user actually wanted the stricter version.) More dependencies are
+  expected from the user later — this table is meant to be trivially
+  appendable, not hardcoded per-item branches.
+- **A 4th "Other" category exists in Chopping Block** beyond the user's
+  original three (Crate / Merchant-Achievement-Rebirth / P2W) — 2 tracked
+  items (Cupcake-inator, Portable Spinner) don't belong to any special
+  source sheet or P2W pack; they're just plain base-game upgraders. Without
+  a catch-all they'd have nowhere to be toggled on, breaking "select every
+  upgrader." Not explicitly requested — flag to the user.
+- **"Fidget Pack" contains only Ore Rocker in this build, not "Fidget
+  Spinner"** — the user's pack list named "fidget spinner," but no such item
+  exists anywhere in the database. The real item citing "Fidget Pack" in its
+  own obtainment text is **Whimsical Palace** — but that's an Additive-type
+  upgrader, excluded from this tool entirely regardless, so the practical
+  effect is the same either way (Fidget Pack shows just Ore Rocker in
+  Chopping Block). **Confirm with the user** whether they meant Whimsical
+  Palace or something else entirely.
+- **P2W pack membership and crate/merchant/achievement/rebirth category
+  membership are baked into `data/mpu-stats.js` at build time** (`category`/
+  `subcategory` fields per item), derived once from
+  `data/items.index.json`'s `sourceSheets` plus the hand-built `packs` map —
+  not re-derived at runtime. If the source database's sourceSheets ever
+  disagree with this later, these fields need manual re-checking, not
+  automatic re-sync (consistent with the data file's own one-time-seed
+  nature).
+- **Keep/chop session state**: "kept" is transient, in-memory only
+  (`keptThisRun`, reset each time "Figure out what's getting chopped" is
+  pressed) — not persisted. Only the ownership toggle and per-item inputs
+  persist to `localStorage` (`tycoon-sim-2:mpa-tool:v1`), matching the
+  user's own description: a kept item naturally reappears on the *next run*
+  because it's still the worst MPA among what's owned, with no separate
+  "already decided" memory needed.
+
+**Testing**: no permanent automated test file yet (unlike Capgrader
+Generator/`tests/capgrader-generator.test.mjs`) — flagged as a follow-up, not
+done due to time. What *was* done: the file exposes `globalThis.__mpaDebug`
+(same hook pattern as `capgrader-generator.js`'s `__cgDebug`) and was
+exercised with an ad hoc Node script (DOM-stub loaded via `new
+Function('globalThis', src)`, same technique) covering: every choppable item
+has a finite reference MPA, Lambda's best-is-1-use behavior, Dragon's
+Breath's best-is-Looped behavior, Dream Machine's formula at an untabulated
+effect count, both dependency-lock shapes (simple and OR), the keep-advances-
+to-next-worst behavior, and Incremental-removes-all vs. Lambda-removes-one
+chop semantics — all passed. Also smoke-tested live in a real browser via
+Playwright (`playwright` is available as a global npm package in this
+environment, not a project dependency — `chromium-1194` under
+`/opt/pw-browsers`, not `/opt/pw-browsers/chromium` despite what
+`PLAYWRIGHT_BROWSERS_PATH` might suggest, needs the versioned subdirectory
+path passed as `executablePath` explicitly): list sorts correctly by both
+MPA and MPU, all 4 categories and 28 subcategories render (18 crates with
+tracked items — not all 19 crates have one, e.g. nothing tracked comes from
+Basic — 3 M/A/R, 6 packs, 1 Other), select-all/toggle/run/keep/chop/back all
+work with no JS errors (only expected 404s for the known-missing icons
+below). **A proper `tests/mpa-chopping-block.test.mjs` wired into `npm
+test`/`npm run check` should still be written** — this is the gap to close
+next if this tool gets touched again, same as Capgrader Generator's own
+history (it also shipped once without tests, gained them in a later
+session).
+
+**Missing icons**: `docs/MPA_TOOL_MISSING_ICONS.md` lists 12 — mostly the
+already-known nature-update items, plus one pre-existing gap (MVP Shiny).
+The tool renders a blank slot for these (`onerror`-hide, same pattern as
+`luck-crate-generator.js`), never breaks.
+
+**Files**: `data/mpu-stats.js` (new), `mpa-chopping-block.js` (new, all tool
+logic), `docs/MPA_TOOL_MISSING_ICONS.md` (new), `index.html` (nav button +
+WIP badge, new `#mpa-tool` section with 3 inner views, new script tags for
+both the data file and the tool script), `app.js` (`activeTool` widened to
+5-way, `wipBadge` generalized to show for `'builder'` or `'mpa'` with a
+tool-specific title, `mpa-tool:activated` event), `styles.css` (new
+`.mpa-*` rules, reusing `.capgrader-*`/`.luck-*` classes wherever they
+already fit rather than duplicating).
+
+**Next suggested steps**: confirm the 3 flagged items above with the user
+(Portable Spinner's looped-config handling, the OR-dependency interpretation,
+the Fidget Pack/Whimsical Palace naming mismatch); write the permanent
+automated test file; get the more complete combo/dependency list the user
+said they'd send; fill in the missing icons.
 
 ## 2026-09-11 follow-up: fixed "Rubix's Polisher" typo at the source
 

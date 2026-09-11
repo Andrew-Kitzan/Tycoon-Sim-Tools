@@ -751,3 +751,41 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .calc-key-wide { grid-column: span 5; }
 .calc-suffix-note { margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.5; }
 .calc-suffix-note code { padding: 1px 5px; border-radius: 4px; background: #10212b; color: var(--accent); font-size: .9em; }
+
+/* ---- MPA / Chopping Block ---- */
+
+.mpa-tool { display: flex; flex-direction: column; gap: 16px; }
+.mpa-tool[hidden] { display: none; }
+
+.mpa-list-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+
+.mpa-list-rows { display: flex; flex-direction: column; gap: 6px; max-width: 640px; }
+.mpa-list-row { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.mpa-list-icon { width: 32px; height: 32px; object-fit: contain; flex: 0 0 auto; }
+.mpa-list-name { flex: 1 1 auto; display: flex; flex-direction: column; font-size: .86rem; }
+.mpa-list-name small { color: var(--muted); font-size: .7rem; }
+.mpa-list-value { color: var(--accent); font-size: .92rem; font-variant-numeric: tabular-nums; }
+
+.mpa-view-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.mpa-view-header h2 { margin: 0; font-size: 1.05rem; flex: 1 1 auto; }
+
+.mpa-categories { display: flex; flex-direction: column; gap: 20px; }
+.mpa-category h3 { margin: 0 0 10px; font-size: 1rem; color: var(--accent); }
+.mpa-subcategory { margin-bottom: 14px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.mpa-subcategory:last-child { margin-bottom: 0; }
+.mpa-subcategory-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.mpa-subcategory-header h4 { margin: 0; font-size: .88rem; }
+.mpa-subcategory-actions { display: flex; gap: 6px; }
+.mpa-toggle-icon { width: 26px; height: 26px; object-fit: contain; flex: 0 0 auto; }
+
+.mpa-decision-card { max-width: 560px; }
+.mpa-decision-card-inner { display: flex; flex-direction: column; gap: 10px; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+.mpa-decision-heading { display: flex; align-items: center; gap: 12px; }
+.mpa-decision-heading h3 { margin: 0; font-size: 1.05rem; }
+.mpa-decision-icon { width: 44px; height: 44px; object-fit: contain; flex: 0 0 auto; }
+.mpa-decision-mpa { margin: 0; font-size: .92rem; }
+.mpa-decision-mpa strong { color: var(--accent); }
+.mpa-decision-chop-note { margin: 0; padding: 8px 10px; border: 1px solid #a86a2c; border-radius: 8px; background: #3a2a14; color: #ffdca8; font-size: .8rem; }
+.mpa-decision-actions { display: flex; gap: 10px; margin-top: 4px; }
+.mpa-chop-button { background: #8f2a2a; border-color: #a84d56; }
+.mpa-chop-button:hover, .mpa-chop-button:focus-visible { background: #a3312f; border-color: #ffb5bc; }

@@ -44,11 +44,13 @@ const toolNavItemBuilder = document.querySelector('[data-tool="builder"]');
 const toolNavItemCapgrader = document.querySelector('[data-tool="capgrader"]');
 const toolNavItemLuck = document.querySelector('[data-tool="luck"]');
 const toolNavItemCalculator = document.querySelector('[data-tool="calculator"]');
-const toolNavItems = [toolNavItemBuilder, toolNavItemCapgrader, toolNavItemLuck, toolNavItemCalculator].filter(Boolean);
+const toolNavItemMpa = document.querySelector('[data-tool="mpa"]');
+const toolNavItems = [toolNavItemBuilder, toolNavItemCapgrader, toolNavItemLuck, toolNavItemCalculator, toolNavItemMpa].filter(Boolean);
 const workspaceSection = document.querySelector('.workspace');
 const capgraderToolSection = document.querySelector('#capgrader-tool');
 const luckToolSection = document.querySelector('#luck-tool');
 const calcToolSection = document.querySelector('#calc-tool');
+const mpaToolSection = document.querySelector('#mpa-tool');
 const headerTitle = document.querySelector('#header-title');
 const wipBadge = document.querySelector('#wip-badge');
 const plannerLoadoutActions = document.querySelector('#planner-loadout-actions');
@@ -2108,7 +2110,7 @@ function loadActiveTool() {
   if (!storage) return 'builder';
   try {
     const saved = storage.getItem(activeToolStorageKey);
-    return saved === 'capgrader' || saved === 'luck' || saved === 'calculator' ? saved : 'builder';
+    return saved === 'capgrader' || saved === 'luck' || saved === 'calculator' || saved === 'mpa' ? saved : 'builder';
   } catch {
     return 'builder';
   }
@@ -2119,13 +2121,20 @@ function applyActiveToolUi() {
   if (capgraderToolSection) capgraderToolSection.hidden = activeTool !== 'capgrader';
   if (luckToolSection) luckToolSection.hidden = activeTool !== 'luck';
   if (calcToolSection) calcToolSection.hidden = activeTool !== 'calculator';
+  if (mpaToolSection) mpaToolSection.hidden = activeTool !== 'mpa';
   if (headerTitle) {
     headerTitle.textContent = activeTool === 'capgrader' ? 'Capgrader Generator'
       : activeTool === 'luck' ? 'Luck Simulator'
       : activeTool === 'calculator' ? 'Calculator'
+      : activeTool === 'mpa' ? 'MPA / Chopping Block'
       : 'Base Builder';
   }
-  if (wipBadge) wipBadge.hidden = activeTool !== 'builder';
+  if (wipBadge) {
+    wipBadge.hidden = activeTool !== 'builder' && activeTool !== 'mpa';
+    wipBadge.title = activeTool === 'mpa'
+      ? 'This tool is new and still a work in progress — data and behavior may still change.'
+      : 'Item geometry data (drop points, conveyor beams, furnace zones) is still being audited, so simulation accuracy here is a work in progress';
+  }
   if (plannerLoadoutActions) plannerLoadoutActions.hidden = activeTool !== 'builder';
   if (topbarActions) topbarActions.hidden = activeTool !== 'builder';
   toolNavItems.forEach((button) => {
@@ -2134,6 +2143,7 @@ function applyActiveToolUi() {
   if (activeTool === 'capgrader') document.dispatchEvent(new CustomEvent('capgrader-tool:activated'));
   if (activeTool === 'luck') document.dispatchEvent(new CustomEvent('luck-tool:activated'));
   if (activeTool === 'calculator') document.dispatchEvent(new CustomEvent('calc-tool:activated'));
+  if (activeTool === 'mpa') document.dispatchEvent(new CustomEvent('mpa-tool:activated'));
   // Exposed for other standalone-IIFE scripts (help.js) that need to know
   // which tool is active without app.js's internal `activeTool` variable —
   // same pattern as globalThis.TycoonDatabase/TycoonActivePlan.
@@ -2144,7 +2154,7 @@ function applyActiveToolUi() {
 }
 
 function setActiveTool(nextTool) {
-  activeTool = nextTool === 'capgrader' || nextTool === 'luck' || nextTool === 'calculator' ? nextTool : 'builder';
+  activeTool = nextTool === 'capgrader' || nextTool === 'luck' || nextTool === 'calculator' || nextTool === 'mpa' ? nextTool : 'builder';
   applyActiveToolUi();
   saveActiveTool();
 }

@@ -6,6 +6,23 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
 
 ## In progress
 
+- **MPA / Chopping Block tool (5th tool) — shipped as WIP, 3 things need the
+  user's confirmation, plus needs automated tests.** Full detail in
+  `AI_HANDOFF.md` → "2026-09-11 MPA / Chopping Block tool (fifth tool, WIP)".
+  Open items: (1) Portable Spinner's "Looped is best" handling was this
+  agent's own finding, never discussed with the user like Dragon's Breath
+  was — confirm it's correct. (2) The Hoarded Treasure/Electric Overdrive OR-
+  dependency was implemented as true OR semantics (either choppable while
+  the other remains) rather than the plan doc's stricter draft wording
+  ("both must be gone") — confirm which is actually wanted. (3) "Fidget
+  Pack" only contains Ore Rocker since no "Fidget Spinner" item exists in the
+  database — confirm whether the user meant Whimsical Palace (the item that
+  actually cites "Fidget Pack," though it's Additive-type and excluded from
+  this tool either way) or something else. Also still needed: a permanent
+  `tests/mpa-chopping-block.test.mjs` (only ad hoc manual/Playwright testing
+  so far, same gap Capgrader Generator and Luck Simulator originally had),
+  the fuller combo/dependency list the user said they'd send, and the 12
+  missing icons in `docs/MPA_TOOL_MISSING_ICONS.md`.
 - **Auditing `data/item-geometry-worksheet.json`'s `upgraders` section.**
   Droppers and furnaces are fully audited and fixed. Upgraders: every item has
   been bulk pre-filled with best-guess defaults (conveyor centered per

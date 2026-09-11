@@ -301,6 +301,40 @@
           <p class="calc-suffix-note">Abbreviations understood in input: K, M, B, T, Qd, Qn, Sx, Sp, Oc, No (e.g. <code>2.4Qd</code>).</p>
         </div>
       </section>
+
+      <section id="mpa-tool" class="mpa-tool" aria-label="MPA / Chopping Block" hidden>
+        <div id="mpa-list-view" class="mpa-list-view">
+          <p class="capgrader-intro">MPU, MPA, and MPS measure how efficiently an upgrader's multiplier compounds — per tile of length, per tile of area, and per second respectively. Toggle a stat to sort every tracked upgrader by it, best at the top. This is a work in progress — data and behavior may still change.</p>
+          <div class="mpa-list-toolbar">
+            <div class="luck-variant-toggle" role="group" aria-label="Stat">
+              <button type="button" data-mpa-stat="mpu" aria-pressed="false">MPU</button>
+              <button type="button" data-mpa-stat="mpa" aria-pressed="true">MPA</button>
+              <button type="button" data-mpa-stat="mps" aria-pressed="false">MPS</button>
+            </div>
+            <button type="button" id="mpa-open-chop-block" class="capgrader-generate">Chopping Block &rarr;</button>
+          </div>
+          <div id="mpa-list-rows" class="mpa-list-rows"></div>
+        </div>
+
+        <div id="mpa-select-view" class="mpa-select-view" hidden>
+          <div class="mpa-view-header">
+            <button type="button" id="mpa-select-back" class="luck-back-button">&larr; Back to list</button>
+            <h2>Chopping Block — what do you own?</h2>
+            <button type="button" id="mpa-run-chop" class="capgrader-generate">Figure out what's getting chopped</button>
+          </div>
+          <p class="capgrader-panel-note">Toggle on every upgrader you currently own. A few need one more detail (uses, effects, or configuration) once toggled on — that's used to work out their real efficiency.</p>
+          <div id="mpa-categories" class="mpa-categories"></div>
+        </div>
+
+        <div id="mpa-decision-view" class="mpa-decision-view" hidden>
+          <div class="mpa-view-header">
+            <button type="button" id="mpa-decision-back" class="luck-back-button">&larr; Back to selection</button>
+            <h2>Chopping Block</h2>
+          </div>
+          <div id="mpa-decision-card" class="mpa-decision-card"></div>
+          <p id="mpa-decision-empty" class="capgrader-empty-note" hidden>Nothing left to decide — every owned upgrader has been kept or chopped, or is still locked by a combo requirement.</p>
+        </div>
+      </section>
     </main>
 
     <dialog id="luck-item-dialog" class="luck-item-dialog" aria-labelledby="luck-item-dialog-title">
@@ -337,6 +371,10 @@
           <button type="button" class="tool-nav-item" data-tool="calculator" aria-current="false">
             <strong>Calculator</strong>
             <span>Scientific calculator with in-game number abbreviations</span>
+          </button>
+          <button type="button" class="tool-nav-item" data-tool="mpa" aria-current="false">
+            <strong>MPA / Chopping Block <span class="wip-badge">WIP</span></strong>
+            <span>Browse upgrader efficiency and get help trimming your setup</span>
           </button>
         </div>
       </div>
@@ -560,6 +598,7 @@
 
     <script src="data/items.generated.js"></script>
     <script src="data/crate-luck-data.generated.js"></script>
+    <script src="data/mpu-stats.js"></script>
     <script src="planner-core.js"></script>
     <script src="data/workflow-state.js"></script>
     <script src="data/coordinate-preview.js"></script>
@@ -570,6 +609,7 @@
     <script src="capgrader-generator.js"></script>
     <script src="luck-crate-generator.js"></script>
     <script src="abbrev-calculator.js"></script>
+    <script src="mpa-chopping-block.js"></script>
     <script src="feedback.js"></script>
     <script src="help.js"></script>
   </body>
