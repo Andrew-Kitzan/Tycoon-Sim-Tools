@@ -37,6 +37,56 @@
   const choppableItems = data.items.filter((item) => item.kind !== 'comboInfoOnly');
   const itemsByName = new Map(data.items.map((item) => [item.name, item]));
 
+  // ---- capgrader chain ordering ------------------------------------------
+  // Real capgraders chain in range order — a low-range one (e.g. 8-Ball
+  // Refiner, 10B-50B) is only useful as a stepping stone toward a
+  // higher-range one you also own (e.g. Blocky Refiner, 30B-100B). Same 23
+  // real capgraders as capgrader-generator.js's own CAPGRADER_NAMES —
+  // update both lists together if new capgraders are ever added.
+  const CAPGRADER_NAMES = new Set([
+    'Fusion Upgrader', 'Oil Well', 'Cookie Upgrader', '8-Ball Refiner', 'Desert Remains',
+    'Martian Tech', 'Fairy Forest', 'Helio-Grader', 'Quad Rays Upgrader', 'Satellite Enhancer',
+    'Orbital Messenger', 'Sugar Churner', 'Anchor Upgrader', 'Ore Purifier', 'Blocky Refiner',
+    'Hydrothermal Vent', 'Observatory Refiner', 'Fine Point Upgrader', "Rubik's Polisher",
+    'Rocketship Upgrader', 'Surfboard Polisher', 'Gumball Enhancer', 'Toybox Express',
+  ]);
+  // Wide-range, single-use "finisher" capgraders (range floor 0, ceiling in
+  // the quadrillions+) aren't part of the sequential chain — they cascade on
+  // top at the very end regardless of order, same distinction
+  // capgrader-generator.js's own isFinisherRecord() makes.
+  const FINISHER_CEILING_THRESHOLD = 1e15;
+  const RANGE_UNITS = [
+    ['no', 1e30], ['oc', 1e27], ['sp', 1e24], ['sx', 1e21], ['qn', 1e18],
+    ['qd', 1e15], ['t', 1e12], ['b', 1e9], ['m', 1e6], ['k', 1e3],
+  ].sort((a, b) => b[0].length - a[0].length);
+
+  function parseRangeNumber(text) {
+    const trimmed = String(text ?? '').trim().toLowerCase();
+    if (!trimmed) return null;
+    const unit = RANGE_UNITS.find(([suffix]) => trimmed.endsWith(suffix));
+    const numberPart = unit ? trimmed.slice(0, -unit[0].length) : trimmed;
+    const magnitude = Number(numberPart);
+    if (!Number.isFinite(magnitude)) return null;
+    return magnitude * (unit ? unit[1] : 1);
+  }
+
+  const capgraderRangeCache = new Map();
+  function capgraderRangeBounds(name) {
+    if (capgraderRangeCache.has(name)) return capgraderRangeCache.get(name);
+    const record = (db.records ?? []).find((r) => r.name === name && r.range && r.range !== 'N/A');
+    const parts = record ? String(record.range).split('-') : null;
+    const bounds = parts && parts.length === 2
+      ? { lo: parseRangeNumber(parts[0]), hi: parseRangeNumber(parts[1]) }
+      : null;
+    capgraderRangeCache.set(name, bounds);
+    return bounds;
+  }
+
+  function isFinisherCapgrader(name) {
+    const bounds = capgraderRangeBounds(name);
+    return Boolean(bounds && bounds.lo === 0 && bounds.hi >= FINISHER_CEILING_THRESHOLD);
+  }
+
   // ---- persistence ------------------------------------------------------
 
   function browserStorage() {
@@ -201,6 +251,22 @@
         return dep;
       }
     }
+
+    // Capgrader chain lock: a normal (non-finisher) capgrader stays locked
+    // while a higher-range capgrader is also in the base, since it's just a
+    // stepping stone toward that one.
+    if (CAPGRADER_NAMES.has(name) && !isFinisherCapgrader(name)) {
+      const myBounds = capgraderRangeBounds(name);
+      if (myBounds) {
+        const higherOwned = [...CAPGRADER_NAMES].some((other) => {
+          if (other === name || !state.owned[other] || isFinisherCapgrader(other)) return false;
+          const otherBounds = capgraderRangeBounds(other);
+          return otherBounds && otherBounds.hi > myBounds.hi;
+        });
+        if (higherOwned) return { requires: [name], neededBy: null, chainLock: true };
+      }
+    }
+
     return null;
   }
 
@@ -617,5 +683,6 @@
     isLocked, ownedEligibleSorted, derivedFromMulti, formulaMultiForEffects,
     groupedForSelection, renderList, renderCategories, renderDecision, setView,
     getKeptThisRun: () => keptThisRun, resetKeptThisRun: () => { keptThisRun = new Set(); },
+    capgraderRangeBounds, isFinisherCapgrader, CAPGRADER_NAMES,
   };
 })();
