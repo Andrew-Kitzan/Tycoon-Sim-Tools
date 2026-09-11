@@ -6,21 +6,22 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
 
 ## In progress
 
-- **MPA / Chopping Block tool (5th tool) — shipped as WIP, 1 thing still
-  needs the user's confirmation, plus needs automated tests.** Full detail in
-  `AI_HANDOFF.md` → "2026-09-11 MPA / Chopping Block tool (fifth tool, WIP)".
-  The categorization question (Cupcake-inator → Codes, Portable Spinner →
-  Fidget Pack) is resolved — see that entry's "RESOLVED" note. Still open:
-  (1) Portable Spinner's "Looped is best" handling was this agent's own
-  finding, never discussed with the user like Dragon's Breath was — confirm
-  it's correct. (2) The Hoarded Treasure/Electric Overdrive OR-dependency
-  was implemented as true OR semantics (either choppable while the other
-  remains) rather than the plan doc's stricter draft wording ("both must be
-  gone") — confirm which is actually wanted. Also still needed: a permanent
-  `tests/mpa-chopping-block.test.mjs` (only ad hoc manual/Playwright testing
-  so far, same gap Capgrader Generator and Luck Simulator originally had),
-  the fuller combo/dependency list the user said they'd send, and the 12
-  missing icons in `docs/MPA_TOOL_MISSING_ICONS.md`.
+- **MPA / Chopping Block tool (5th tool) — shipped as WIP; only a cosmetic
+  gap left open.** Full detail in `AI_HANDOFF.md` → "2026-09-11 MPA /
+  Chopping Block tool (fifth tool, WIP)". All three previously-open questions
+  are now resolved, confirmed directly by the user: (1) Portable Spinner's
+  "Looped is best" handling is correct as shipped. (2) The Hoarded
+  Treasure/Electric Overdrive/Alien Invasion dependency is **not** OR
+  semantics — both stay locked until Alien Invasion itself is gone,
+  regardless of how many of the two are owned; fixed by flipping that
+  entry's `requiresAny` to `false` in `data/mpu-stats.js`. (3) The user
+  confirmed the 3 dependencies already in the table (Ore Wash/Acid Plant,
+  Leviathans' Wrath/Atlantis Remnant, Hoarded Treasure+Electric
+  Overdrive/Alien Invasion) are the complete list — no more are coming.
+  `tests/mpa-chopping-block.test.mjs` now exists, wired into `npm test`/`npm
+  run check`, per the user's explicit request. Only remaining item: the 12
+  missing icons in `docs/MPA_TOOL_MISSING_ICONS.md` (not blocking — the tool
+  renders a blank slot for these).
 - **Auditing `data/item-geometry-worksheet.json`'s `upgraders` section.**
   Droppers and furnaces are fully audited and fixed. Upgraders: every item has
   been bulk pre-filled with best-guess defaults (conveyor centered per

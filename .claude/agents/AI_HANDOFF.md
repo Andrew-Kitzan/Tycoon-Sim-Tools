@@ -108,18 +108,24 @@ comboInfoOnly).
   Ore Replicator and Dual Plasma Upgrader still each appear individually and
   normally in Chopping Block.
 - **Combo/dependency locks** (`data.dependencies` in the data file): Ore
-  Wash↔Acid Plant and Leviathans' Wrath↔Atlantis Remnant are simple
-  single-prerequisite locks. Hoarded Treasure/Electric Overdrive→Alien
-  Invasion is an OR-lock — **implemented as true OR semantics**: either one
-  is choppable while the other still satisfies Alien Invasion's
-  requirement, and only the *last remaining* one locks. (The plan doc's
-  draft wording said "releases only once both are gone," which is stricter
-  than this — that was this agent's own inference while writing the plan,
-  never separately confirmed by the user, and true-OR is what real game
-  logic calls for. Flagging this interpretation choice explicitly in case
-  the user actually wanted the stricter version.) More dependencies are
-  expected from the user later — this table is meant to be trivially
-  appendable, not hardcoded per-item branches.
+  Wash↔Acid Plant, Leviathans' Wrath↔Atlantis Remnant, and Hoarded
+  Treasure/Electric Overdrive→Alien Invasion are **all the same simple
+  rule** — every item in `requires` is locked while `neededBy` is owned,
+  full stop, regardless of how many alternatives exist. **RESOLVED, not
+  true OR semantics**: an earlier pass of this tool implemented the Alien
+  Invasion entry as real OR logic (either Hoarded Treasure or Electric
+  Overdrive choppable while the other remains, only the last one locks) —
+  this was this agent's own inference, never confirmed by the user at the
+  time. The user has since explicitly confirmed the real rule: **both stay
+  locked as long as Alien Invasion itself is owned**, regardless of whether
+  one or both of its listed items are present — Alien Invasion has to be
+  gone first. Fixed by flipping that entry's `requiresAny` to `false` (no
+  code change needed — `isLocked()`'s non-`requiresAny` branch already does
+  exactly this). The `requiresAny` mechanism itself is kept in the code in
+  case a genuinely different future combo needs real OR semantics, but as
+  of now no dependency in the table actually uses `requiresAny: true`.
+  Per the user, no more dependencies are coming beyond these three — this
+  is the complete list, not a placeholder.
 - **Capgrader chain-order lock (added 2026-09-11, same day, after the user
   hit this live)**: reported via a real screenshot — with both 8-Ball
   Refiner (range 10B-50B) and Blocky Refiner (30B-100B) in the base,
@@ -197,31 +203,37 @@ comboInfoOnly).
   because it's still the worst MPA among what's owned, with no separate
   "already decided" memory needed.
 
-**Testing**: no permanent automated test file yet (unlike Capgrader
-Generator/`tests/capgrader-generator.test.mjs`) — flagged as a follow-up, not
-done due to time. What *was* done: the file exposes `globalThis.__mpaDebug`
-(same hook pattern as `capgrader-generator.js`'s `__cgDebug`) and was
-exercised with an ad hoc Node script (DOM-stub loaded via `new
-Function('globalThis', src)`, same technique) covering: every choppable item
-has a finite reference MPA, Lambda's best-is-1-use behavior, Dragon's
-Breath's best-is-Looped behavior, Dream Machine's formula at an untabulated
-effect count, both dependency-lock shapes (simple and OR), the keep-advances-
-to-next-worst behavior, and Incremental-removes-all vs. Lambda-removes-one
-chop semantics — all passed. Also smoke-tested live in a real browser via
-Playwright (`playwright` is available as a global npm package in this
+**Testing**: `tests/mpa-chopping-block.test.mjs` now exists, wired into both
+`npm test` and `npm run check` (added same day, per the user's explicit
+request — matches Capgrader Generator's own history of gaining tests in a
+later pass). Same DOM-stub-plus-`new Function('globalThis', src)` technique
+as `tests/capgrader-generator.test.mjs`, exercised through
+`globalThis.__mpaDebug` (same hook pattern as `capgrader-generator.js`'s
+`__cgDebug`). Covers: every choppable item has a finite reference MPA;
+Lambda's best-is-1-use / Incremental's and Tiki's best-is-most-uses
+behaviors; Dragon's Breath's and Portable Spinner's best-is-Looped behavior;
+Dream Machine's formula against every tabulated row plus an untabulated
+effect count; the simple dependency locks (Ore Wash/Acid Plant, Leviathans'
+Wrath/Atlantis Remnant); the Alien Invasion dependency's confirmed-correct
+"both stay locked until Alien Invasion itself is gone" behavior (see the
+combo/dependency entry above — this used to be tested as OR semantics before
+the user's correction); the capgrader chain-order lock (8-Ball Refiner/
+Blocky Refiner) and finisher-exclusion (Toybox Express, Rubik's Polisher,
+Nuclear Upgrader, Chartreuse Collider) in both directions; the
+keep-advances-to-next-worst decision-loop behavior; Incremental-removes-all
+vs. Lambda-removes-one chop semantics; and that `renderList`/
+`renderCategories`/`renderDecision` don't throw against the stub. Also
+smoke-tested live in a real browser via Playwright for every fix in this
+session (`playwright` is available as a global npm package in this
 environment, not a project dependency — `chromium-1194` under
 `/opt/pw-browsers`, not `/opt/pw-browsers/chromium` despite what
 `PLAYWRIGHT_BROWSERS_PATH` might suggest, needs the versioned subdirectory
 path passed as `executablePath` explicitly): list sorts correctly by both
 MPA and MPU, all 4 categories and 28 subcategories render (18 crates with
 tracked items — not all 19 crates have one, e.g. nothing tracked comes from
-Basic — 3 M/A/R, 6 packs, 1 Other), select-all/toggle/run/keep/chop/back all
-work with no JS errors (only expected 404s for the known-missing icons
-below). **A proper `tests/mpa-chopping-block.test.mjs` wired into `npm
-test`/`npm run check` should still be written** — this is the gap to close
-next if this tool gets touched again, same as Capgrader Generator's own
-history (it also shipped once without tests, gained them in a later
-session).
+Basic — 3 M/A/R plus Codes, 6 packs), select-all/toggle/run/keep/chop/back
+all work with no JS errors (only expected 404s for the known-missing icons
+below).
 
 **Missing icons**: `docs/MPA_TOOL_MISSING_ICONS.md` lists 12 — mostly the
 already-known nature-update items, plus one pre-existing gap (MVP Shiny).

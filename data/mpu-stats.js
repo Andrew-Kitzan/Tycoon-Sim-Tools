@@ -1555,7 +1555,7 @@ globalThis.MpuStatsData = {
         "Hoarded Treasure",
         "Electric Overdrive"
       ],
-      "requiresAny": true,
+      "requiresAny": false,
       "neededBy": "Alien Invasion"
     }
   ]
