@@ -31,7 +31,7 @@
     other: 'Other Upgraders',
   };
   const CRATE_ORDER = ['Basic', 'Advanced', 'Factory', 'Quarry', 'Futuristic', 'Toxic', 'Desert', 'Fantasy', 'Space', 'Periastron', 'Candy', 'Ancient', 'Alien', 'Tropic', 'Ocean', 'Trinket', 'Toy', 'Floral', 'Nature'];
-  const MAR_ORDER = ['Merchant', 'Achievement', 'Rebirth'];
+  const MAR_ORDER = ['Merchant', 'Achievement', 'Rebirth', 'Codes'];
   const CATEGORY_ORDER = ['crate', 'merchant-achievement-rebirth', 'p2w', 'other'];
 
   const choppableItems = data.items.filter((item) => item.kind !== 'comboInfoOnly');

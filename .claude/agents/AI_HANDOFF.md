@@ -115,20 +115,35 @@ comboInfoOnly).
   the user actually wanted the stricter version.) More dependencies are
   expected from the user later — this table is meant to be trivially
   appendable, not hardcoded per-item branches.
-- **A 4th "Other" category exists in Chopping Block** beyond the user's
-  original three (Crate / Merchant-Achievement-Rebirth / P2W) — 2 tracked
-  items (Cupcake-inator, Portable Spinner) don't belong to any special
-  source sheet or P2W pack; they're just plain base-game upgraders. Without
-  a catch-all they'd have nowhere to be toggled on, breaking "select every
-  upgrader." Not explicitly requested — flag to the user.
-- **"Fidget Pack" contains only Ore Rocker in this build, not "Fidget
-  Spinner"** — the user's pack list named "fidget spinner," but no such item
-  exists anywhere in the database. The real item citing "Fidget Pack" in its
-  own obtainment text is **Whimsical Palace** — but that's an Additive-type
-  upgrader, excluded from this tool entirely regardless, so the practical
-  effect is the same either way (Fidget Pack shows just Ore Rocker in
-  Chopping Block). **Confirm with the user** whether they meant Whimsical
-  Palace or something else entirely.
+- **RESOLVED (2026-09-11, same day, right after the user reviewed the first
+  build): the "Other" category and the Fidget Pack naming question are both
+  fixed, not open anymore.** Checked both items' real obtainment text
+  directly in the Upgraders sheet rather than guessing:
+  - **Cupcake-inator**'s real source text is `"From code \"release\""` — a
+    code-redemption item. Moved from `other`/`Other` to
+    `merchant-achievement-rebirth`/**`Codes`** (a new 4th subcategory there,
+    `MAR_ORDER` in `mpa-chopping-block.js` now `['Merchant', 'Achievement',
+    'Rebirth', 'Codes']`).
+  - **Portable Spinner**'s real source text is `"Buy Fidget Pack"`, and
+    **Ore Rocker**'s is `"Buy the Horsey or Fidget Pack"` — confirming they
+    share the same real pack. Moved Portable Spinner from `other`/`Other` to
+    `p2w`/**`Fidget Pack`** (joining Ore Rocker), and added it to
+    `data.packs['Fidget Pack']` in `data/mpu-stats.js` for consistency (the
+    per-item `category`/`subcategory` fields are what actually drives
+    rendering, but keeping `packs` accurate too). "Fidget Spinner" (the
+    user's original name) never existed in the database — Portable Spinner
+    was the real item meant.
+  - With both moved out, the `other`/`Other` category is now empty and no
+    longer renders at all (the existing `bucket.size === 0` skip in
+    `renderCategories` handles this automatically — no code change needed
+    beyond moving the two items' data). Chopping Block is back to exactly
+    the user's original 3 categories, now with Codes as a 4th subcategory
+    under Merchant/Achievement/Rebirth.
+  - Verified via the same Playwright smoke-test approach as the initial
+    build: category list is now exactly `['Crate Upgraders', 'Merchant /
+    Achievement / Rebirth Upgraders', 'P2W Upgraders']`, Codes contains only
+    Cupcake-inator, Fidget Pack contains both Ore Rocker and Portable
+    Spinner.
 - **P2W pack membership and crate/merchant/achievement/rebirth category
   membership are baked into `data/mpu-stats.js` at build time** (`category`/
   `subcategory` fields per item), derived once from

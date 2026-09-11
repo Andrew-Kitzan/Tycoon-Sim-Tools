@@ -113,9 +113,9 @@ globalThis.MpuStatsData = {
       "mpa": 1.018769265,
       "mpu": 1.077217345,
       "mps": 1.387185964,
-      "notes": null,
-      "category": "other",
-      "subcategory": "Other"
+      "notes": "Obtained from redeeming a code (\"release\").",
+      "category": "merchant-achievement-rebirth",
+      "subcategory": "Codes"
     },
     {
       "name": "Cookie Upgrader",
@@ -1471,9 +1471,9 @@ globalThis.MpuStatsData = {
           "notes": "Looped to use one spinner for 2 uses"
         }
       ],
-      "notes": "Discovered while building the MPU data from the spreadsheet (not previously discussed) — looping costs no extra footprint here (same 2x2 area as 1 Use) and roughly doubles the multiplier, so Looped is clearly the best configuration. Flag to the user to confirm this is handled the way they'd expect.",
-      "category": "other",
-      "subcategory": "Other"
+      "notes": "Looping costs no extra footprint here (same 2x2 area as 1 Use) and roughly doubles the multiplier, so Looped is the best configuration. Obtainment method (Upgraders sheet): \"Buy Fidget Pack\" — same pack as Ore Rocker.",
+      "category": "p2w",
+      "subcategory": "Fidget Pack"
     },
     {
       "name": "Replicator + Dual Plasma (Combo)",
@@ -1526,7 +1526,8 @@ globalThis.MpuStatsData = {
       "Space Pirates"
     ],
     "Fidget Pack": [
-      "Ore Rocker"
+      "Ore Rocker",
+      "Portable Spinner"
     ],
     "Clover Pack": [
       "Clover Garden",
