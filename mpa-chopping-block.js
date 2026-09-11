@@ -333,8 +333,14 @@
           `;
         }).join('');
       return `
-        <div class="mpa-category">
-          <h3>${CATEGORY_LABELS[category]}</h3>
+        <div class="mpa-category" data-mpa-category>
+          <div class="mpa-category-header">
+            <h3>${CATEGORY_LABELS[category]}</h3>
+            <div class="mpa-category-actions">
+              <button type="button" class="capgrader-bulk-button" data-mpa-category-select-all>Select all</button>
+              <button type="button" class="capgrader-bulk-button" data-mpa-category-select-none>Deselect all</button>
+            </div>
+          </div>
           ${subHtml}
         </div>
       `;
@@ -359,15 +365,12 @@
       renderCategories();
       return;
     }
-    const selectAll = event.target.closest('[data-mpa-select-all]');
-    const selectNone = event.target.closest('[data-mpa-select-none]');
-    if (selectAll || selectNone) {
-      const subcategory = event.target.closest('[data-mpa-subcategory]');
-      const rows = subcategory?.querySelectorAll('[data-mpa-item]') ?? [];
+    function applyBulkSelection(container, select) {
+      const rows = container?.querySelectorAll('[data-mpa-item]') ?? [];
       rows.forEach((row) => {
         const name = row.dataset.mpaItem;
-        state.owned[name] = Boolean(selectAll);
-        if (selectAll && !state.inputs[name]) {
+        state.owned[name] = select;
+        if (select && !state.inputs[name]) {
           const item = itemsByName.get(name);
           if (item?.kind === 'scalesWithUses') state.inputs[name] = { uses: item.bestUses };
           else if (item?.kind === 'scalesWithEffects') state.inputs[name] = { effects: item.maxEffects };
@@ -376,6 +379,19 @@
       });
       saveState();
       renderCategories();
+    }
+
+    const subSelectAll = event.target.closest('[data-mpa-select-all]');
+    const subSelectNone = event.target.closest('[data-mpa-select-none]');
+    if (subSelectAll || subSelectNone) {
+      applyBulkSelection(event.target.closest('[data-mpa-subcategory]'), Boolean(subSelectAll));
+      return;
+    }
+
+    const catSelectAll = event.target.closest('[data-mpa-category-select-all]');
+    const catSelectNone = event.target.closest('[data-mpa-category-select-none]');
+    if (catSelectAll || catSelectNone) {
+      applyBulkSelection(event.target.closest('[data-mpa-category]'), Boolean(catSelectAll));
     }
   });
 

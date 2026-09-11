@@ -770,7 +770,9 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .mpa-view-header h2 { margin: 0; font-size: 1.05rem; flex: 1 1 auto; }
 
 .mpa-categories { display: flex; flex-direction: column; gap: 20px; }
-.mpa-category h3 { margin: 0 0 10px; font-size: 1rem; color: var(--accent); }
+.mpa-category-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.mpa-category-header h3 { margin: 0; font-size: 1rem; color: var(--accent); }
+.mpa-category-actions { display: flex; gap: 6px; }
 .mpa-subcategory { margin-bottom: 14px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .mpa-subcategory:last-child { margin-bottom: 0; }
 .mpa-subcategory-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
