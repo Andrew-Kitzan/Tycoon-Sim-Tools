@@ -301,7 +301,7 @@
       <div class="capgrader-toggle-item mpa-toggle-item ${owned ? 'is-owned' : ''}" data-mpa-item="${item.name}">
         ${itemIconHtml(item.name, item.variant, 'mpa-toggle-icon')}
         <span class="capgrader-toggle-name">${item.name}</span>
-        <button type="button" class="capgrader-toggle-pill" data-mpa-toggle aria-pressed="${owned}">${owned ? 'Owned' : 'Own'}</button>
+        <button type="button" class="capgrader-toggle-pill" data-mpa-toggle aria-pressed="${owned}">${owned ? 'In Base' : 'Not in Base'}</button>
         ${needsInput ? `<div class="capgrader-toggle-options">${specialInputHtml(item)}</div>` : ''}
       </div>
     `;
@@ -436,7 +436,7 @@
 
   function describeChopEffect(item, stats) {
     if (item.kind === 'scalesWithUses' && item.name !== 'Lambda Upgrader') {
-      return `Chopping this removes all ${stats.uses} you own.`;
+      return `Chopping this removes all ${stats.uses} from your base.`;
     }
     if (item.name === 'Lambda Upgrader') {
       const remaining = stats.uses - 1;

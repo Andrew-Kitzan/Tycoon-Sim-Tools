@@ -319,10 +319,10 @@
         <div id="mpa-select-view" class="mpa-select-view" hidden>
           <div class="mpa-view-header">
             <button type="button" id="mpa-select-back" class="luck-back-button">&larr; Back to list</button>
-            <h2>Chopping Block — what do you own?</h2>
+            <h2>Chopping Block — what's in your base?</h2>
             <button type="button" id="mpa-run-chop" class="capgrader-generate">Figure out what's getting chopped</button>
           </div>
-          <p class="capgrader-panel-note">Toggle on every upgrader you currently own. A few need one more detail (uses, effects, or configuration) once toggled on — that's used to work out their real efficiency.</p>
+          <p class="capgrader-panel-note">Toggle on every upgrader currently in your base. A few need one more detail (uses, effects, or configuration) once toggled on — that's used to work out their real efficiency.</p>
           <div id="mpa-categories" class="mpa-categories"></div>
         </div>
 
@@ -332,7 +332,7 @@
             <h2>Chopping Block</h2>
           </div>
           <div id="mpa-decision-card" class="mpa-decision-card"></div>
-          <p id="mpa-decision-empty" class="capgrader-empty-note" hidden>Nothing left to decide — every owned upgrader has been kept or chopped, or is still locked by a combo requirement.</p>
+          <p id="mpa-decision-empty" class="capgrader-empty-note" hidden>Nothing left to decide — everything in your base has been kept or chopped, or is still locked by a combo requirement.</p>
         </div>
       </section>
     </main>
@@ -620,13 +620,13 @@
             <p><strong>MPU</strong>, <strong>MPA</strong>, and <strong>MPS</strong> measure how efficiently an upgrader's multiplier compounds — per tile of <strong>length</strong>, per tile of <strong>area</strong>, and per <strong>second</strong>, respectively. Toggle between them at the top of the list; the list re-sorts to match, worst at the top and best at the bottom. A few items (Incremental Upgrader, Tiki Evaluator, Lambda Upgrader, Dream Machine, Dragon's Breath) show their best possible number here, with a small note explaining the assumption — Chopping Block asks for your actual numbers instead.</p>
           </details>
           <details class="help-section">
-            <summary>2. Chopping Block: mark what you own</summary>
-            <p>Click <strong>Chopping Block</strong> (top-right of the list) to open the ownership screen. Toggle on every upgrader you currently own, organized by how you get them — <strong>Crate</strong> (grouped by crate), <strong>Merchant / Achievement / Rebirth</strong> (plus Codes), and <strong>P2W</strong> (grouped by pack). Use <strong>Select all / Deselect all</strong> on a subcategory, or on a whole category at once, to save time.</p>
+            <summary>2. Chopping Block: mark what's in your base</summary>
+            <p>Click <strong>Chopping Block</strong> (top-right of the list) to open the selection screen. Toggle on every upgrader currently in your base, organized by how you get them — <strong>Crate</strong> (grouped by crate), <strong>Merchant / Achievement / Rebirth</strong> (plus Codes), and <strong>P2W</strong> (grouped by pack). Use <strong>Select all / Deselect all</strong> on a subcategory, or on a whole category at once, to save time.</p>
             <p>A handful of upgraders ask for one more detail once you toggle them on — how many uses (Incremental/Tiki/Lambda), how many effects are currently active (Dream Machine), or which configuration you're using (Dragon's Breath, e.g. looped vs. two separate) — since that changes their real efficiency.</p>
           </details>
           <details class="help-section">
             <summary>3. Figure out what's getting chopped</summary>
-            <p>Click <strong>Figure out what's getting chopped</strong> to start the keep/chop loop. It always suggests your worst-MPA owned upgrader first, skipping anything still required by another upgrader you own (like Ore Wash for Acid Plant) until that requirement is gone. Some items get a "switch configuration first" suggestion instead, if a better setup (like looping Dragon's Breath) would fix their MPA without chopping anything.</p>
+            <p>Click <strong>Figure out what's getting chopped</strong> to start the keep/chop loop. It always suggests the worst-MPA upgrader in your base first, skipping anything still required by another upgrader in your base (like Ore Wash for Acid Plant) until that requirement is gone. Some items get a "switch configuration first" suggestion instead, if a better setup (like looping Dragon's Breath) would fix their MPA without chopping anything.</p>
             <p>Choose <strong>Keep</strong> to move to the next-worst item, or <strong>Chop</strong> to remove it (for Incremental/Tiki this removes all copies at once; for Lambda it removes just one). Your choices are saved automatically, and you can back out to the previous screen at any point without losing progress.</p>
           </details>
         </div>
