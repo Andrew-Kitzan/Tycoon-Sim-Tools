@@ -19,11 +19,13 @@
   // abbreviatedRate, capgrader-generator.js's money parser) — keep this in
   // sync with those if that table ever grows.
   const UNITS = [
+    ['td', 1e42], ['dd', 1e39], ['ud', 1e36], ['dc', 1e33],
     ['no', 1e30], ['oc', 1e27], ['sp', 1e24], ['sx', 1e21], ['qn', 1e18],
     ['qd', 1e15], ['t', 1e12], ['b', 1e9], ['m', 1e6], ['k', 1e3],
   ];
   const UNITS_BY_LENGTH_DESC = [...UNITS].sort((a, b) => b[0].length - a[0].length);
   const DISPLAY_UNITS = [
+    [1e42, 'Td'], [1e39, 'Dd'], [1e36, 'Ud'], [1e33, 'Dc'],
     [1e30, 'No'], [1e27, 'Oc'], [1e24, 'Sp'], [1e21, 'Sx'], [1e18, 'Qn'],
     [1e15, 'Qd'], [1e12, 'T'], [1e9, 'B'], [1e6, 'M'], [1e3, 'K'],
   ];
