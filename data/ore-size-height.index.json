@@ -1,8 +1,8 @@
 {
   "importerVersion": 5,
-  "generatedAt": "2026-08-28T05:17:40.517Z",
+  "generatedAt": "2026-09-11T00:03:07.233Z",
   "sourceWorkbook": "data/Tycoon Sim Database.xlsx",
-  "sourceHash": "baaae4676274c7f850d1ba7dc29a9d3290217d5b81ac72096550860f31030337",
+  "sourceHash": "bb0a245d8a2ad7053d4c2ba34d4688fb14a9be5b7ce5c84e24d6470530a2387d",
   "sheet": "Ore SizeHeight",
   "paths": [
     {
@@ -2588,7 +2588,7 @@
         1.8
       ],
       "notes": "1st=already centered blocks.\n2nd=off center/blocks that rotate",
-      "row": 3
+      "row": 2
     },
     {
       "name": "Chartreuse Collider",
@@ -2604,7 +2604,7 @@
         2.45
       ],
       "notes": "will hit top but it will get through",
-      "row": 4
+      "row": 3
     },
     {
       "name": "Cupcake-inator",
@@ -2620,7 +2620,7 @@
         1.84
       ],
       "notes": null,
-      "row": 5
+      "row": 4
     },
     {
       "name": "Hoarded Treasure",
@@ -2636,7 +2636,7 @@
         2.17
       ],
       "notes": null,
-      "row": 7
+      "row": 5
     },
     {
       "name": "Lambda Upgrader",
@@ -2652,7 +2652,7 @@
         1.84
       ],
       "notes": null,
-      "row": 8
+      "row": 6
     },
     {
       "name": "Ore Expander",
@@ -2668,7 +2668,7 @@
         2.6
       ],
       "notes": null,
-      "row": 9
+      "row": 7
     },
     {
       "name": "Ore Shrinker",
@@ -2684,7 +2684,7 @@
         2.635
       ],
       "notes": null,
-      "row": 10
+      "row": 8
     },
     {
       "name": "Rocketship Upgrader",
@@ -2700,7 +2700,7 @@
         2.25
       ],
       "notes": "Will drag around rocket fins but it will get throgh",
-      "row": 11
+      "row": 9
     },
     {
       "name": "Rubix's Polisher",
@@ -2716,7 +2716,7 @@
         2.32
       ],
       "notes": "Will clip on sides but get through",
-      "row": 12
+      "row": 10
     },
     {
       "name": "Space Pirates",
@@ -2734,7 +2734,7 @@
         1.84
       ],
       "notes": "Roof is slanted,\nOne side lets 2.01 through\nThe other side lets 1.83 Through",
-      "row": 13
+      "row": 11
     },
     {
       "name": "Tiki Evaluator",
@@ -2750,7 +2750,7 @@
         2.4
       ],
       "notes": "will drag on the roof but get through in decent time",
-      "row": 15
+      "row": 12
     },
     {
       "name": "Krakatoa",
@@ -2767,6 +2767,39 @@
         1.95
       ],
       "notes": "The processing zone has a length of 1/0.5 that isnt covered by the overhang(depending on the variant). the size is how small the ore can be before it gets stuck.\n1st = is the size of ore that can fit in base / shiny krakatoa.\n2nd = is the size of ore that can fit in mythic / shiny mythic krakatoa.",
+      "row": 13
+    },
+    {
+      "name": "Potted Flower",
+      "rarity": "Uncommon",
+      "size": {
+        "width": 3,
+        "length": 2
+      },
+      "acceptable": [
+        2.065
+      ],
+      "rejected": [
+        2.082
+      ],
+      "notes": null,
+      "row": 15
+    },
+    {
+      "name": "Lush Beanstock",
+      "rarity": "Legendary",
+      "size": {
+        "width": 4,
+        "length": 3
+      },
+      "acceptable": [
+        1.8,
+        1.8445
+      ],
+      "rejected": [
+        1.86
+      ],
+      "notes": "Roof is slanted,\nOne side lets 1.8 through\nThe center is 1.8445",
       "row": 16
     }
   ]

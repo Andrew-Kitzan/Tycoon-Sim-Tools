@@ -8,9 +8,110 @@ now wrong, correct it in place and say why.
 
 ## Last worked on
 
-2026-08-27 — see "2026-08-27 Capgrader Generator: automated test coverage"
-below. Closes out the item AI_TASKS.md had kept open ("feature-complete,
-kept open only for lack of automated tests").
+2026-09-11 — see "2026-09-11 Database resync (nature-update workbook)" below.
+
+## Note: a Calculator tool exists but was never documented here
+
+Between the last entry below (2026-08-27) and this session, a prior session
+added a **fourth tool, the Calculator** (`abbrev-calculator.js`, commits
+`fbd6f24` "Add Calculator tool: scientific calc with in-game number
+abbreviations" and `d8bc12b` "Fix hidden-attribute bugs: Calculator leaking
+into other tools, stale Capgrader results after Edit setup") — both already
+on `main`. That session never wrote a handoff entry for it, so treat this
+paragraph as the placeholder: read `abbrev-calculator.js` and the two commits
+directly if you need the architecture, since nothing further is recorded
+here. Wired in the same way as the other tools: `data-tool="calculator"` nav
+button in `index.html`, `activeTool` in `app.js` (title "Calculator",
+`calc-tool:activated` event, `calcToolSection.hidden`).
+
+## 2026-09-11 Database resync (nature-update workbook)
+
+User supplied a new `Tycoon Sim Database.xlsx` (a real in-game content
+update — nature-themed items — not just a correction pass). Replaced
+`data/Tycoon Sim Database.xlsx` and re-ran the full pipeline
+(`sync-database.mjs`, `report-database-conflicts.mjs`,
+`build-database-index.mjs`, `lint-database.mjs`,
+`build-crate-luck-data.mjs`), then diffed every record against the prior
+workbook (kept as a scratch backup during the session, not committed) rather
+than trusting the sync tool's own conflict check alone.
+
+**36 new item-variant rows, 0 removed:** Butterfly Dropper, Floral Frenzy,
+Nature's Promise, Canyon Refiner, Carrot Mutator, Clover Garden, Fragrant
+Passage, Fungal Enhancer, Glistening Falls, Holophase Device, Lush
+Beanstock, Ore Pollinator, Potted Flower, Reclaimed Sanctum, Sunflower
+Fields (2 new crates too: Floral, Nature — 19 crates / 113 crate items now,
+up from 17/101). **None of these have icons yet** in `icons/items/` — that's
+expected (icons come from the user separately, per the 2026-08-27 Luck tool
+entry's process), not a database problem, just a follow-up if the user wants
+these new items to render properly in the Luck Simulator.
+
+**Two real data-entry errors found and fixed in the workbook itself** (both
+were previously non-existent — confirmed by diffing against the prior
+workbook, not just current-state lint):
+1. **Dream Machine (Base), `Upgraders` sheet row 38** had "Limited Uses: 3"
+   while the same item on the `Merchant` sheet (row 33) and every other
+   Dream Machine variant on both sheets said "Limited Uses: 1". The row
+   directly above it (Whimsical Palace Shiny, row 37) legitimately has
+   "Limited Uses: 3" — this had clearly bled down into Dream Machine's row.
+   User confirmed: fixed to 1. This was the sync tool's own
+   `DATABASE_CONFLICT` check catching a real error, not a false positive.
+2. **Krakatoa's "Rejected" ore size** on the `Ore SizeHeight` sheet came in
+   blank in the new workbook; the prior workbook had it as `1.95` (paired
+   with Acceptable `[2.4, 1.8]`). This is not something the conflict
+   checker catches on its own (it's a single-sheet omission, not a
+   cross-sheet disagreement) — only caught by diffing against the prior
+   workbook. User confirmed: restored to `1.95`.
+
+**How the xlsx was patched — do this again if editing this specific
+workbook, not openpyxl full-rewrite:** the workbook is ~21-23MB, almost
+certainly because of embedded images/rich content beyond plain cell data.
+A test edit via `openpyxl.load_workbook(...).save(...)` silently shrank the
+file to ~344KB — it does not round-trip whatever makes this file large, so
+a full openpyxl rewrite is a silent-corruption risk for this specific file.
+Caught before committing (compared file size before/after) and reverted.
+The safe method that was actually used: unzip the `.xlsx`, edit only the
+target cell in the specific `xl/worksheets/sheetN.xml`, then
+`zip <file>.xlsx path/to/sheetN.xml` to patch just that zip entry in place
+(verified afterward that the full entry list — 555 files — was byte-for-byte
+unchanged except the two patched sheet XMLs). For the Dream Machine fix this
+was even simpler than writing new XML: cell `N38` referenced shared-string
+index 1697 ("...Limited Uses: 3..."); shared-string index 1690 already held
+the exact desired text ("...Limited Uses: 1..." — same string other Dream
+Machine variants already use), so the fix was just repointing `N38`'s
+`<v>1697</v>` to `<v>1690</v>`, touching zero shared content. The Krakatoa
+fix changed an empty self-closing `<c r="P13" s="188"/>` to
+`<c r="P13" s="188"><v>1.95</v></c>` — a plain numeric cell, no shared string
+involved.
+
+**Pre-existing issues, NOT introduced by or fixed in this resync — flagging,
+not touching:**
+- `tests/engine.test.mjs` still fails on the already-documented "Base
+  Portable Upgrader is 1x2; expected 2x1" geometry mismatch (see the
+  2026-08-27 "Unrelated pre-existing issue" entry further down this file).
+  Confirmed Portable Upgrader's size is identically `1x2` in both the old
+  and new workbook, so this update didn't cause or change it either way.
+  `tests/validate-planner.js`, `tests/regression-fixtures.test.mjs`, and
+  `tests/capgrader-generator.test.mjs` all still pass standalone.
+- **`Ore SizeHeight` sheet spells it "Rubix's Polisher"** (with an x) in its
+  restrictions table, while every other sheet (and the item database) has
+  the correct "Rubik's Polisher" — present in both the old and new workbook,
+  so not new. This is the *same* typo class the 2026-08-27 session already
+  found and fixed once in `capgrader-generator.js`'s hardcoded
+  `CAPGRADER_NAMES` list, just in a different location (the source sheet
+  itself this time). Currently harmless — nothing in `engine/*.mjs` cross-
+  references `oreSizeHeight.restrictions[].name` against the item database
+  yet (only `engine/database-lint.mjs` reads it, and only for
+  acceptable/rejected presence, not name-matching) — but worth the user
+  fixing at the source before anything is ever built that looks restrictions
+  up by name.
+
+**Verification run, all clean after the two fixes above:** `database:sync`
+(0 cross-sheet conflicts), `database:lint` (`valid: true`, 390 records, 0
+errors/warnings), `build-crate-luck-data.mjs`, `node --check` on every
+engine/script file, and the three passing test files above.
+`data/item-geometry-worksheet.json` and
+`scripts/build-item-geometry-worksheet.mjs` (still deliberately uncommitted
+per the "Things NOT to change" section below) were not touched.
 
 ## 2026-08-27 Capgrader Generator: automated test coverage
 
