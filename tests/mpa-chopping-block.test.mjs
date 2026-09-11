@@ -236,9 +236,16 @@ function resetOwnership() {
 // ---- Decision loop: worst MPA first, "Keep" advances to the next --------
 
 {
+  // Fusion Upgrader and Ore Wash are both plain non-capgrader upgraders with
+  // a known, stable MPA order (Fusion lower, i.e. worse). Originally used
+  // Sunflower Fields as a third "middle" item too, but it's now a real
+  // capgrader (added 2026-09-10, see capgrader-generator.test.mjs's
+  // regression-band comment) and gets chain-locked by the same rule as
+  // Nuclear Upgrader/Chartreuse Collider above, which would make this test
+  // exercise the lock instead of the plain worst-first/keep-advances
+  // mechanic it's meant to check — two tiers is enough to prove that.
   resetOwnership();
-  dbg.state.owned['Fusion Upgrader'] = true; // lowest MPA of the three
-  dbg.state.owned['Sunflower Fields'] = true;
+  dbg.state.owned['Fusion Upgrader'] = true; // lowest MPA of the two
   dbg.state.owned['Ore Wash'] = true;
 
   let eligible = dbg.ownedEligibleSorted();
@@ -246,7 +253,7 @@ function resetOwnership() {
 
   dbg.getKeptThisRun().add('Fusion Upgrader'); // simulate pressing "Keep"
   eligible = dbg.ownedEligibleSorted();
-  assert.equal(eligible[0].item.name, 'Sunflower Fields', 'keeping an item must advance to the next-worst eligible one');
+  assert.equal(eligible[0].item.name, 'Ore Wash', 'keeping an item must advance to the next-worst eligible one');
 }
 
 // ---- Chop semantics: Incremental/Tiki remove everything, Lambda removes 1 -

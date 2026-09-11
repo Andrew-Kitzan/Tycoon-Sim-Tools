@@ -6,22 +6,6 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
 
 ## In progress
 
-- **MPA / Chopping Block tool (5th tool) — shipped as WIP; only a cosmetic
-  gap left open.** Full detail in `AI_HANDOFF.md` → "2026-09-11 MPA /
-  Chopping Block tool (fifth tool, WIP)". All three previously-open questions
-  are now resolved, confirmed directly by the user: (1) Portable Spinner's
-  "Looped is best" handling is correct as shipped. (2) The Hoarded
-  Treasure/Electric Overdrive/Alien Invasion dependency is **not** OR
-  semantics — both stay locked until Alien Invasion itself is gone,
-  regardless of how many of the two are owned; fixed by flipping that
-  entry's `requiresAny` to `false` in `data/mpu-stats.js`. (3) The user
-  confirmed the 3 dependencies already in the table (Ore Wash/Acid Plant,
-  Leviathans' Wrath/Atlantis Remnant, Hoarded Treasure+Electric
-  Overdrive/Alien Invasion) are the complete list — no more are coming.
-  `tests/mpa-chopping-block.test.mjs` now exists, wired into `npm test`/`npm
-  run check`, per the user's explicit request. Only remaining item: the 12
-  missing icons in `docs/MPA_TOOL_MISSING_ICONS.md` (not blocking — the tool
-  renders a blank slot for these).
 - **Auditing `data/item-geometry-worksheet.json`'s `upgraders` section.**
   Droppers and furnaces are fully audited and fixed. Upgraders: every item has
   been bulk pre-filled with best-guess defaults (conveyor centered per
@@ -178,3 +162,15 @@ later item leans on the data/work from the ones before it):
   CSS bug class fixed there that's worth reading before adding any future new
   top-level tool section (easy to accidentally repeat). No automated tests
   exist (same as Luck Simulator) — verified manually in-browser only.
+- **MPA / Chopping Block tool (5th tool) — no longer WIP, badge removed.**
+  Full detail in `AI_HANDOFF.md` → "2026-09-11 MPA / Chopping Block tool
+  (fifth tool, WIP)" for the original build, and "2026-09-10 MPA / Chopping
+  Block graduates from WIP + a real Portable Upgrader bugfix" for
+  everything since (desktop layout centering, 5 new capgraders added to
+  `CAPGRADER_NAMES`, a real screenshot icon for the Replicator+Dual Plasma
+  combo row, a cold-load init bug matching one `capgrader-generator.js`
+  already had to solve, and — unrelated to this tool specifically but found
+  while working on it — the root-cause fix for the long-standing Portable
+  Upgrader rotation bug that had been failing `engine.test.mjs` since
+  2026-08-27). Only one icon still missing (`Ore Pollinator`, not in the
+  user's source folder yet) — down from the original 12.

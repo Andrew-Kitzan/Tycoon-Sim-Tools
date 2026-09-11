@@ -1480,6 +1480,7 @@ globalThis.MpuStatsData = {
       "variant": "Shiny + Shiny Mythic",
       "kind": "comboInfoOnly",
       "excludeFromChopping": true,
+      "icon": "icons/combos/replicator-dual-plasma.png",
       "multi": 6.05,
       "size": "6x3",
       "area": 32,
@@ -1488,7 +1489,7 @@ globalThis.MpuStatsData = {
       "mpa": 1.057864043,
       "mpu": 1.293240626,
       "mps": 10.01490605,
-      "notes": "Combines Ore Replicator + Dual Plasma Upgrader to save the original ore (not just the duplicate) at the cost of more space. List-only per the user — excluded entirely from Chopping Block. Ore Replicator and Dual Plasma Upgrader remain individually toggleable there.",
+      "notes": "Combines Ore Replicator + Dual Plasma Upgrader to save the original ore (not just the duplicate) at the cost of more space.",
       "category": null,
       "subcategory": null
     },

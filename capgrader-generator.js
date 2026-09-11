@@ -130,6 +130,7 @@
     'Orbital Messenger', 'Sugar Churner', 'Anchor Upgrader', 'Ore Purifier', 'Blocky Refiner',
     'Hydrothermal Vent', 'Observatory Refiner', 'Fine Point Upgrader', "Rubik's Polisher",
     'Rocketship Upgrader', 'Surfboard Polisher', 'Gumball Enhancer', 'Toybox Express',
+    'Sunflower Fields', 'Fragrant Passage', 'Canyon Refiner', 'Fungal Enhancer', 'Glistening Falls',
   ]);
   const SCANNER_NAMES = new Set(['Ancient Scanner', 'Precision Ore Scanner', 'Azure Scanner']);
 

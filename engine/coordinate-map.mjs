@@ -101,11 +101,8 @@ function renderType(item) {
   return item.type;
 }
 
-function rotatedSize(item, direction, type = renderType(item)) {
+function rotatedSize(item, direction) {
   const horizontal = direction === 'east' || direction === 'west';
-  if (type === 'portable') return horizontal
-    ? { width: item.size.width, height: item.size.length }
-    : { width: item.size.length, height: item.size.width };
   return horizontal
     ? { width: item.size.length, height: item.size.width }
     : { width: item.size.width, height: item.size.length };
@@ -146,7 +143,7 @@ function normalizeItems(map, database, rules) {
     const topLeft = parseGridCoordinate(saved.topLeft);
     const bottomRight = parseGridCoordinate(saved.bottomRight);
     const type = renderType(definition);
-    const size = rotatedSize(definition, saved.facing, type);
+    const size = rotatedSize(definition, saved.facing);
     const transport = ['dropper', 'portable', 'furnace'].includes(type)
       ? null
       : internalTransportProfile(definition, rules);

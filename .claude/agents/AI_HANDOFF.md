@@ -8,14 +8,129 @@ now wrong, correct it in place and say why.
 
 ## Last worked on
 
-2026-09-11 — see "2026-09-11 MPA / Chopping Block tool (fifth tool, WIP)"
-below — the newest and most involved entry, plus its several same-day
-follow-up fixes/refinements from the user actually using it live (icon
-caption, category-level select-all, "Own"→"In Base" wording, and — the
-biggest one — a capgrader chain-order lock, all folded into that same entry
-below since they're all part of the same tool's ongoing WIP polish). The
-database-resync and Rubik's-Polisher-typo entries right below it are from
-earlier the same day.
+2026-09-10 — see "2026-09-10 MPA / Chopping Block graduates from WIP + a
+real Portable Upgrader bugfix" below. Closes out the MPA tool's WIP status
+and fixes a long-standing pre-existing `engine.test.mjs` failure along the
+way. The 2026-09-11 MPA build entry right below it (dated after this one in
+the file, but written the session before — timestamps in this file are not
+strictly chronological across sessions, trust the content) is still the one
+to read first for the tool's original design/decisions.
+
+## 2026-09-10 MPA / Chopping Block graduates from WIP + a real Portable Upgrader bugfix
+
+Several unrelated fixes/polish items from one session, grouped here since
+they touched a lot of the same files. Read each sub-section independently.
+
+**MPA / Chopping Block is no longer marked WIP.** Removed the `.wip-badge`
+from both the header (`app.js`'s `applyActiveToolUi` — `wipBadge.hidden`
+reverted to `activeTool !== 'builder'` only, dropping the `'mpa'` special
+case added when the tool first shipped) and the tools-menu list entry in
+`index.html`. The tool's own intro paragraph still says "This is a work in
+progress — data and behavior may still change" — left as-is since the user
+only asked to remove the badge; flag to them if that sentence should go too.
+
+**Real, root-cause fix for the long-standing "Base Portable Upgrader is 1x2;
+expected 2x1" `engine.test.mjs` failure** (flagged as a known pre-existing
+issue in every session back to 2026-08-27, never previously investigated).
+Traced to an inverted rotation rule duplicated in **three** places —
+`engine/coordinate-map.mjs`'s `rotatedSize()`, `engine/validate.mjs`'s
+`validatePlan()`, and `app.js`'s hand-ported `validateCoordinateMap()` — all
+three swapped width/length for north/south-facing portables and kept them
+natural for east/west, the exact opposite of every other item type's
+convention (which swaps on east/west, not north/south). Unified all three to
+the normal rule. `npm test` is now fully green for the first time in this
+project's tracked history — no other known failures remain. If this
+regresses, check for a 4th hand-copy of the same swap logic before assuming
+it's a new bug.
+
+**5 new capgraders added** from the nature-update database (all clean,
+non-destructive, unlimited-use multiplicative upgraders — verified their
+effects text before adding): Sunflower Fields (500B-1T), Fragrant Passage
+(150B-350B), Canyon Refiner (1T-3T), Fungal Enhancer (1T-3T), Glistening
+Falls (6T-10T). Added to both `capgrader-generator.js`'s and
+`mpa-chopping-block.js`'s `CAPGRADER_NAMES` sets (kept in sync per the
+existing convention — also tightened that sync comment in
+`mpa-chopping-block.js`, which was already stale before this session, since
+its list has always included Nuclear Upgrader/Chartreuse Collider that
+capgrader-generator.js's list deliberately excludes).
+- Updated `tests/capgrader-generator.test.mjs`'s "own everything" regression
+  band from $1.25T-$1.4T to **$3.0T-$3.3T** (measured actual: ~$3.1536T) —
+  real new bridging capgraders legitimately extend the optimal chain
+  further, not a search-quality regression.
+- Updated `tests/mpa-chopping-block.test.mjs`'s decision-loop-ordering test,
+  which had used "Sunflower Fields" as a plain non-capgrader example item —
+  now that it's correctly capgrader-locked, swapped to a simpler 2-item
+  fixture (Fusion Upgrader + Ore Wash) rather than hunting for a new item
+  with the exact right MPA to sit "in between."
+- **Discovered and confirmed a real, verified gap in capgrader range
+  coverage**: nothing bridges 350B (Fragrant Passage's ceiling) to 500B
+  (Sunflower Fields' floor) — checked all 26 pool capgraders by hand via the
+  debug hook. A chain landing at ~441B after two Fragrant Passage
+  applications correctly falls through to finishers instead of ever reaching
+  Sunflower Fields, no matter the ordering. This is a data-content
+  characteristic, not a generator bug — flagged to the user, unresolved
+  (would need either game data confirming the gap is real, or a
+  currently-unlisted item that closes it).
+
+**Floral & Nature crate icons** (both crates' data was already generated in
+an earlier session — this was pure asset work): copied 18 icon files from
+the user's local `Tycoon Sim/Icons` folder into `icons/items/`, covering
+every real item in both crates across all their variants. Verified rendering
+in Luck Simulator for both crates. Still missing: `Ore Pollinator` (not in
+the user's source folder yet). **Also fixed a real bonus bug found along the
+way**: `icons/items/MVP Upgrader.png` / `MVP Upgrader Shiny.png` existed but
+the database's actual item name is just **"MVP"** — its icon had been
+silently broken (blank slot) everywhere on the site, not just in the new
+work. Renamed to `MVP.png` / `MVP Shiny.png`, deleted the stray misnamed
+files. `Tornado` (appears in the Nature crate's raw item list but not
+anywhere in the real item database) is confirmed a genuine, intentional
+developer placeholder in the source spreadsheet — every field is literally
+`"?"`, weight `0` — not a parsing bug; already silently excluded from the
+Luck Simulator's item grid with no code change needed.
+
+**MPA layout centered for desktop** (previously left-floating in a huge
+empty page on wide screens, per user screenshots — mobile was already fine
+since its narrower viewport naturally fills the `max-width`): added
+`margin: 0 auto` to `.mpa-decision-card`, `.mpa-list-rows`, and
+`.mpa-list-toolbar` (the last one also brings the MPU/MPA/MPS stat toggle
+and the "Chopping Block →" button in from the page edges to line up with the
+now-centered list/card below them).
+
+**Ore Replicator + Dual Plasma combo now has a real screenshot icon.** The
+combo row's `name` ("Replicator + Dual Plasma (Combo)") never matched any
+real item's icon path, so it always rendered blank. Added an `icon` field
+directly on that one entry in `data/mpu-stats.js`
+(`icons/combos/replicator-dual-plasma.png` — the user's real in-game
+screenshot, sourced from their `Tycoon Sim/Spreadsheet Pic/Ore Dupe.png`,
+not a generic icon) and taught `mpa-chopping-block.js`'s `itemIconHtml()` to
+prefer `item.icon` over the normal name-derived path when present — refactor
+touched all 5 call sites (list row, toggle row, 2 decision-card renders, the
+config-switch decision render), now passing the full item object instead of
+separate name/variant args. Also added a `.mpa-icon-screenshot` CSS modifier
+class (auto-applied whenever `item.icon` is set) that renders roughly 3x
+larger than a normal square item icon in every context it appears (list
+~104x61, toggle ~88x52, decision card ~168x99) — a real screenshot has much
+finer detail than a flat icon and was illegible at the normal 26-44px sizes.
+Also trimmed that entry's player-facing `notes` text down to just the actual
+description — it previously included internal implementation detail
+("List-only per the user — excluded entirely from Chopping Block...") that
+had no business being shown to players.
+
+**Real cold-load init bug fixed in `mpa-chopping-block.js`**: `app.js`
+dispatches `mpa-tool:activated` synchronously on every page load (not just
+actual tool switches) from `applyActiveToolUi()`, but since this file's
+`<script>` tag loads *after* `app.js`'s, its event listener wasn't
+registered in time to catch that very first dispatch on a cold load where
+MPA was already the persisted active tool — leaving the browsing list
+permanently blank until the player manually switched tools away and back.
+`capgrader-generator.js` already solved this exact problem
+(`if (!document.querySelector('#capgrader-tool')?.hidden) initCapgraderTool();`
+right after its event listener registration) — applied the identical fix
+here (`initMpaTool()` extracted to a named function, called both from the
+event listener and synchronously if `#mpa-tool` isn't hidden at load time).
+**If a 6th tool is ever added with this same lazy-init-on-activation-event
+pattern, give it this same synchronous fallback check up front — don't wait
+for another user bug report to find it again.**
 
 ## 2026-09-11 MPA / Chopping Block tool (fifth tool, WIP)
 

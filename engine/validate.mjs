@@ -81,9 +81,9 @@ export function validatePlan(plan, rules) {
   const itemCells = new Map();
   for (const item of plan.items) {
     const horizontal = item.direction === 'east' || item.direction === 'west';
-    const expected = item.type === 'portable'
-      ? (horizontal ? { width: item.itemWidth, height: item.itemLength } : { width: item.itemLength, height: item.itemWidth })
-      : (horizontal ? { width: item.itemLength, height: item.itemWidth } : { width: item.itemWidth, height: item.itemLength });
+    const expected = horizontal
+      ? { width: item.itemLength, height: item.itemWidth }
+      : { width: item.itemWidth, height: item.itemLength };
     if (item.width !== expected.width || item.height !== expected.height) diagnostics.push(diagnostic('SCHEMA', `${item.name} has an invalid rotated footprint.`, { item: item.id, expected }));
     if (item.type === 'dropper' && item.conveyorWidth !== 0) diagnostics.push(diagnostic('SCHEMA', `${item.name} must not render an internal conveyor.`));
     for (const cell of rectCells(item)) {

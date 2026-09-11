@@ -40,9 +40,16 @@
   // ---- capgrader chain ordering ------------------------------------------
   // Real capgraders chain in range order — a low-range one (e.g. 8-Ball
   // Refiner, 10B-50B) is only useful as a stepping stone toward a
-  // higher-range one you also own (e.g. Blocky Refiner, 30B-100B). Same 23
-  // real capgraders as capgrader-generator.js's own CAPGRADER_NAMES —
-  // update both lists together if new capgraders are ever added.
+  // higher-range one you also own (e.g. Blocky Refiner, 30B-100B). Same list
+  // as capgrader-generator.js's own CAPGRADER_NAMES, PLUS Nuclear Upgrader
+  // and Chartreuse Collider (capgrader-generator.js deliberately excludes
+  // those two from its search entirely since they apply a destructive/
+  // overriding effect instead of bridging cleanly, but this tool still needs
+  // them here for chain-order locking — see MANUAL_FINISHER_NAMES below,
+  // which treats them as finisher-like for the ordering exemption). Update
+  // all three places (this list, capgrader-generator.js's CAPGRADER_NAMES,
+  // and MANUAL_FINISHER_NAMES if the new item is Nuclear/Chartreuse-like) if
+  // new capgraders are ever added.
   const CAPGRADER_NAMES = new Set([
     'Fusion Upgrader', 'Oil Well', 'Cookie Upgrader', '8-Ball Refiner', 'Desert Remains',
     'Martian Tech', 'Fairy Forest', 'Helio-Grader', 'Quad Rays Upgrader', 'Satellite Enhancer',
@@ -50,6 +57,7 @@
     'Hydrothermal Vent', 'Observatory Refiner', 'Fine Point Upgrader', "Rubik's Polisher",
     'Rocketship Upgrader', 'Surfboard Polisher', 'Gumball Enhancer', 'Toybox Express',
     'Nuclear Upgrader', 'Chartreuse Collider',
+    'Sunflower Fields', 'Fragrant Passage', 'Canyon Refiner', 'Fungal Enhancer', 'Glistening Falls',
   ]);
   // Wide-range, single-use "finisher" capgraders (range floor 0, ceiling in
   // the quadrillions+) aren't part of the sequential chain — they cascade on
@@ -151,9 +159,18 @@
     return `icons/items/${encodeURIComponent(`${name}${suffix}`)}.png`;
   }
 
-  function itemIconHtml(name, variant, className) {
-    const src = iconPathFor(name, variant);
-    return `<img src="${src}" alt="" class="${className}" loading="lazy" onerror="this.style.display='none'" />`;
+  // `item.icon` is an explicit override for entries that don't correspond to
+  // one real item's normal icons/items/{Name} {Variant}.png path — currently
+  // just the Replicator + Dual Plasma combo row, which uses a real in-game
+  // screenshot of the setup instead (icons/combos/), since "Replicator +
+  // Dual Plasma (Combo)" isn't a real item name with its own icon.
+  function itemIconHtml(item, className) {
+    const src = item.icon ?? iconPathFor(item.name, item.variant);
+    // A custom `icon` override is a real in-game screenshot, not a small
+    // square item icon — it needs a bigger, wider box to actually be legible
+    // (see .mpa-icon-screenshot in styles.css), unlike the normal 1:1 icons.
+    const extraClass = item.icon ? ' mpa-icon-screenshot' : '';
+    return `<img src="${src}" alt="" class="${className}${extraClass}" loading="lazy" onerror="this.style.display='none'" />`;
   }
 
   function formatStat(value) {
@@ -338,7 +355,7 @@
 
     listRowsEl.innerHTML = rows.map(({ item, value, note }) => `
       <div class="mpa-list-row">
-        ${itemIconHtml(item.name, item.variant, 'mpa-list-icon')}
+        ${itemIconHtml(item, 'mpa-list-icon')}
         <div class="mpa-list-name">
           <span>${item.name}</span>
           ${note ? `<small>${note}</small>` : ''}
@@ -374,7 +391,7 @@
     const needsInput = item.kind !== 'straight';
     return `
       <div class="capgrader-toggle-item mpa-toggle-item ${owned ? 'is-owned' : ''}" data-mpa-item="${item.name}">
-        ${itemIconHtml(item.name, item.variant, 'mpa-toggle-icon')}
+        ${itemIconHtml(item, 'mpa-toggle-icon')}
         <span class="capgrader-toggle-name">${item.name}</span>
         <button type="button" class="capgrader-toggle-pill" data-mpa-toggle aria-pressed="${owned}">${owned ? 'In Base' : 'Not in Base'}</button>
         ${needsInput ? `<div class="capgrader-toggle-options">${specialInputHtml(item)}</div>` : ''}
@@ -547,7 +564,7 @@
       decisionCardEl.innerHTML = `
         <div class="mpa-decision-card-inner">
           <div class="mpa-decision-heading">
-            ${itemIconHtml(item.name, item.variant, 'mpa-decision-icon')}
+            ${itemIconHtml(item, 'mpa-decision-icon')}
             <div>
               <h3>${item.name}</h3>
               <p class="capgrader-panel-note">Currently: ${stats.contextNote} (MPA ${formatStat(stats.mpa)})</p>
@@ -568,7 +585,7 @@
     decisionCardEl.innerHTML = `
       <div class="mpa-decision-card-inner" data-mpa-item="${item.name}">
         <div class="mpa-decision-heading">
-          ${itemIconHtml(item.name, item.variant, 'mpa-decision-icon')}
+          ${itemIconHtml(item, 'mpa-decision-icon')}
           <div>
             <h3>${item.name}</h3>
             <p class="capgrader-panel-note">${stats.contextNote ?? ''}</p>
@@ -610,7 +627,7 @@
       decisionCardEl.innerHTML = `
         <div class="mpa-decision-card-inner" data-mpa-item="${current.name}">
           <div class="mpa-decision-heading">
-            ${itemIconHtml(current.name, current.variant, 'mpa-decision-icon')}
+            ${itemIconHtml(current, 'mpa-decision-icon')}
             <div><h3>${current.name}</h3><p class="capgrader-panel-note">${stats.contextNote ?? ''}</p></div>
           </div>
           <p class="mpa-decision-mpa">MPA: <strong>${formatStat(stats.mpa)}</strong></p>
@@ -676,13 +693,22 @@
   decisionBackButton?.addEventListener('click', () => setView('select'));
 
   let initialized = false;
-  document.addEventListener('mpa-tool:activated', () => {
-    if (!initialized) {
-      initialized = true;
-      renderStatToggle();
-      renderList();
-    }
-  });
+  function initMpaTool() {
+    if (initialized) return;
+    initialized = true;
+    renderStatToggle();
+    renderList();
+  }
+  document.addEventListener('mpa-tool:activated', initMpaTool);
+  // app.js dispatches 'mpa-tool:activated' once synchronously on every page
+  // load (not just on an actual tool switch), from applyActiveToolUi() — but
+  // script tags run in order, and this file loads after app.js, so on a cold
+  // load where MPA is already the persisted active tool, that first dispatch
+  // fires before the listener above even exists to hear it, leaving the list
+  // blank until the player manually switches tools and back. Same fix as
+  // capgrader-generator.js's initCapgraderTool() already uses: also run
+  // init immediately, synchronously, if the section is already visible.
+  if (!document.querySelector('#mpa-tool')?.hidden) initMpaTool();
 
   // Test hook — same pattern as capgrader-generator.js's __cgDebug: lets
   // automated tests exercise the real logic without a browser. No-op in

@@ -2130,10 +2130,8 @@ function applyActiveToolUi() {
       : 'Base Builder';
   }
   if (wipBadge) {
-    wipBadge.hidden = activeTool !== 'builder' && activeTool !== 'mpa';
-    wipBadge.title = activeTool === 'mpa'
-      ? 'This tool is new and still a work in progress — data and behavior may still change.'
-      : 'Item geometry data (drop points, conveyor beams, furnace zones) is still being audited, so simulation accuracy here is a work in progress';
+    wipBadge.hidden = activeTool !== 'builder';
+    wipBadge.title = 'Item geometry data (drop points, conveyor beams, furnace zones) is still being audited, so simulation accuracy here is a work in progress';
   }
   if (plannerLoadoutActions) plannerLoadoutActions.hidden = activeTool !== 'builder';
   if (topbarActions) topbarActions.hidden = activeTool !== 'builder';
@@ -3743,14 +3741,9 @@ function validateCoordinateMap(items, size) {
 
   items.forEach((item) => {
     const horizontal = item.direction === 'east' || item.direction === 'west';
-    const portable = item.type === 'portable';
     const furnace = item.type === 'furnace';
-    const expectedWidth = portable
-      ? (horizontal ? item.itemWidth : item.itemLength)
-      : (horizontal ? item.itemLength : item.itemWidth);
-    const expectedHeight = portable
-      ? (horizontal ? item.itemLength : item.itemWidth)
-      : (horizontal ? item.itemWidth : item.itemLength);
+    const expectedWidth = horizontal ? item.itemLength : item.itemWidth;
+    const expectedHeight = horizontal ? item.itemWidth : item.itemLength;
     const expectedTransport = internalTransportProfile(item.name, item.itemWidth, item.type);
     const expectedConveyorWidth = expectedTransport?.across ?? 0;
     const expectedConveyorOffset = expectedTransport?.northOffset ?? 0;

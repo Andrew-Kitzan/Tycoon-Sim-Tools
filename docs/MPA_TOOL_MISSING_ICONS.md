@@ -7,22 +7,19 @@ icon — it just renders a blank slot (same `onerror`-hide pattern the Luck
 Simulator uses) — but leaving a static list here so these can be filled in
 without having to re-scan for them.
 
-Most of these are the recently-added nature-update items that already had no
-icons before this tool existed (see the database-resync work in
-`AI_HANDOFF.md`); `MVP Shiny` is the one pre-existing gap.
+**Update (2026-09-10):** 11 of the original 12 were filled in from the user's
+local `Tycoon Sim/Icons` source folder. Also found and fixed a real
+pre-existing bug while doing this: `icons/items/MVP Upgrader.png` /
+`MVP Upgrader.png Shiny` existed in the repo, but the database's actual item
+name is just **"MVP"** (no "Upgrader") — so MVP's icon had been silently
+broken (blank slot) for both variants, everywhere on the site, not just in
+this tool. Renamed to `MVP.png` / `MVP Shiny.png` and removed the stray
+incorrectly-named files.
 
-- `icons/items/Sunflower Fields Shiny.png`
-- `icons/items/Glistening Falls Shiny.png`
-- `icons/items/Lush Beanstock Shiny.png`
-- `icons/items/Canyon Refiner Shiny.png`
-- `icons/items/MVP Shiny.png`
-- `icons/items/Fungal Enhancer Shiny.png`
-- `icons/items/Carrot Mutator Shiny.png`
-- `icons/items/Fragrant Passage Shiny.png`
+Only one item remains genuinely missing — not present anywhere in the
+source icon folder yet, so nothing to copy in until the user has it:
+
 - `icons/items/Ore Pollinator Shiny.png`
-- `icons/items/Clover Garden Shiny.png`
-- `icons/items/Reclaimed Sanctum Shiny Mythic.png`
-- `icons/items/Holophase Device Shiny Mythic.png`
 
 If new items are added to `data/mpu-stats.js` later, this list won't
 auto-update — re-check manually (compare each tracked item+variant's

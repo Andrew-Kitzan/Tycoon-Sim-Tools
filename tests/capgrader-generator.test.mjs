@@ -125,12 +125,20 @@ function ownNothing() {
 
 // ---- optimizeCapgraderChain(): regression benchmark ----------------------
 // Locks in the known-good "own everything" result from the 2026-08-26
-// beam-search quality fixes (AI_HANDOFF.md) — a Dropper starting at $10 should
-// land in the $1.3-1.35T band (true offline-search ceiling ~$1.348T, ~1-1.5%
-// gap accepted as a known limitation, not a bug). If this regresses back
-// toward the pre-fix $185B-$780B range, one of the three fixes described
-// there (terminal scoring, finisher pool split, same-item move batching) has
-// been broken.
+// beam-search quality fixes (AI_HANDOFF.md) — a Dropper starting at $10
+// originally landed in the $1.25T-$1.4T band (true offline-search ceiling
+// ~$1.348T, ~1-1.5% gap accepted as a known limitation, not a bug). If this
+// regresses back toward the pre-fix $185B-$780B range, one of the three
+// fixes described there (terminal scoring, finisher pool split, same-item
+// move batching) has been broken.
+//
+// Band raised to $3.0T-$3.3T on 2026-09-10 after 5 new capgraders from the
+// nature-update database (Sunflower Fields 500B-1T, Fragrant Passage
+// 150B-350B, Canyon Refiner 1T-3T, Fungal Enhancer 1T-3T, Glistening Falls
+// 6T-10T) were added to CAPGRADER_NAMES — real new bridging options that
+// legitimately extend the optimal chain further before falling back to
+// generic multi-spam, not a search-quality change. Measured actual result:
+// ~$3.1536T.
 
 {
   ownEverything();
@@ -138,8 +146,8 @@ function ownNothing() {
   const result = optimizeCapgraderChain(10, 1, pool, false);
   assert(result.chain.length > 0, 'a fully-owned pool must produce a non-empty chain');
   assert(
-    result.finalValue >= 1.25e12 && result.finalValue <= 1.4e12,
-    `expected final value in the $1.25T-$1.4T regression band, got ${result.finalValue}`,
+    result.finalValue >= 3.0e12 && result.finalValue <= 3.3e12,
+    `expected final value in the $3.0T-$3.3T regression band, got ${result.finalValue}`,
   );
 
   // Every step must be legal: value must move the expected direction (up for
