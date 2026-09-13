@@ -6,7 +6,44 @@ has no memory of this conversation and only has the repo plus this file to go
 on. Don't delete previous entries' hard-won context; if something here is
 now wrong, correct it in place and say why.
 
+## Standing gotchas (read before adding/toggling any new tool or section)
+
+**The `[hidden]` attribute vs. an author `display` rule.** This has caused
+real, user-visible bugs three separate times now (`.topbar`, `.wiki-tool`
+twice — see the 2026-09-13 entries below and 2026-09-11/2026-09-10 entries
+further down). The browser's default UA rule `[hidden] { display: none; }`
+has low specificity — any of your own rules that set `display` on that same
+class (e.g. `.foo { display: flex; }`) beats it once written, so setting
+`el.hidden = true` in JS silently does nothing and the element stays fully
+visible and laid out. **Whenever you give a class its own `display` value
+AND that element is ever toggled via `.hidden = ` in JS, you MUST also add
+`.that-class[hidden] { display: none; }`** (see the many existing examples
+in `styles.css` — search for `[hidden] { display: none; }`).
+`tests/hidden-toggle-guard.test.mjs` (part of `npm test`) now statically
+checks this automatically — it scans every JS file for `.hidden = ` toggles,
+resolves the target element's CSS class, and fails if that class has a
+non-`none` `display` rule with no matching `[hidden]` override. It already
+caught and this session fixed one additional real latent instance
+(`.live-dropper-control`) beyond the two everyone already knew about. It is
+NOT a full CSS parser (see the file's own header comment for exactly what
+it does and doesn't catch) — don't treat a clean run as absolute proof, but
+it should catch the common "new tool section doesn't actually hide" case
+going forward. If you add a new tool/section that gets toggled via
+`.hidden`, run `npm test` before considering it done.
+
 ## Last worked on
+
+2026-09-13 — see "2026-09-13 Wiki tool bleeding into other tools + tool-menu
+label" below, then "2026-09-13 New Wiki tool (WIP), now the default tool"
+below that. The wiki tool from earlier today had exactly the `[hidden]`-vs-
+`display` bug described in "Standing gotchas" above — it doesn't hide, and
+in the process it also fixed one more pre-existing latent instance
+(`.live-dropper-control`) and added the regression test that now guards
+against all of these. **Still open**: the player reports the gap between
+the new "Tool Menu" label and the tool title still looks too wide even
+after the padding was tightened and a hard-refresh was requested — see the
+"Open/unresolved" bullet in that entry before touching `.planner-brand`'s
+padding again.
 
 2026-09-13 — see "2026-09-13 New Wiki tool (WIP), now the default tool"
 below. A brand-new fourth-wall-breaking tool: it doesn't use the shared
@@ -25,6 +62,78 @@ the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-13 Wiki tool bleeding into other tools + tool-menu label
+
+Two follow-up fixes on top of the Wiki tool work below, both reported
+directly by the player after trying it:
+
+1. **The wiki bled onto every other tool.** `#wiki-tool`/`.wiki-tool` was
+   toggled via `wikiToolSection.hidden = activeTool !== 'wiki'` in
+   `applyActiveToolUi()` (`app.js`), but `.wiki-tool { display: flex; }` had
+   no `[hidden]` override — see "Standing gotchas" at the top of this file,
+   this is that exact bug, the second time it's hit this same tool in one
+   day. Fixed with `.wiki-tool[hidden] { display: none; }`. Writing
+   `tests/hidden-toggle-guard.test.mjs` (see "Standing gotchas") was a
+   direct response to this happening again.
+2. **Added a "Tool Menu" label** (`#tool-nav-toggle-label` /
+   `.tool-nav-toggle-label` in `styles.css`) next to the fixed hamburger
+   button, fixed-positioned at `top:20px; left:62px`. Originally
+   Wiki-only (the empty space next to the hamburger only existed there,
+   since the Wiki tool hides the shared `.topbar`), then the player asked
+   for it on every tool for consistency — it's now unconditionally visible,
+   no JS toggle needed at all.
+   - **This required `.planner-brand { padding-left: ... }`** (plus a
+     `max-width: 720px` override that drops to `padding-top: 44px` with no
+     left padding instead, wrapping below the fixed buttons on a narrow
+     phone screen). Without this, "TYCOON SIM" / the tool title sits
+     directly under the fixed hamburger+label pair and gets visually
+     clipped. Verified in-browser at a ~800px pane width, a real 1400px
+     desktop width, and a 375px mobile emulation — no overlap in any of
+     them. Value started at `165px` (generous), then tightened to `130px`
+     after the player said it was too far away — `130px` gives only ~8px of
+     clearance past the label's right edge (measured via
+     `getBoundingClientRect()`), which is close to the practical floor: much
+     less and the title starts overlapping the label again (verified this
+     boundary directly, don't go below it without re-checking).
+   - **Open/unresolved as of this entry**: the player reported the gap still
+     looks wide after this tightening and after being asked to hard-refresh.
+     Two working theories, neither confirmed: (1) their browser is still
+     serving a cached `styles.css` from before the tightening — this
+     project's dev-server preview has a well-documented stale-cache quirk,
+     and a plain refresh doesn't always bust it, incognito/"disable cache in
+     DevTools" was suggested as a firmer test; (2) something actually
+     scales with viewport width that hasn't been found yet, though nothing
+     in this CSS (`position: fixed` pixel offsets, a fixed-px
+     `padding-left`) should behave that way — `justify-content: space-between`
+     on `.topbar` only affects the gap between its two flex children, not
+     where the first one starts. **If this comes up again**: get a fresh
+     screenshot confirmed to be post-hard-refresh (or better, ask the player
+     to paste the live computed `padding-left` value from their own DevTools
+     inspector) before changing the number again — don't guess-and-shrink
+     further, since below ~130px it starts genuinely overlapping the label
+     (a regression that was already hit and fixed once this same day).
+   - Don't reintroduce a bare `.planner-brand {}` rule without this padding
+     if this ever gets refactored — the collision is real and was verified
+     with a screenshot, not assumed (a near-identical-looking padding
+     change earlier in this same project's history was tried, then
+     reverted, because it had been requested to fix what turned out to be a
+     browser-zoom artifact, not a real overlap — this one IS real, checked
+     at multiple real viewport widths, not just eyeballed once).
+
+**A mistake made and fixed while working on this**: while iterating on the
+regression test above, a throwaway `sed -i` edit to `styles.css` (to
+temporarily verify the test actually catches the bug) was undone with
+`git checkout -- styles.css` — which discarded ALL of this session's
+still-uncommitted `styles.css` work, not just the throwaway sed edit. Had to
+manually redo the `.wiki-tool[hidden]`, `.live-dropper-control[hidden]`,
+the entire `.tool-nav-toggle-label` block, and both `.planner-brand` rules
+from memory/re-derivation. Everything was re-verified against `npm test`
+and in-browser afterward and nothing was ultimately lost, but **the lesson
+stands generally: never use `git checkout --`/`reset`/etc. to undo a small
+in-progress experiment when there's other uncommitted work in the same
+file — undo the specific edit instead, or commit good work before
+experimenting with risky throwaway changes.**
 
 ## 2026-09-13 New Wiki tool (WIP), now the default tool
 

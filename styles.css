@@ -58,6 +58,9 @@ select {
   gap: 16px;
   margin-bottom: 24px;
 }
+/* Clears the fixed hamburger button + "Tool Menu" label (both position:
+   fixed, top-left) so they don't sit on top of the brand/title text. */
+.planner-brand { padding-left: 130px; }
 .topbar-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
 .topbar-actions[hidden] { display: none; }
 .planner-loadout-actions { display: flex; align-items: center; gap: 7px; margin-top: 10px; }
@@ -173,6 +176,7 @@ body.mode-generation .live-ore-tracker { display: none; }
 .wip-badge[hidden] { display: none; }
 #header-title { display: inline-flex; align-items: center; gap: 8px; }
 .tool-nav-item strong { display: inline-flex; align-items: center; gap: 6px; }
+.live-dropper-control[hidden] { display: none; }
 .live-dropper-control { display: grid; gap: 5px; color: var(--muted); font-size: .68rem; font-weight: 800; }
 .live-dropper-control select { width: 100%; padding: 8px 9px; border: 1px solid var(--line); border-radius: 7px; background: #13212d; color: var(--text); font: inherit; }
 .live-dropper-control select:focus { border-color: var(--accent); outline: 2px solid rgba(124,225,186,.25); }
@@ -491,6 +495,9 @@ body.mode-generation .live-ore-tracker { display: none; }
 
 @media (max-width: 720px) {
   :root { --shell-pad: 16px; }
+  /* Not enough width here to sit beside the fixed hamburger + "Tool Menu"
+     label — drop below them instead of squeezing right. */
+  .planner-brand { padding-left: 0; padding-top: 44px; }
   .topbar { align-items: flex-start; flex-direction: column; }
   .topbar-actions { justify-content: flex-start; width: 100%; }
   .board-toolbar { align-items: flex-start; flex-direction: column; }
@@ -516,6 +523,28 @@ body.mode-generation .live-ore-tracker { display: none; }
 .tool-nav-toggle { position: fixed; top: 20px; left: 20px; z-index: 30; display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 34px; height: 34px; padding: 8px 7px; border: 1px solid var(--line); border-radius: 7px; background: #13212d; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
 .tool-nav-toggle:hover, .tool-nav-toggle:focus-visible { border-color: var(--accent); outline: none; }
 .tool-nav-toggle span { display: block; height: 2px; border-radius: 1px; background: var(--text); }
+/* Labels the fixed hamburger button on every tool — most obviously needed
+   on the Wiki tool, whose full-bleed background otherwise leaves this
+   corner looking unexplained, but shown everywhere for consistency. */
+.tool-nav-toggle-label[hidden] { display: none; }
+.tool-nav-toggle-label {
+  position: fixed;
+  top: 20px;
+  left: 62px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #13212d;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0,0,0,.4);
+  pointer-events: none;
+}
 
 .tool-nav-menu { width: min(360px, calc(100vw - 28px)); margin: 0; height: 100vh; max-height: 100vh; padding: 0; border: 0; border-right: 1px solid var(--line); border-radius: 0; background: var(--surface); color: var(--text); box-shadow: 0 22px 70px rgba(0,0,0,.55); inset: 0 auto 0 0; }
 .tool-nav-menu::backdrop { background: rgba(3,10,14,.72); backdrop-filter: blur(2px); }
@@ -847,6 +876,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 /* Break out of .app-shell's centered max-width/padding box so the
    background image fills the actual browser viewport instead of sitting in
    a smaller inset panel — this tool draws its own full page look. */
+.wiki-tool[hidden] { display: none; }
 .wiki-tool {
   display: flex;
   width: 100vw;
