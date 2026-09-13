@@ -31,6 +31,22 @@ it should catch the common "new tool section doesn't actually hide" case
 going forward. If you add a new tool/section that gets toggled via
 `.hidden`, run `npm test` before considering it done.
 
+**If the player says a layout/spacing looks off but your own screenshot
+shows it looking fine (or the reported gap/overlap doesn't match your
+measured pixel values), ask whether they're zoomed in or out in their
+browser before changing any CSS.** This has happened at least twice in this
+project's history: once for the "TYCOON SIM" header being reported as
+covered by the menu icon (turned out to be a zoom artifact, a padding fix
+was applied then reverted), and again for the "Tool Menu" label gap looking
+too wide after it had already been tightened and measured correctly via
+`getBoundingClientRect()` (same cause, confirmed directly by the player:
+"I didnt noticed i was zoomed out"). Browser zoom scales the whole page
+including fixed-position elements and text together, so a real screenshot
+comparison won't reveal it — you have to ask. Don't guess-and-shrink/adjust
+a value further based on a single report without first ruling this out (or
+stale cache — see the dev-server caching quirk noted elsewhere in this
+file) as the cause.
+
 ## Last worked on
 
 2026-09-13 — see "2026-09-13 Wiki tool bleeding into other tools + tool-menu
@@ -39,11 +55,10 @@ below that. The wiki tool from earlier today had exactly the `[hidden]`-vs-
 `display` bug described in "Standing gotchas" above — it doesn't hide, and
 in the process it also fixed one more pre-existing latent instance
 (`.live-dropper-control`) and added the regression test that now guards
-against all of these. **Still open**: the player reports the gap between
-the new "Tool Menu" label and the tool title still looks too wide even
-after the padding was tightened and a hard-refresh was requested — see the
-"Open/unresolved" bullet in that entry before touching `.planner-brand`'s
-padding again.
+against all of these. The player briefly thought the "Tool Menu" label gap
+was still too wide after tightening — turned out to be their own browser
+zoom, not a real issue (see that entry's "Resolved" bullet, and the new
+"Standing gotchas" note about asking about zoom).
 
 2026-09-13 — see "2026-09-13 New Wiki tool (WIP), now the default tool"
 below. A brand-new fourth-wall-breaking tool: it doesn't use the shared
@@ -96,23 +111,13 @@ directly by the player after trying it:
      `getBoundingClientRect()`), which is close to the practical floor: much
      less and the title starts overlapping the label again (verified this
      boundary directly, don't go below it without re-checking).
-   - **Open/unresolved as of this entry**: the player reported the gap still
-     looks wide after this tightening and after being asked to hard-refresh.
-     Two working theories, neither confirmed: (1) their browser is still
-     serving a cached `styles.css` from before the tightening — this
-     project's dev-server preview has a well-documented stale-cache quirk,
-     and a plain refresh doesn't always bust it, incognito/"disable cache in
-     DevTools" was suggested as a firmer test; (2) something actually
-     scales with viewport width that hasn't been found yet, though nothing
-     in this CSS (`position: fixed` pixel offsets, a fixed-px
-     `padding-left`) should behave that way — `justify-content: space-between`
-     on `.topbar` only affects the gap between its two flex children, not
-     where the first one starts. **If this comes up again**: get a fresh
-     screenshot confirmed to be post-hard-refresh (or better, ask the player
-     to paste the live computed `padding-left` value from their own DevTools
-     inspector) before changing the number again — don't guess-and-shrink
-     further, since below ~130px it starts genuinely overlapping the label
-     (a regression that was already hit and fixed once this same day).
+   - **Resolved**: the player initially reported the gap still looked too
+     wide even after this tightening and a requested hard-refresh — turned
+     out to be their own browser zoom level, not a caching or CSS issue
+     (confirmed directly by the player: "I didnt noticed i was zoomed out").
+     `130px` is correct and doesn't need revisiting on this basis alone. See
+     the new "Standing gotchas" entry about asking about zoom before
+     changing layout code in response to a visual report.
    - Don't reintroduce a bare `.planner-brand {}` rule without this padding
      if this ever gets refactored — the collision is real and was verified
      with a screenshot, not assumed (a near-identical-looking padding
