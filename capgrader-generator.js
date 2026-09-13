@@ -886,13 +886,39 @@
 
   // ---- Results rendering --------------------------------------------------
 
+  // Shiny badges get one small sparkle that twinkles at a random spot inside
+  // the badge, one at a time, with a random pause between twinkles (capped
+  // so it never goes too long between sparkles).
+  function randomBetween(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function scheduleSparkle(el) {
+    const pauseMs = randomBetween(300, 2200);
+    setTimeout(() => {
+      el.style.left = `${randomBetween(12, 82)}%`;
+      el.style.top = `${randomBetween(15, 75)}%`;
+      el.classList.add('is-active');
+    }, pauseMs);
+  }
+
+  document.addEventListener('animationend', (event) => {
+    if (!event.target.classList?.contains('capgrader-sparkle')) return;
+    event.target.classList.remove('is-active');
+    scheduleSparkle(event.target);
+  });
+
+  function initSparkles(root) {
+    root.querySelectorAll('.capgrader-sparkle').forEach(scheduleSparkle);
+  }
+
   function renderResultTable(dropperLabel, chain, startingValue) {
     const wrap = document.createElement('div');
     wrap.className = 'capgrader-result-table-wrap';
     const rows = chain.map((entry) => `
       <tr>
         <td>${entry.record.name}${entry.count > 1 ? ` &times;${entry.count}` : ''}</td>
-        <td>${entry.record.variant}</td>
+        <td><span class="capgrader-variant-badge ${entry.record.variant.includes('Shiny') ? 'is-shiny' : 'is-base'}">${entry.record.variant}${entry.record.variant.includes('Shiny') ? '<span class="capgrader-sparkle"></span>' : ''}</span></td>
         <td>${compactNumber(entry.before)}</td>
         <td>${compactNumber(entry.after)}</td>
         <td>${entry.timeAfter.toFixed(1)}s</td>
@@ -908,6 +934,7 @@
         </table>
       </div>
     `;
+    initSparkles(wrap);
     return wrap;
   }
 

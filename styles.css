@@ -600,6 +600,36 @@ table.capgrader-result-table thead th { color: var(--muted); font-size: .68rem; 
 table.capgrader-result-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--surface-raised) 40%, transparent); }
 table.capgrader-result-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
 table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font-weight: 800; border-bottom: none; }
+
+.capgrader-variant-badge { position: relative; display: inline-block; padding: 3px 10px; border-radius: 999px; color: #14171c; font-weight: 700; font-size: .78rem; line-height: 1.4; overflow: visible; }
+.capgrader-variant-badge.is-base { background: #f4f6f9; border: 1px solid #d7dce3; }
+.capgrader-variant-badge.is-shiny { background: #ffd94a; border: 1px solid #e8b900; }
+.capgrader-sparkle {
+  position: absolute;
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(.2);
+  transform-origin: center;
+  pointer-events: none;
+  background: #fff;
+  clip-path: polygon(50% 0%, 62% 36%, 100% 50%, 62% 64%, 50% 100%, 38% 64%, 0% 50%, 38% 36%);
+  filter: drop-shadow(0 0 4px rgba(255,255,255,.9));
+  opacity: 0;
+}
+.capgrader-sparkle.is-active {
+  animation: capgrader-sparkle-twinkle 550ms ease-in-out;
+}
+@keyframes capgrader-sparkle-twinkle {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.2) rotate(0deg); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(20deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(.3) rotate(30deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .capgrader-sparkle { display: none; }
+}
 .capgrader-empty-note { color: var(--muted); font-size: .84rem; }
 
 /* ---- Feedback widget ---- */
