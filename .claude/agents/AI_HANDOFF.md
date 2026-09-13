@@ -8,11 +8,108 @@ now wrong, correct it in place and say why.
 
 ## Last worked on
 
+2026-09-13 — see "2026-09-13 Capgrader Generator: Base/Shiny variant badges
++ icons/items/ backfill" below. Small, low-risk polish on top of the
+2026-09-11 variant-mixing work: the results table now visually distinguishes
+Base vs Shiny per row, plus a handful of item icons that were missing from
+`icons/items/` got copied in from the player's local icon folder.
+
 2026-09-11 — see "2026-09-11 Capgrader Generator: mix Base/Shiny variants of
 the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-13 Capgrader Generator: Base/Shiny variant badges + icons/items/ backfill
+
+**Variant badges (`capgrader-generator.js`, `styles.css`)**: now that chains
+routinely mix Base and Shiny copies of the same capgrader (see the
+2026-09-11 entries below), the results table's plain-text "Variant" column
+was hard to scan at a glance. Each row's variant is now a colored pill:
+white background + black text for Base, yellow background + black text for
+Shiny (`.capgrader-variant-badge`, `.is-base` / `.is-shiny` in `styles.css`).
+Mythic/Shiny Mythic fall into whichever bucket matches — anything with
+"Shiny" in the name (`Shiny`, `Shiny Mythic`) gets the yellow treatment,
+plain `Mythic` gets the white one, decided by
+`entry.record.variant.includes('Shiny')` at render time.
+
+**Sparkle effect on Shiny badges** — went through several iterations before
+landing on something the player was happy with, worth recording so a future
+session doesn't repeat the same misses:
+1. First attempt used `::before`/`::after` radial-gradient "dots" with no
+   `background-size` set — radial-gradient layers default to the size of
+   their background box when unset, so each "dot" actually stretched to
+   fill the whole badge, reading as one big pulsing glow blob that drowned
+   out the "Shiny" text. **Lesson: always set `background-size` explicitly
+   on small decorative radial-gradient dots, or they silently scale to the
+   whole element.**
+2. Fixed the sizing, then the player asked for the sparkle to look like an
+   actual 4-point sparkle/star shape (reference: a "twinkle" glyph, one big
+   star plus smaller ones), in white, not the soft circular dots. Solved
+   with `clip-path: polygon(50% 0%, 62% 36%, 100% 50%, 62% 64%, 50% 100%,
+   38% 64%, 0% 50%, 38% 36%)` on a plain white-background element — this
+   polygon shape (4 outer spike points, 4 concave inner points) is the
+   general recipe for a CSS sparkle/twinkle glyph if this is needed again
+   elsewhere (e.g. a future Luck/Crate tool "lucky pull" celebration).
+3. Player wanted only **one sparkle at a time**, appearing at a **random
+   position inside the badge** (not fixed corners), with a **random pause
+   between twinkles capped on the low side of "not too long"**. Pure CSS
+   keyframes can't do true per-cycle randomness shared identically across
+   every badge instance, so this moved to JS: each Shiny badge's markup now
+   includes a child `<span class="capgrader-sparkle">` (added in
+   `renderResultTable()`'s row template, only when
+   `variant.includes('Shiny')`), and `capgrader-generator.js` has a small
+   self-scheduling loop (`scheduleSparkle()` + a delegated
+   `document.addEventListener('animationend', ...)` in the same file) that:
+   picks a random `left`/`top` percentage inside the badge, adds
+   `.is-active` to trigger a ~550ms CSS keyframe twinkle
+   (`capgrader-sparkle-twinkle` in `styles.css`), then on
+   `animationend` removes the class and reschedules after a random
+   300ms-2200ms pause. `initSparkles(root)` is called once per rendered
+   result table (inside `renderResultTable()`) to wire up any sparkles it
+   just created.
+4. Final size ended up much bigger than first guessed (22px, up from an
+   initial 9px) — the player's screen genuinely couldn't see a small
+   sparkle at a glance, and explicitly said it's fine for it to bleed
+   outside the badge's rounded-pill bounds (`.capgrader-variant-badge` has
+   `overflow: visible` for exactly this reason — don't add `overflow:
+   hidden` back to it without checking this doesn't need it).
+
+**`icons/items/` backfill**: the player pointed at their local
+`Documents\Tycoon Sim\Icons` folder and asked to get it into the repo so
+future tools can pull icons without needing their machine. Turned out
+`icons/items/` already mirrored ~430 of 436 files from an earlier session's
+sync (not otherwise documented in this file — found by direct comparison,
+worth a future session double-checking git blame/history if the provenance
+matters). That earlier sync had also **manually corrected a handful of typos
+in the source folder's raw filenames** to match the game's real item names
+from `data/items.generated.js` (e.g. source's "Percision Ore Scanner" →
+repo's "Precision Ore Scanner", source's "Advanced ore Upgrader" → repo's
+"Advanced Ore Upgrader", source's "MVP Upgrader" → repo's "MVP", source's
+"Enforced Upgrader Mythic Shiny" → repo's "Enforced Upgrader Shiny Mythic").
+**Don't blindly re-sync/overwrite `icons/items/` from the source folder in
+one shot** — diff filenames first and only add genuinely missing ones, or
+those corrections get silently reverted back to the typo'd names. This
+session found and added exactly 6 genuinely-missing files by doing an exact
+filename diff: Base variants for Carrot Mutator, Clover Garden, and Lush
+Beanstock (only their Shiny versions existed before), plus all three
+missing Holophase Device variants (Base/Shiny/Mythic — only Shiny Mythic
+existed before).
+
+**Not done**: no wiki/item-info tool exists yet. Discussed with the player
+(not yet planned or started) — their instinct was to wait for the
+in-progress item-geometry worksheet (`data/item-geometry-worksheet.json`,
+still WIP and intentionally untracked — see the standing rule below) to be
+finished first, thinking it'd tell them "how every item works." Clarified
+this isn't the right dependency: the geometry worksheet encodes
+placement/rotation/footprint priority rules for the **base-builder engine**,
+not display facts a wiki page would show a reader. A stats/effects/icon
+wiki could be built today entirely from `data/items.generated.js`,
+`data/mpu-stats.js`, `data/crate-luck-data.generated.js`, and now-complete
+`icons/items/` — geometry only becomes relevant if a wiki page should also
+render a live footprint/placement preview per item, which is a distinct,
+optional feature. Player is now thinking about how they want it to look
+before requesting an implementation.
 
 ## 2026-09-11 Capgrader Generator: mix Base/Shiny variants of the same capgrader within one chain
 
