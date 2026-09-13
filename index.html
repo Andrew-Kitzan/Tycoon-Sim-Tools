@@ -335,6 +335,59 @@
           <p id="mpa-decision-empty" class="capgrader-empty-note" hidden>Nothing left to decide — everything in your base has been kept or chopped, or is still locked by a combo requirement.</p>
         </div>
       </section>
+
+      <section id="wiki-tool" class="wiki-tool" aria-label="Wiki" hidden>
+        <div class="wiki-frame">
+          <div class="wiki-topbar">
+            <label class="wiki-search" aria-label="Search the wiki">
+              <input type="search" id="wiki-search-input" placeholder="Search the wiki..." />
+            </label>
+          </div>
+
+          <div class="wiki-body">
+            <aside class="wiki-sidebar" aria-label="Wiki navigation">
+              <p class="wiki-sidebar-title">Tycoon Simulator Wiki</p>
+              <nav class="wiki-sidebar-nav">
+                <p class="wiki-sidebar-heading">Navigation</p>
+                <div class="wiki-sidebar-list"></div>
+              </nav>
+            </aside>
+
+            <div class="wiki-main">
+              <div class="wiki-hero">
+                <p class="wiki-hero-eyebrow">Welcome to the...</p>
+                <h1 class="wiki-hero-title">Tycoon Simulator Wiki</h1>
+                <p class="wiki-hero-sub">A wiki run by <strong>Minecraftwiner1</strong> for <strong>Tycoon Simulator</strong>, made by <strong>derpmonster83</strong> and <strong>Auxiliary_cord</strong>.</p>
+                <div class="wiki-hero-links">
+                  <a class="wiki-hero-link" href="https://www.roblox.com/games/123076957357158/Tycoon-Simulator" target="_blank" rel="noopener noreferrer">Play the Game</a>
+                  <a class="wiki-hero-link" href="https://www.roblox.com/communities/35607303/Derp-LLC#!/about" target="_blank" rel="noopener noreferrer">Roblox Group</a>
+                  <a class="wiki-hero-link" href="https://discord.gg/YWsMAMdftq" target="_blank" rel="noopener noreferrer">Discord</a>
+                </div>
+              </div>
+
+              <div class="wiki-nav-grid" aria-label="Wiki page categories">
+                <div class="wiki-nav-tile"></div>
+                <div class="wiki-nav-tile"></div>
+                <div class="wiki-nav-tile"></div>
+                <div class="wiki-nav-tile"></div>
+                <div class="wiki-nav-tile"></div>
+                <div class="wiki-nav-tile"></div>
+              </div>
+
+              <div class="wiki-updates">
+                <div class="wiki-update-panel">
+                  <h3>Game Updates</h3>
+                  <p class="wiki-update-placeholder">Coming soon.</p>
+                </div>
+                <div class="wiki-update-panel">
+                  <h3>Wiki &amp; Tools Updates</h3>
+                  <p class="wiki-update-placeholder">Coming soon.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <dialog id="luck-item-dialog" class="luck-item-dialog" aria-labelledby="luck-item-dialog-title">
@@ -356,7 +409,11 @@
           <button class="icon-button" type="button" data-tool-nav-action="close" aria-label="Close tools menu">&times;</button>
         </div>
         <div class="tool-nav-list" role="list">
-          <button type="button" class="tool-nav-item" data-tool="builder" aria-current="true">
+          <button type="button" class="tool-nav-item" data-tool="wiki" aria-current="true">
+            <strong>Wiki <span class="wip-badge">WIP</span></strong>
+            <span>Browse the community wiki</span>
+          </button>
+          <button type="button" class="tool-nav-item" data-tool="builder" aria-current="false">
             <strong>Base Builder <span class="wip-badge">WIP</span></strong>
             <span>Grid-based base planner</span>
           </button>

@@ -40,12 +40,15 @@ const buildModeHint = document.querySelector('#build-mode-hint');
 const plannerModeToggle = document.querySelector('#planner-mode-toggle');
 const toolNavToggle = document.querySelector('#tool-nav-toggle');
 const toolNavMenu = document.querySelector('#tool-nav-menu');
+const toolNavItemWiki = document.querySelector('[data-tool="wiki"]');
 const toolNavItemBuilder = document.querySelector('[data-tool="builder"]');
 const toolNavItemCapgrader = document.querySelector('[data-tool="capgrader"]');
 const toolNavItemLuck = document.querySelector('[data-tool="luck"]');
 const toolNavItemCalculator = document.querySelector('[data-tool="calculator"]');
 const toolNavItemMpa = document.querySelector('[data-tool="mpa"]');
-const toolNavItems = [toolNavItemBuilder, toolNavItemCapgrader, toolNavItemLuck, toolNavItemCalculator, toolNavItemMpa].filter(Boolean);
+const toolNavItems = [toolNavItemWiki, toolNavItemBuilder, toolNavItemCapgrader, toolNavItemLuck, toolNavItemCalculator, toolNavItemMpa].filter(Boolean);
+const appTopbar = document.querySelector('.topbar');
+const wikiToolSection = document.querySelector('#wiki-tool');
 const workspaceSection = document.querySelector('.workspace');
 const capgraderToolSection = document.querySelector('#capgrader-tool');
 const luckToolSection = document.querySelector('#luck-tool');
@@ -2107,21 +2110,26 @@ function saveActiveTool() {
 
 function loadActiveTool() {
   const storage = browserStorage();
-  if (!storage) return 'builder';
+  if (!storage) return 'wiki';
   try {
     const saved = storage.getItem(activeToolStorageKey);
-    return saved === 'capgrader' || saved === 'luck' || saved === 'calculator' || saved === 'mpa' ? saved : 'builder';
+    return saved === 'builder' || saved === 'capgrader' || saved === 'luck' || saved === 'calculator' || saved === 'mpa' ? saved : 'wiki';
   } catch {
-    return 'builder';
+    return 'wiki';
   }
 }
 
 function applyActiveToolUi() {
+  if (wikiToolSection) wikiToolSection.hidden = activeTool !== 'wiki';
   if (workspaceSection) workspaceSection.hidden = activeTool !== 'builder';
   if (capgraderToolSection) capgraderToolSection.hidden = activeTool !== 'capgrader';
   if (luckToolSection) luckToolSection.hidden = activeTool !== 'luck';
   if (calcToolSection) calcToolSection.hidden = activeTool !== 'calculator';
   if (mpaToolSection) mpaToolSection.hidden = activeTool !== 'mpa';
+  // The wiki tool draws its own full page chrome (its own title, search bar,
+  // nav) instead of using the shared app-shell header, so that header is
+  // hidden entirely while it's active rather than showing a redundant title.
+  if (appTopbar) appTopbar.hidden = activeTool === 'wiki';
   if (headerTitle) {
     headerTitle.textContent = activeTool === 'capgrader' ? 'Capgrader Generator'
       : activeTool === 'luck' ? 'Luck Simulator'
@@ -2142,6 +2150,7 @@ function applyActiveToolUi() {
   if (activeTool === 'luck') document.dispatchEvent(new CustomEvent('luck-tool:activated'));
   if (activeTool === 'calculator') document.dispatchEvent(new CustomEvent('calc-tool:activated'));
   if (activeTool === 'mpa') document.dispatchEvent(new CustomEvent('mpa-tool:activated'));
+  if (activeTool === 'wiki' && typeof CustomEvent === 'function') document.dispatchEvent(new CustomEvent('wiki-tool:activated'));
   // Exposed for other standalone-IIFE scripts (help.js) that need to know
   // which tool is active without app.js's internal `activeTool` variable —
   // same pattern as globalThis.TycoonDatabase/TycoonActivePlan.
@@ -2152,7 +2161,7 @@ function applyActiveToolUi() {
 }
 
 function setActiveTool(nextTool) {
-  activeTool = nextTool === 'capgrader' || nextTool === 'luck' || nextTool === 'calculator' || nextTool === 'mpa' ? nextTool : 'builder';
+  activeTool = nextTool === 'builder' || nextTool === 'capgrader' || nextTool === 'luck' || nextTool === 'calculator' || nextTool === 'mpa' ? nextTool : 'wiki';
   applyActiveToolUi();
   saveActiveTool();
 }

@@ -9,6 +9,7 @@
   --accent: #7ce1ba;
   --tile: 36px;
   --grid-zoom: 1.5;
+  --shell-pad: 28px;
 }
 
 * { box-sizing: border-box; }
@@ -17,6 +18,11 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  /* The wiki tool's full-bleed background (below) intentionally breaks out
+     of .app-shell's centered max-width box using 100vw; vw and % disagree
+     by the scrollbar's width, which without this rule shows up as a few
+     stray px of horizontal scroll. */
+  overflow-x: hidden;
   background: radial-gradient(circle at 75% 0%, #203747, var(--page) 45%);
   color: var(--text);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -42,8 +48,9 @@ select {
   -webkit-text-fill-color: var(--text);
 }
 
-.app-shell { max-width: 1740px; margin: 0 auto; padding: 28px; }
+.app-shell { max-width: 1740px; margin: 0 auto; padding: var(--shell-pad); }
 
+.topbar[hidden] { display: none; }
 .topbar {
   display: flex;
   align-items: end;
@@ -483,7 +490,7 @@ body.mode-generation .live-ore-tracker { display: none; }
 .confirm-load-base-dialog p:not(.panel-label) { color: var(--muted); line-height: 1.5; }
 
 @media (max-width: 720px) {
-  .app-shell { padding: 16px; }
+  :root { --shell-pad: 16px; }
   .topbar { align-items: flex-start; flex-direction: column; }
   .topbar-actions { justify-content: flex-start; width: 100%; }
   .board-toolbar { align-items: flex-start; flex-direction: column; }
@@ -830,3 +837,96 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .mpa-decision-actions { display: flex; gap: 10px; margin-top: 4px; }
 .mpa-chop-button { background: #8f2a2a; border-color: #a84d56; }
 .mpa-chop-button:hover, .mpa-chop-button:focus-visible { background: #a3312f; border-color: #ffb5bc; }
+
+/* ---- Wiki (WIP) ------------------------------------------------------- */
+/* Deliberately its own full page look rather than the shared app-shell
+   header/panels — the hamburger tool-nav toggle (fixed, outside <header>)
+   still works to switch away from it; see applyActiveToolUi() in app.js,
+   which hides .topbar entirely while this tool is active instead of
+   showing a redundant title bar on top of this section's own header. */
+/* Break out of .app-shell's centered max-width/padding box so the
+   background image fills the actual browser viewport instead of sitting in
+   a smaller inset panel — this tool draws its own full page look. */
+.wiki-tool {
+  display: flex;
+  width: 100vw;
+  margin: calc(var(--shell-pad) * -1) calc(-50vw + 50%);
+}
+.wiki-frame {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: #16222c;
+  background-image: url('icons/wiki/background.png');
+  background-size: cover;
+  background-position: center;
+}
+.wiki-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(8,14,18,.55), rgba(8,14,18,.78));
+  pointer-events: none;
+}
+.wiki-topbar, .wiki-body { position: relative; z-index: 1; }
+
+.wiki-topbar { display: flex; justify-content: center; padding: 24px 28px 0; }
+.wiki-search { width: min(560px, 90%); }
+.wiki-search input {
+  width: 100%;
+  padding: 12px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(10,18,24,.72);
+  color: var(--text);
+  font-size: .9rem;
+}
+.wiki-search input::placeholder { color: var(--muted); }
+.wiki-search input:focus-visible { outline: 2px solid var(--accent); border-color: var(--accent); }
+
+.wiki-body { display: flex; align-items: flex-start; gap: 22px; padding: 26px 32px 34px; }
+.wiki-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
+
+.wiki-sidebar {
+  flex: 0 0 240px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(8,16,20,.62);
+}
+.wiki-sidebar-title { margin: 0; font-size: 1.05rem; font-weight: 800; text-align: left; color: var(--text); }
+.wiki-sidebar-heading { margin: 16px 0 8px; font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: left; }
+.wiki-sidebar-list { min-height: 140px; border: 1px dashed var(--line); border-radius: 10px; }
+
+.wiki-hero { padding: 34px 30px; border: 1px solid var(--line); border-radius: 14px; background: rgba(8,14,18,.6); text-align: center; }
+.wiki-hero-eyebrow { margin: 0 0 6px; color: var(--muted); font-size: .95rem; }
+.wiki-hero-title { margin: 0 0 14px; font-size: 2.4rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 24px rgba(124,225,186,.45); }
+.wiki-hero-sub { max-width: 640px; margin: 0 auto 22px; color: var(--text); font-size: .95rem; line-height: 1.5; }
+.wiki-hero-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.wiki-hero-link {
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(20,34,42,.85);
+  color: var(--text);
+  font-weight: 800;
+  font-size: .82rem;
+  text-decoration: none;
+}
+.wiki-hero-link:hover, .wiki-hero-link:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+
+.wiki-nav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+.wiki-nav-tile { aspect-ratio: 2.4 / 1; border: 1px dashed var(--line); border-radius: 10px; background: rgba(8,14,18,.35); }
+
+.wiki-updates { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.wiki-update-panel { padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: rgba(8,14,18,.6); }
+.wiki-update-panel h3 { margin: 0 0 10px; font-size: .95rem; color: var(--accent); }
+.wiki-update-placeholder { margin: 0; color: var(--muted); font-size: .84rem; }
+
+@media (max-width: 860px) {
+  .wiki-body { flex-direction: column; }
+  .wiki-sidebar { flex-basis: auto; width: 100%; }
+  .wiki-sidebar-title, .wiki-sidebar-heading { text-align: left; }
+  .wiki-updates { grid-template-columns: 1fr; }
+}
