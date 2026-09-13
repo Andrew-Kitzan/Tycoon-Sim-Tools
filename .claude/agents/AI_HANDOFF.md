@@ -8,6 +8,12 @@ now wrong, correct it in place and say why.
 
 ## Last worked on
 
+2026-09-13 — see "2026-09-13 New Wiki tool (WIP), now the default tool"
+below. A brand-new fourth-wall-breaking tool: it doesn't use the shared
+app-shell header/panel chrome at all, draws its own full-viewport page, and
+is now what loads first for a new visitor instead of Base Builder. Only a
+home-page demo exists so far — no actual wiki content/pages yet.
+
 2026-09-13 — see "2026-09-13 Capgrader Generator: Base/Shiny variant badges
 + icons/items/ backfill" below. Small, low-risk polish on top of the
 2026-09-11 variant-mixing work: the results table now visually distinguishes
@@ -19,6 +25,93 @@ the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-13 New Wiki tool (WIP), now the default tool
+
+Player wants a wiki tool eventually (item info, guides, etc. — discussed but
+not planned yet, see the "Not done" note in the 2026-09-13 icons entry
+below). This session built just the **home page**, as a design demo, before
+any real content/page system exists. Marked WIP in the tools menu
+(`<span class="wip-badge">WIP</span>` next to "Wiki", same convention as
+Base Builder's).
+
+**It's now the default tool** (`app.js`'s `loadActiveTool()`/`setActiveTool()`
+both fall back to `'wiki'` instead of `'builder'` when nothing is saved yet
+in `localStorage`), matching the player's explicit ask — a new visitor lands
+here first, not on Base Builder. Existing visitors with a saved
+`tycoon-sim-2:active-tool:v1` are unaffected; this only changes the
+first-ever-visit default.
+
+**Why it doesn't use the shared app-shell header** (`.topbar`,
+`#header-title`, etc., shared by every other tool): the player wants this
+tool to look like an actual wiki homepage (reference: a screenshot of an
+unrelated game's community wiki, used purely for layout inspiration, not
+this game's content) — full-bleed background image, its own search bar and
+title — not a small tool bolted under the game's usual top bar. So
+`applyActiveToolUi()` in `app.js` now hides `.topbar` entirely
+(`appTopbar.hidden = activeTool === 'wiki'`) whenever this tool is active,
+and `#wiki-tool` draws a completely self-contained page. The fixed
+hamburger tool-switcher button and Feedback button are OUTSIDE `<header>` in
+the DOM, so they still work fine regardless — only the per-tool title bar
+disappears.
+
+**Full-bleed background — the trick and its gotcha** (`styles.css`,
+`.wiki-tool`/`.wiki-frame`): every other tool lives inside `.app-shell`,
+which is `max-width: 1740px; margin: 0 auto; padding: var(--shell-pad)`
+(new CSS variable, default `28px`, `16px` under the existing 720px mobile
+breakpoint — added specifically so this breakout math and `.app-shell`'s own
+padding can never drift out of sync). To make the wiki's background image
+fill the actual browser viewport instead of sitting in a smaller inset
+panel, `.wiki-tool` uses the standard "breakout" hack:
+`margin: calc(var(--shell-pad) * -1) calc(-50vw + 50%); width: 100vw;`.
+**Gotcha hit and fixed**: `vw` units include the width a vertical scrollbar
+would occupy, while `%` (based on the containing block) does not — when a
+page has a vertical scrollbar these two disagree by the scrollbar's width,
+which showed up as ~7px of stray horizontal scroll/cropped content on the
+right edge. Fixed by adding `overflow-x: hidden` to `body` (comment left in
+place explaining why). **If any future full-bleed/breakout element is added
+elsewhere, expect the same issue** — either reuse this existing
+`overflow-x: hidden`, or budget for it again.
+
+**Content is entirely placeholder** — nothing here is wired to real data yet:
+- Search bar (`#wiki-search-input`) is visual only, no search logic.
+- The left sidebar's `.wiki-sidebar-list` and the `.wiki-nav-grid`'s six
+  `.wiki-nav-tile` divs are empty, dashed-border placeholder boxes — meant to
+  become real links to wiki pages once those exist. Don't build a page
+  system on top of these without asking the player how they want pages
+  structured first; this was explicitly "just the outlines for now."
+- `.wiki-update-panel` "Game Updates" / "Wiki & Tools Updates" boxes just say
+  "Coming soon." — no update-log data source exists yet.
+- The 3 hero links (Play the Game / Roblox Group / Discord) ARE real,
+  working links (`target="_blank" rel="noopener noreferrer"`) — those don't
+  need revisiting.
+
+**Credits/links used in the hero copy** (confirmed with the player directly,
+not guessed): wiki run by **Minecraftwiner1**; game is **Tycoon Simulator**
+(confirmed via the actual Roblox store listing — note this differs from
+this repo's own internal name "Tycoon Sim 2", which is just this companion
+tool's own branding, not the game's real title); made by **derpmonster83**
+(owner, per the "Derp LLC" Roblox group page) and **Auxiliary_cord**
+(builder — player corrected an initial wrong guess of "Auxinite" from
+misreading a reference image). Game link:
+`https://www.roblox.com/games/123076957357158/Tycoon-Simulator`. Group
+link: `https://www.roblox.com/communities/35607303/Derp-LLC#!/about`.
+Discord: `https://discord.gg/YWsMAMdftq`.
+
+**Background image**: `icons/wiki/background.png` — an actual in-game
+screenshot the player supplied (their local
+`Tycoon Sim\Spreadsheet Pic\enviroment screenshot.png`, note the source
+filename's typo'd spelling). **Lesson for next time**: a pasted/inline chat
+image is NOT readable as a file — only a real filesystem path works. When a
+player pastes an image and expects it used as an asset, ask for the actual
+file path up front instead of assuming access, which costs a round trip.
+
+**Not done**: no actual wiki pages/content, no search functionality, no
+page-link data structure decided, no `wiki-tool.js` script exists yet
+(everything so far is static HTML/CSS — no JS file was needed since nothing
+is interactive besides real `<a>` tags). Player said they're still thinking
+about how they want it to look/organized before requesting the next round of
+implementation — don't build the page/content system speculatively.
 
 ## 2026-09-13 Capgrader Generator: Base/Shiny variant badges + icons/items/ backfill
 
