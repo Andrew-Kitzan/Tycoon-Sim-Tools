@@ -49,6 +49,13 @@ file) as the cause.
 
 ## Last worked on
 
+2026-09-13 — see "2026-09-13 Wiki content-structure research (not yet
+planned/built — reference for later)" below. Pure research, no code
+changed: browsed a real fan wiki for structure/navigation ideas (category
+pages vs. item pages, infobox pattern, the cross-page "navbox" footer link
+pattern). Player doesn't have time to turn this into a plan yet — don't act
+on it without checking in first.
+
 2026-09-13 — see "2026-09-13 Wiki tool bleeding into other tools + tool-menu
 label" below, then "2026-09-13 New Wiki tool (WIP), now the default tool"
 below that. The wiki tool from earlier today had exactly the `[hidden]`-vs-
@@ -77,6 +84,62 @@ the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-13 Wiki content-structure research (not yet planned/built — reference for later)
+
+Player wants to plan out actual wiki *content* structure (pages, item
+templates, navigation) once they have time, separate from the home-page demo
+above. Asked to browse a real MediaWiki-based fan wiki for a different game
+(Ultimate Mining Tycoon, `https://umt.miraheze.org/wiki/Ultimate_Mining_Tycoon_Wiki`
+— the same site whose home page was used as visual inspiration for this
+project's own wiki home page demo) specifically for structure/flow/linking
+patterns, not content to copy. Findings, kept here until the player is ready
+to turn this into an actual plan:
+
+- **Category pages ≠ item pages.** A page like "Ores" or "Machines" is one
+  long article explaining the *mechanic* (how the category works, how it's
+  obtained/used), not just a list of links. Skeleton: intro sentence → table
+  of contents → mechanic sub-sections → a data table or icon-grid gallery of
+  every item in that category (each name/icon links out to that item's own
+  page) → a version-history/changelog section → a "Navigation" footer.
+- **Individual item pages** get their own URL (e.g. `Tin_Ore`,
+  `Guide:Tablet_Factory`), linked from the category table. Template: one
+  intro sentence, an **infobox** top-right (icon + a stat block — fields
+  vary sensibly per item type: ores show Value/Depth/Strength, other types
+  would show their own relevant stats), then Obtaining → Usage → History
+  (a per-item-filtered changelog) → Navigation.
+- **The page-bottom "Navigation" section is a collapsible navbox** (MediaWiki
+  calls this a "vte" template) listing every item across the whole related
+  item-family (e.g. all Ores AND all Gems together under a "Minerals"
+  group), so a reader can jump sideways between sibling items without going
+  back through the category page first. This is the single most reusable
+  idea found — worth adopting even if nothing else from this research is,
+  since it solves real cross-page navigation cheaply.
+- **Machines-style category pages** additionally split into named
+  sub-groups by function (Metalwork, Stonework, Explosives, etc.), each
+  with its own short blurb and an icon-card gallery (image + price per
+  card) instead of a big table — better fit for tools/upgraders than the
+  Ores-style table, probably the closer analog for this game's
+  Upgraders/Machines pages if built.
+- **Linking convention**: category pages hyperlink every proper-noun
+  mechanic term inline on first mention (e.g. "sold through **Sellers**,"
+  smelted into **Bars**"), and every item name in a table/gallery is always
+  a live link even before that page exists (MediaWiki shows these as
+  visually-distinct "redlinks" — worth deciding whether to do the same or
+  only link pages that already exist, once a page system exists here).
+- **Home page layout already matches** what was referenced when building
+  this project's own wiki home-page demo (see the entry below) — search top
+  center, hero welcome block, 3 external links, a tile-grid nav row, then a
+  two-column updates block. The reference site's home page has more below
+  that (Recent Changes / Wiki Statistics / Wiki Contribution Help) that the
+  player explicitly said NOT to include here.
+
+**Not done**: no plan has been written from this yet — the player said they
+don't have time to review it right now. Next session should NOT start
+building page templates/navigation logic from this alone; revisit with the
+player first to turn it into an actual plan (which pages first, what fields
+each of this game's item types needs in an infobox, whether to use the
+navbox-footer pattern, etc.) before writing any code.
 
 ## 2026-09-13 Wiki tool bleeding into other tools + tool-menu label
 
