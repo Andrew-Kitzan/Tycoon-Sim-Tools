@@ -1,6 +1,6 @@
 // Generates data/crate-luck-data.generated.js from the "Crates" sheet of
 // data/Tycoon Sim Database.xlsx, for the Luck/Crate Simulator tool
-// (luck-crate-generator.js). Unlike data/item-geometry-worksheet.json, this
+// (luck-crate-generator.js). Unlike data/manual/item-geometry-worksheet.json, this
 // file needs no manual judgment calls — every field here (crate name, cost,
 // per-item weight/rarity/size/variant) is mechanically present in the sheet,
 // so it's a generated cache like data/items.generated.js, not a hand-maintained

@@ -1,6 +1,6 @@
 # MPA / Chopping Block — missing icons
 
-Computed once while building `data/mpu-stats.js` (2026-09-11) by checking
+Computed once while building `data/manual/mpu-stats.js` (2026-09-11) by checking
 every tracked item+variant's expected `icons/items/{Name} {Variant}.png`
 path against what actually exists. The tool itself never breaks on a missing
 icon — it just renders a blank slot (same `onerror`-hide pattern the Luck
@@ -21,6 +21,6 @@ source icon folder yet, so nothing to copy in until the user has it:
 
 - `icons/items/Ore Pollinator Shiny.png`
 
-If new items are added to `data/mpu-stats.js` later, this list won't
+If new items are added to `data/manual/mpu-stats.js` later, this list won't
 auto-update — re-check manually (compare each tracked item+variant's
 expected icon path against `icons/items/`) if it matters again.

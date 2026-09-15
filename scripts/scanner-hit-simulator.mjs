@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Kinematic hit-chance simulator for scanner beams, driven directly by the
-// confirmed geometry in data/item-geometry-worksheet.json. This replaces
+// confirmed geometry in data/manual/item-geometry-worksheet.json. This replaces
 // in-game empirical testing for the variables that are pure geometry/motion
 // (lane position, ore size, drop speed / ore spacing, conveyor speed) by
 // literally simulating a real sequence of dropped ore against the beam's own
@@ -191,7 +191,7 @@ function summarizeAcrossOffsets(fn, cfg, params, { nOffsets = 20, offsetPeriod }
   return { mean, min, max };
 }
 
-// ---- Scanner geometry, taken from data/item-geometry-worksheet.json "confirmed" ----
+// ---- Scanner geometry, taken from data/manual/item-geometry-worksheet.json "confirmed" ----
 
 // conveyorSpeed is stored raw (studs/sec, 3 studs == 1 tile) — divide by 3 to
 // get tile-grid speed matching the rest of this file's coordinates.

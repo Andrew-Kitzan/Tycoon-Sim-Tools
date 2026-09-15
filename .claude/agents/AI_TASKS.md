@@ -6,7 +6,7 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
 
 ## In progress
 
-- **Auditing `data/item-geometry-worksheet.json`'s `upgraders` section.**
+- **Auditing `data/manual/item-geometry-worksheet.json`'s `upgraders` section.**
   Droppers and furnaces are fully audited and fixed. Upgraders: every item has
   been bulk pre-filled with best-guess defaults (conveyor centered per
   `internalTransportProfile`, beam assumed to match the full conveyor path),
@@ -78,7 +78,7 @@ Roadmap items the user wants eventually, roughly in dependency order (each
 later item leans on the data/work from the ones before it):
 
 1. **Updated item info** — the user's current, active focus (this is the
-   `data/item-geometry-worksheet.json` audit above, not a separate task).
+   `data/manual/item-geometry-worksheet.json` audit above, not a separate task).
 2. **More in-app warnings for items/situations that could screw over the
    player** — e.g. limited-use items about to run out, destructive
    effect/material interactions, irreversible actions, anything a player

@@ -11,6 +11,72 @@
   const navTiles = document.querySelectorAll('[data-wiki-page]');
   if (!homeView || !pageView) return;
 
+  // Rebirth reward data lives in data/manual/rebirth-data.json — a plain,
+  // hand-edited JSON file (not a JS global like the other data/ files) so it
+  // stays easy to open and fill in directly. Fetched once and cached; safe
+  // under both the local `python -m http.server` dev setup and the real
+  // static GitHub Pages deploy, since both serve it same-origin over http(s).
+  let rebirthDataPromise = null;
+  function loadRebirthData() {
+    if (!rebirthDataPromise) {
+      rebirthDataPromise = fetch('data/manual/rebirth-data.json')
+        .then((res) => res.json())
+        .catch(() => []);
+    }
+    return rebirthDataPromise;
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (ch) => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+    ));
+  }
+
+  function formatNumber(value) {
+    return typeof value === 'number' ? value.toLocaleString() : escapeHtml(value ?? '—');
+  }
+
+  function formatList(list) {
+    return Array.isArray(list) && list.length ? list.map(escapeHtml).join(', ') : '—';
+  }
+
+  async function renderRebirthPage() {
+    const rows = await loadRebirthData();
+    const tableRows = rows.map((row) => `
+      <tr>
+        <td>${formatNumber(row.rebirth)}</td>
+        <td>${row.cost == null ? '—' : formatNumber(row.cost)}</td>
+        <td>${formatList(row.itemRewards)}</td>
+        <td>${row.crystalReward == null ? '—' : formatNumber(row.crystalReward)}</td>
+        <td>${formatList(row.statRewards)}</td>
+        <td>${formatList(row.potionRewards)}</td>
+      </tr>`).join('');
+    return `
+      <p>Rebirthing resets your cash to $0 in exchange for permanent rewards —
+      it's the game's core prestige loop. Since cash is the only thing you
+      lose (see below), the optimal time to rebirth isn't the moment you
+      first qualify — spend as much as you can on crates from the Merchant
+      first, then rebirth once you've got just enough cash left to cover the
+      cost.</p>
+      <p><strong>What you lose:</strong> your cash resets to $0 the moment
+      you rebirth, no matter how much you had banked above the cost — there's
+      no benefit to holding extra cash past what the next rebirth requires.
+      That's the only thing rebirthing takes from you.</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Rebirth</th>
+            <th>Cost</th>
+            <th>Item Reward(s)</th>
+            <th>Crystals</th>
+            <th>Stat Rewards</th>
+            <th>Potion Rewards</th>
+          </tr>
+        </thead>
+        <tbody>${tableRows || '<tr><td colspan="6">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
   const PAGES = {
     index: {
       title: 'Index',
@@ -18,7 +84,7 @@
     },
     rebirth: {
       title: 'Rebirth',
-      body: '<p>How rebirthing works, what it costs, and what you get for it. Not written yet.</p>',
+      body: renderRebirthPage,
     },
     merchant: {
       title: 'Merchant',
@@ -70,7 +136,16 @@
     const page = PAGES[key];
     if (!page) return;
     pageTitle.textContent = page.title;
-    pageBody.innerHTML = page.body;
+    if (typeof page.body === 'function') {
+      pageBody.innerHTML = '<p>Loading…</p>';
+      Promise.resolve(page.body()).then((html) => {
+        // Guard against a slow fetch resolving after the player has already
+        // navigated away to a different page.
+        if (pageTitle.textContent === page.title) pageBody.innerHTML = html;
+      });
+    } else {
+      pageBody.innerHTML = page.body;
+    }
     homeView.hidden = true;
     pageView.hidden = false;
   }

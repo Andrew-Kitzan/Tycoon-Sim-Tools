@@ -20,7 +20,7 @@ current item actually modifies the distribution.
 
 ## Item geometry worksheet
 
-`data/item-geometry-worksheet.json` is the **hand-maintained source of truth**
+`data/manual/item-geometry-worksheet.json` is the **hand-maintained source of truth**
 for every item's physical placement (drop points, conveyor belts, upgrade
 beams, furnace processing zones) and, for items whose behavior a flat
 `mainStat` can't express, a `formulaOverride`. It exists to stage and verify
@@ -106,7 +106,7 @@ A geometry-based kinematic simulator now exists — `scripts/scanner-hit-simulat
 `node scripts/scanner-hit-report.mjs [nOre] [nOffsets] > report.md`). It replaces
 in-game empirical testing for the 4 real scanners by literally simulating the beam's
 motion and a real sequential stream of dropped ore against it. **Not yet wired into
-`data/item-geometry-worksheet.json`'s `formulaOverride` fields or the engine — this
+`data/manual/item-geometry-worksheet.json`'s `formulaOverride` fields or the engine — this
 section exists so a future session can find and use it without re-deriving it.**
 
 - **Model assumptions locked in with the user, do not re-litigate:** ore x-position

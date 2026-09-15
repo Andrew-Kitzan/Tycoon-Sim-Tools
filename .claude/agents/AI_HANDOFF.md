@@ -49,6 +49,10 @@ file) as the cause.
 
 ## Last worked on
 
+2026-09-14 (later session) — see "2026-09-14 Rebirth page: first real
+content page + new data/manual/ folder" below. Started actually writing wiki
+content, page by page, beginning with Rebirth per the player's request.
+
 2026-09-14 — see "2026-09-14 Wiki home page: real navigation, all 13 tiles
 backgrounded" below. Long session, all UI/content-scaffolding work on the
 Wiki tool's home page — no other tool touched. The nav grid went from
@@ -94,6 +98,80 @@ the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-14 Rebirth page: first real content page + new data/manual/ folder
+
+First actual wiki content page (everything before this was a "Not written
+yet." placeholder). Picks up directly from the home-page entry below.
+
+**`data/manual/` is a new folder** holding hand-edited data files the player
+and/or an agent will commonly update — moved `data/item-geometry-worksheet.json`
+and `data/mpu-stats.js` into it (now `data/manual/item-geometry-worksheet.json`,
+`data/manual/mpu-stats.js`), and added `data/manual/rebirth-data.json` there
+too. Every reference to the old paths was updated in the same session
+(`index.html`'s `<script src>`, `scripts/build-item-geometry-worksheet.mjs`'s
+`outputPath`, `tests/mpa-chopping-block.test.mjs`'s fixture read, plus
+comments in `scripts/build-crate-luck-data.mjs`, `scripts/scanner-hit-simulator.mjs`,
+`docs/MPA_TOOL_MISSING_ICONS.md`, `.claude/agents/AI_TASKS.md`,
+`.claude/agents/AI_DECISIONS.md`) — `npm test` confirmed green afterward. If
+a future data file is meant to be commonly hand-edited going forward, put it
+in `data/manual/` too rather than loose in `data/`.
+
+**`data/manual/rebirth-data.json` is a plain, real `.json` file — not a
+`.js`-with-a-global like every other `data/` file** (`items.generated.js`,
+`crate-luck-data.generated.js`, `mpu-stats.js`, etc.), a deliberate exception
+so the player can open and edit it directly without JS wrapper syntax.
+`wiki-tool.js`'s `loadRebirthData()` `fetch()`s it (cached in
+`rebirthDataPromise` after first load) — works fine same-origin under both
+the local `python -m http.server` dev setup and the real static GitHub Pages
+deploy, no CORS issue either way. **Currently an empty array (`[]`) — the
+player is filling it in.** Schema, one object per rebirth level:
+```json
+{
+  "rebirth": 1,
+  "cost": 1000000,
+  "itemRewards": ["Some Item"],
+  "crystalReward": 50,
+  "statRewards": ["+1% luck"],
+  "potionRewards": ["Speed Potion"]
+}
+```
+`cost`/`crystalReward` are numbers or `null` (renders as `—`);
+`itemRewards`/`statRewards`/`potionRewards` are string arrays (renders
+comma-joined, or `—` if empty/missing). No code changes needed as entries get
+filled in — `renderRebirthPage()` in `wiki-tool.js` renders whatever rows
+exist, and the table already shows "Not filled in yet." for an empty array.
+
+**Page content itself** (`renderRebirthPage()` in `wiki-tool.js`): two
+hand-written paragraphs above a `<table class="wiki-data-table">` (new
+reusable table style added to `styles.css`, scoped under `.wiki-page-body` —
+any future data-driven page can reuse the same `wiki-data-table` class for
+free). The two paragraphs encode facts confirmed directly by the player, not
+guessed:
+1. Cash is the *only* thing lost on rebirth — resets to $0 regardless of how
+   much you had banked above the rebirth cost.
+2. Because of that, the optimal play is to spend everything possible on
+   Merchant crates first, then rebirth once you have just enough cash left
+   to cover the cost — not to rebirth the instant you qualify.
+
+**`PAGES[key].body` can now be a function, not just a string** — `openPage()`
+in `wiki-tool.js` checks `typeof page.body === 'function'`, shows a
+`<p>Loading…</p>` placeholder, awaits it (handles both sync strings and
+async/Promise-returning functions), then fills in the result. A guard
+(`if (pageTitle.textContent === page.title)`) skips a stale write if the
+player already navigated to a different page before a slow fetch resolves.
+**This is the template for every future real content page** — a static-string
+`PAGES` entry is now specifically for "not written yet" placeholders; a real
+page should follow Rebirth's pattern (a dedicated `renderXPage()` function,
+data pulled from a real `data/` source where one exists instead of hand-typed
+into the HTML string).
+
+**Not done**: `data/manual/rebirth-data.json` still needs the player to fill
+in every rebirth level's actual numbers (cost, items, crystals, stats,
+potions) — the page will render "Not filled in yet." until then. No nav/
+search system yet either — player explicitly said that's for later, once
+more pages exist to link between (see "Not done" in the home-page entry
+below too).
 
 ## 2026-09-14 Wiki home page: real navigation, all 13 tiles backgrounded
 

@@ -56,7 +56,7 @@ function makeDomStub() {
 
 async function loadMpaTool() {
   const databaseSource = await fs.readFile(path.join(root, 'data', 'items.generated.js'), 'utf8');
-  const mpuStatsSource = await fs.readFile(path.join(root, 'data', 'mpu-stats.js'), 'utf8');
+  const mpuStatsSource = await fs.readFile(path.join(root, 'data', 'manual', 'mpu-stats.js'), 'utf8');
   const toolSource = await fs.readFile(path.join(root, 'mpa-chopping-block.js'), 'utf8');
   const { document, localStorage, CSS } = makeDomStub();
   const sandbox = { document, localStorage, CSS, window: { alert: () => {} } };
