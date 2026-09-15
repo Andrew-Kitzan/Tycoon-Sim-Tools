@@ -114,6 +114,7 @@
   const STAT_ICON_FILES = {
     'luck': 'luck-icon.png',
     'plot size': 'plot-size-icon.png',
+    'unbox slot': 'unbox-slot-icon.png',
   };
   function formatStatRewards(list) {
     if (!Array.isArray(list) || !list.length) return '—';
