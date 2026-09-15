@@ -305,6 +305,7 @@
             <img class="wiki-reward-icon wiki-reward-icon--epic" src="icons/wiki/crystal-icon.png" alt="" onerror="this.parentElement.remove()">
             <span class="wiki-reward-badge">+${formatCompact(crystalAmount)}</span>
           </span>
+          Crystals
         </span>`;
       }
       // Roll speed multipliers (e.g. "0.5x unbox speed") get the same
@@ -316,6 +317,7 @@
             <img class="wiki-reward-icon" src="icons/wiki/roll-speed-icon.png" alt="" onerror="this.parentElement.remove()">
             <span class="wiki-reward-badge">${escapeHtml(rollSpeedMatch[1])}</span>
           </span>
+          Roll Speed
         </span>`;
       }
       // Crystal MULTIPLIERS (e.g. "1.5x crystal multi", "2x crystals") reuse
@@ -328,6 +330,7 @@
             <img class="wiki-reward-icon wiki-reward-icon--epic" src="icons/wiki/crystal-icon.png" alt="" onerror="this.parentElement.remove()">
             <span class="wiki-reward-badge">${escapeHtml(crystalMultiMatch[1])}</span>
           </span>
+          Crystal Multi
         </span>`;
       }
       // Luck multipliers (e.g. "2x Luck") reuse the Luck stat icon from the
@@ -339,6 +342,7 @@
             <img class="wiki-reward-icon" src="icons/wiki/luck-icon.png" alt="" onerror="this.parentElement.remove()">
             <span class="wiki-reward-badge">${escapeHtml(luckMultiMatch[1])}</span>
           </span>
+          Luck
         </span>`;
       }
       // Walkspeed bonuses (e.g. "+8 walkspeed") get the same treatment.
@@ -349,6 +353,7 @@
             <img class="wiki-reward-icon" src="icons/wiki/walkspeed-icon.png" alt="" onerror="this.parentElement.remove()">
             <span class="wiki-reward-badge">+${escapeHtml(walkspeedMatch[1])}</span>
           </span>
+          Walkspeed
         </span>`;
       }
       // Unbox slot counts (e.g. "+2 unbox slots") reuse the Unbox Slot stat
@@ -360,6 +365,7 @@
             <img class="wiki-reward-icon" src="icons/wiki/unbox-slot-icon.png" alt="" onerror="this.parentElement.remove()">
             <span class="wiki-reward-badge">+${escapeHtml(unboxSlotMatch[1])}</span>
           </span>
+          Unbox Slots
         </span>`;
       }
       // A leading "[Tag]" (a chat-tag reward, e.g. "[MVP] chat tag") renders
