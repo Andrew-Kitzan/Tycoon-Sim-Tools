@@ -318,6 +318,29 @@
           </span>
         </span>`;
       }
+      // Crystal MULTIPLIERS (e.g. "1.5x crystal multi", "2x crystals") reuse
+      // crystal-icon.png same as the flat-amount case above, but with the
+      // multiplier itself as the badge ("1.5x") instead of a "+N" amount.
+      const crystalMultiMatch = String(entry).match(/^([0-9.]+x)\s+crystals?(?:\s+multi)?$/i);
+      if (crystalMultiMatch) {
+        return `<span class="wiki-reward-chip">
+          <span class="wiki-reward-icon-wrap">
+            <img class="wiki-reward-icon wiki-reward-icon--epic" src="icons/wiki/crystal-icon.png" alt="" onerror="this.parentElement.remove()">
+            <span class="wiki-reward-badge">${escapeHtml(crystalMultiMatch[1])}</span>
+          </span>
+        </span>`;
+      }
+      // Unbox slot counts (e.g. "+2 unbox slots") reuse the Unbox Slot stat
+      // icon from the Rebirth page, same icon+badge pattern.
+      const unboxSlotMatch = String(entry).match(/^\+?([0-9]+)\s+unbox\s+slots?$/i);
+      if (unboxSlotMatch) {
+        return `<span class="wiki-reward-chip">
+          <span class="wiki-reward-icon-wrap">
+            <img class="wiki-reward-icon" src="icons/wiki/unbox-slot-icon.png" alt="" onerror="this.parentElement.remove()">
+            <span class="wiki-reward-badge">+${escapeHtml(unboxSlotMatch[1])}</span>
+          </span>
+        </span>`;
+      }
       // A leading "[Tag]" (a chat-tag reward, e.g. "[MVP] chat tag") renders
       // the bracketed part in the tag's own color, matching how it actually
       // looks in-game chat, instead of plain text.
