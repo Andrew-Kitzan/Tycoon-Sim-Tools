@@ -690,10 +690,11 @@
   async function renderEnchanterPage() {
     const data = await loadEnchanterData();
     const mechanics = data?.mechanics ?? {};
+    const variantMultipliers = data?.variantMultipliers ?? {};
     const paths = data?.upgradePaths ?? [];
     const pathRows = paths.map((entry) => {
-      const fromMulti = entry.fromMultiplier ? escapeHtml(entry.fromMultiplier) : '—';
-      const toMulti = entry.toMultiplier ? escapeHtml(entry.toMultiplier) : '—';
+      const fromMulti = variantMultipliers[entry.from] ? escapeHtml(variantMultipliers[entry.from]) : '—';
+      const toMulti = variantMultipliers[entry.to] ? escapeHtml(variantMultipliers[entry.to]) : '—';
       const baseSeconds = parseDurationToSeconds(entry.time);
       const timeCell = baseSeconds == null
         ? '<td class="wiki-enchant-time">—</td>'

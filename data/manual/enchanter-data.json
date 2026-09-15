@@ -7,18 +7,24 @@
     "masteryBonusPerLevel": "+0.5x",
     "masteryAppliesOffline": false
   },
+  "variantMultipliers": {
+    "Base": "1x",
+    "Shiny": "1.1x",
+    "Mythic": "1.25x",
+    "Shiny Mythic": "1.5x"
+  },
   "upgradePaths": [
-    { "rarity": "Common", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": "30 Sec" },
-    { "rarity": "Uncommon", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": "5 Min" },
-    { "rarity": "Rare", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": "30 Min" },
-    { "rarity": "Epic", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": "3 Hours" },
-    { "rarity": "Legendary", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": "12 Hours" },
-    { "rarity": "Legendary", "from": "Base", "to": "Mythic", "fromMultiplier": null, "toMultiplier": null, "time": "12 Hours" },
-    { "rarity": "Legendary", "from": "Shiny", "to": "Shiny Mythic", "fromMultiplier": null, "toMultiplier": null, "time": "12 Hours" },
-    { "rarity": "Legendary", "from": "Mythic", "to": "Shiny Mythic", "fromMultiplier": null, "toMultiplier": null, "time": "12 Hours" },
-    { "rarity": "Secret", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": "48 Hours" },
-    { "rarity": "Secret", "from": "Base", "to": "Mythic", "fromMultiplier": null, "toMultiplier": null, "time": "48 Hours" },
-    { "rarity": "Secret", "from": "Shiny", "to": "Shiny Mythic", "fromMultiplier": null, "toMultiplier": null, "time": "48 Hours" },
-    { "rarity": "Secret", "from": "Mythic", "to": "Shiny Mythic", "fromMultiplier": null, "toMultiplier": null, "time": "48 Hours" }
+    { "rarity": "Common", "from": "Base", "to": "Shiny", "time": "30 Sec" },
+    { "rarity": "Uncommon", "from": "Base", "to": "Shiny", "time": "5 Min" },
+    { "rarity": "Rare", "from": "Base", "to": "Shiny", "time": "30 Min" },
+    { "rarity": "Epic", "from": "Base", "to": "Shiny", "time": "3 Hours" },
+    { "rarity": "Legendary", "from": "Base", "to": "Shiny", "time": "12 Hours" },
+    { "rarity": "Legendary", "from": "Base", "to": "Mythic", "time": "12 Hours" },
+    { "rarity": "Legendary", "from": "Shiny", "to": "Shiny Mythic", "time": "12 Hours" },
+    { "rarity": "Legendary", "from": "Mythic", "to": "Shiny Mythic", "time": "12 Hours" },
+    { "rarity": "Secret", "from": "Base", "to": "Shiny", "time": "48 Hours" },
+    { "rarity": "Secret", "from": "Base", "to": "Mythic", "time": "48 Hours" },
+    { "rarity": "Secret", "from": "Shiny", "to": "Shiny Mythic", "time": "48 Hours" },
+    { "rarity": "Secret", "from": "Mythic", "to": "Shiny Mythic", "time": "48 Hours" }
   ]
 }
