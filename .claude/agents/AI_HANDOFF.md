@@ -67,16 +67,39 @@ it generously "to be safe," since the padding is exactly what causes this.
 
 ## Last worked on
 
+2026-09-14 (later session, conveyor icons — complete) — all 11
+conveyor-family icons are now in `icons/conveyor/` and the Conveyor page
+shows every one of them. This finishes what the entry below started as "in
+progress." Two things worth knowing if this ever needs revisiting:
+- **`renderConveyorPage()` didn't have any icon-rendering code at all until
+  this batch** — it was added specifically for this (`formatConveyorName()`
+  in `wiki-tool.js`, same `icons/conveyor/{Name}.png` +
+  onerror-degrade-to-text pattern as Decoration's `formatDecorationName()`).
+- **The engine's "Normal Conveyor" key isn't what the game calls it** — the
+  player confirmed the real in-game name is just "Conveyor." Renaming the
+  engine's own `conveyorDefinitions` key would have broken the planner (that
+  string is load-bearing — saved plans/routes reference it directly), so
+  instead `wiki-tool.js` has a small `CONVEYOR_DISPLAY_NAMES` map
+  (`{'Normal Conveyor': 'Conveyor'}`) that only affects this page's display
+  text and icon filename — `item-geometry-worksheet.json`'s own `conveyors`
+  entry is still literally named "Normal Conveyor" and must stay that way.
+  **If another conveyor's engine key is ever found to not match its real
+  in-game name, add it to that same map rather than touching the worksheet
+  or the engine.**
+- Two of the source screenshots (`Red Teleporter Reciever.png`, `Blue
+  Teleporter Reciever.png`) had the same "Reciever" misspelling as
+  everything else in this project's source assets — saved on disk as
+  `...Receiver.png` (correct spelling, matching the engine key and the
+  wiki data) same as every other typo-correction noted elsewhere in this
+  file, not a new pattern.
+
 2026-09-14 (later session, Conveyor/Decoration pages + decoration icons) —
 see "2026-09-14 Conveyor and Decoration wiki pages" below. Two more wiki
 pages built end-to-end (data + render + icons), plus a new `conveyors`
-section in `item-geometry-worksheet.json`. **In progress, not finished**:
-the player is now sending conveyor piece icons one at a time (same pattern
-as every icon batch this file already describes) — this was happening as
-this entry was being written, so check git log / `icons/conveyor/` (if it
-exists yet) for how far that actually got before assuming it's incomplete.
-Decoration icons ARE fully done — all 17 entries in `decoration-data.json`
-have a real icon as of this entry.
+section in `item-geometry-worksheet.json`. Decoration icons are fully done —
+all 17 entries in `decoration-data.json` have a real icon. Conveyor icons
+were still in progress when this entry was originally written; see the
+entry above this one for how that finished.
 
 2026-09-14 (later session, Codes page) — see "2026-09-14 Codes page:
 data/manual/codes-data.json + full potion tier icon mapping" below. New
