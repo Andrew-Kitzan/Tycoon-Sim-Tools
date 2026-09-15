@@ -1004,7 +1004,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-nav-tile-furnace-loot { --tile-accent: #6fae2e; --tile-accent-hover: #c6f26b; background-image: url('icons/wiki/furnace-loot-bg.png'); }
 .wiki-nav-tile-conveyor { --tile-accent: #b83fa0; --tile-accent-hover: #ff8fe0; background-image: url('icons/wiki/conveyor-bg.png'); }
 .wiki-nav-tile-codes { --tile-accent: #d6337a; --tile-accent-hover: #ff85c0; background-image: url('icons/wiki/codes-bg.png'); }
-.wiki-nav-tile-p2w { --tile-accent: #2f8fd6; --tile-accent-hover: #8fd6ff; background-image: url('icons/wiki/enchanter-bg.png'); }
+.wiki-nav-tile-p2w { --tile-accent: #2f8fd6; --tile-accent-hover: #8fd6ff; background-image: url('icons/wiki/p2w-bg.png'); }
 .wiki-nav-tile-enchanter { --tile-accent: #2fd6a0; --tile-accent-hover: #8fffe0; background-image: url('icons/wiki/enchanter-portal-bg.png'); }
 .wiki-nav-tile-merchant { --tile-accent: #b81f1f; --tile-accent-hover: #ff7a7a; background-image: url('icons/wiki/merchant-bg.png'); }
 .wiki-nav-tile-brewer { --tile-accent: #a03fd6; --tile-accent-hover: #e0a6ff; background-image: url('icons/wiki/brewer-bg.png'); }
