@@ -1,131 +1,210 @@
 [
   {
     "name": "Cat Upgrader",
-    "robuxCost": null,
+    "robuxCost": 499,
     "gives": [
-      "Cat Upgrader",
-      "Cat Upgrader Shiny"
-    ]
+      "Cat Upgrader"
+    ],
+    "notes": null
   },
   {
     "name": "Dog Upgrader",
-    "robuxCost": null,
+    "robuxCost": 499,
     "gives": [
-      "Dog Upgrader",
-      "Dog Upgrader Shiny"
-    ]
+      "Dog Upgrader"
+    ],
+    "notes": null
   },
   {
     "name": "Classic Bundle",
-    "robuxCost": null,
+    "robuxCost": 999,
     "gives": [
       "Cat Upgrader",
-      "Cat Upgrader Shiny",
       "Dog Upgrader",
-      "Dog Upgrader Shiny",
-      "Sword Heights",
-      "Sword Heights Shiny"
-    ]
+      "Sword Heights"
+    ],
+    "notes": null
   },
   {
     "name": "Bombardier Dropper",
-    "robuxCost": null,
+    "robuxCost": 499,
     "gives": [
-      "Bombardier Dropper",
-      "Bombardier Dropper Shiny"
-    ]
+      "Bombardier Dropper"
+    ],
+    "notes": null
   },
   {
     "name": "Hoarded Treasure",
-    "robuxCost": null,
+    "robuxCost": 499,
     "gives": [
-      "Hoarded Treasure",
-      "Hoarded Treasure Shiny"
-    ]
+      "Hoarded Treasure"
+    ],
+    "notes": null
   },
   {
     "name": "Space Pirates Bundle",
-    "robuxCost": null,
+    "robuxCost": 999,
     "gives": [
       "Bombardier Dropper",
-      "Bombardier Dropper Shiny",
       "Hoarded Treasure",
-      "Hoarded Treasure Shiny",
-      "Space Pirates",
-      "Space Pirates Shiny"
-    ]
+      "Space Pirates"
+    ],
+    "notes": null
   },
   {
     "name": "Horsey",
-    "robuxCost": null,
+    "robuxCost": 499,
     "gives": [
-      "Ore Rocker",
-      "Ore Rocker Shiny"
-    ]
+      "Ore Rocker"
+    ],
+    "notes": null
   },
   {
     "name": "Palace",
-    "robuxCost": null,
+    "robuxCost": 499,
     "gives": [
-      "Whimsical Palace",
-      "Whimsical Palace Shiny"
-    ]
+      "Whimsical Palace"
+    ],
+    "notes": null
   },
   {
     "name": "Fidget Pack",
-    "robuxCost": null,
+    "robuxCost": 999,
     "gives": [
       "Ore Rocker",
-      "Ore Rocker Shiny",
       "Portable Spinner",
-      "Portable Spinner Shiny",
-      "Whimsical Palace",
-      "Whimsical Palace Shiny"
-    ]
+      "Whimsical Palace"
+    ],
+    "notes": null
   },
   {
     "name": "Carrot",
-    "robuxCost": null,
+    "robuxCost": 499,
     "gives": [
-      "Carrot Mutator",
-      "Carrot Mutator Shiny"
-    ]
+      "Carrot Mutator"
+    ],
+    "notes": null
   },
   {
     "name": "Beanstalk",
-    "robuxCost": null,
+    "robuxCost": 499,
     "gives": [
-      "Lush Beanstock",
-      "Lush Beanstock Shiny"
-    ]
+      "Lush Beanstock"
+    ],
+    "notes": null
   },
   {
     "name": "Clover Pack",
-    "robuxCost": null,
+    "robuxCost": 999,
     "gives": [
       "Carrot Mutator",
-      "Carrot Mutator Shiny",
       "Clover Garden",
-      "Clover Garden Shiny",
-      "Lush Beanstock",
-      "Lush Beanstock Shiny"
-    ]
+      "Lush Beanstock"
+    ],
+    "notes": null
+  },
+  {
+    "name": "50K Crystal Pack",
+    "robuxCost": 79,
+    "gives": [
+      "50K Crystals"
+    ],
+    "notes": null
+  },
+  {
+    "name": "260K Crystal Pack",
+    "robuxCost": 399,
+    "gives": [
+      "260K Crystals"
+    ],
+    "notes": null
+  },
+  {
+    "name": "550K Crystal Pack",
+    "robuxCost": 799,
+    "gives": [
+      "550K Crystals"
+    ],
+    "notes": null
   },
   {
     "name": "3.5M Crystal Pack",
-    "robuxCost": null,
+    "robuxCost": 4499,
     "gives": [
       "3.5M Crystals",
-      "Crystalline Dropper",
-      "Crystalline Dropper Shiny"
-    ]
+      "Crystalline Dropper"
+    ],
+    "notes": null
+  },
+  {
+    "name": "Potion Pack",
+    "robuxCost": 799,
+    "gives": [
+      "5x tier 6 luck potions",
+      "5x tier 6 roll speed potions",
+      "5x tier 6 mythic luck potions",
+      "5x tier 6 shiny luck potions",
+      "5x tier 1 unbox slot potions"
+    ],
+    "notes": null
   },
   {
     "name": "MVP Game Pass",
-    "robuxCost": null,
+    "robuxCost": 999,
     "gives": [
-      "MVP",
-      "MVP Shiny"
-    ]
+      "MVP Upgrader",
+      "[MVP] chat tag",
+      "1.5x crystal multi",
+      "+8 walkspeed"
+    ],
+    "notes": null
+  },
+  {
+    "name": "2x Crystals",
+    "robuxCost": 799,
+    "gives": [
+      "2x crystals"
+    ],
+    "notes": null
+  },
+  {
+    "name": "2x Luck",
+    "robuxCost": 399,
+    "gives": [
+      "2x Luck"
+    ],
+    "notes": null
+  },
+  {
+    "name": "Triple Unbox",
+    "robuxCost": 399,
+    "gives": [
+      "+2 unbox slots"
+    ],
+    "notes": null
+  },
+  {
+    "name": "Fast Unbox",
+    "robuxCost": 399,
+    "gives": [
+      "0.5x unbox speed"
+    ],
+    "notes": null
+  },
+  {
+    "name": "Bling Dropper",
+    "robuxCost": 1236,
+    "gives": [
+      "bling dropper"
+    ],
+    "notes": null
+  },
+  {
+    "name": "Derp Blaster",
+    "robuxCost": 9182,
+    "gives": [
+      "Derp Blaster"
+    ],
+    "notes": null
   }
 ]
