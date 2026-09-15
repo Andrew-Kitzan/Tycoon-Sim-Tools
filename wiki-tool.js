@@ -673,14 +673,19 @@
         <td>${Math.floor(activeDropsCap)}</td>
       </tr>`;
     }).join('');
-    const oddsRows = lootOdds.map((entry) => `
+    const oddsRows = lootOdds.map((entry) => {
+      const iconCell = entry.icon
+        ? `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="${escapeHtml(entry.icon)}" alt="" onerror="this.remove()">${escapeHtml(entry.reward)}</span>`
+        : escapeHtml(entry.reward);
+      return `
       <tr>
-        <td>${escapeHtml(entry.reward)}</td>
+        <td>${iconCell}</td>
         <td>${escapeHtml(entry.odds)}</td>
         <td>${escapeHtml(entry.time50)}</td>
         <td>${escapeHtml(entry.time75)}</td>
         <td>${escapeHtml(entry.time90)}</td>
-      </tr>`).join('');
+      </tr>`;
+    }).join('');
     return `
       <p>Furnaces have a chance to roll bonus loot on top of whatever
       they're processing — but only if you've bought the
@@ -692,10 +697,11 @@
       waiting to be collected at once (10 with no mastery, up to 20 fully
       maxed). <strong>The only other thing that affects the drop chance is
       an admin-only event multiplier the devs can trigger — players can't
-      get it any other way, so treat the numbers below as the real rate.</strong></p>
-      <p>Once you hit your active-drops cap, you have to
+      get it any other way, so treat the numbers below as the real rate.</strong>
+      Once you hit your active-drops cap, you have to
       <strong>wait ${escapeHtml(data?.collectCooldownSeconds ?? 60)} seconds</strong>
       before you can collect again.</p>
+      <h3 class="wiki-section-heading">Furnace Loot Mastery</h3>
       <table class="wiki-data-table">
         <thead>
           <tr>
@@ -707,6 +713,7 @@
         </thead>
         <tbody>${tierRows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
       </table>
+      <h3 class="wiki-section-heading">Loot Odds &amp; Timing</h3>
       <p>What each drop can actually be, and the real odds — sourced from
       in-game testing rather than the raw script weights, since the drop
       pool has been tweaked since. Times assume fully maxed mastery

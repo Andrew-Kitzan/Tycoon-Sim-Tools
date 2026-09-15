@@ -13,11 +13,11 @@
     { "level": 5, "currency": "crystals", "cost": 50000 }
   ],
   "lootOdds": [
-    { "reward": "Tier 1 Potions", "odds": "1 / 4.95", "time50": "12 Sec", "time75": "21 Sec", "time90": "33 Sec" },
-    { "reward": "Tier 2 Potions", "odds": "1 / 14.14", "time50": "30 Sec", "time75": "57 Sec", "time90": "1 Min 36 Sec" },
-    { "reward": "50-100 Crystals", "odds": "1 / 9.9", "time50": "21 Sec", "time75": "42 Sec", "time90": "1 Min 6 Sec" },
-    { "reward": "500-1K Crystals", "odds": "1 / 99", "time50": "3 Min 27 Sec", "time75": "6 Min 51 Sec", "time90": "11 Min 21 Sec" },
-    { "reward": "Corium Dropper", "odds": "1 / 100K", "time50": "2.41 Days", "time75": "4.81 Days", "time90": "8 Days" },
-    { "reward": "Unbox Slot Potion", "odds": "1 / 198K", "time50": "4.77 Days", "time75": "9.53 Days", "time90": "15.83 Days" }
+    { "reward": "Tier 1 Potions", "icon": "icons/items/Tier1 Luck Potion.png", "odds": "1 / 4.95", "time50": "12 Sec", "time75": "21 Sec", "time90": "33 Sec" },
+    { "reward": "Tier 2 Potions", "icon": "icons/items/tier2 Luck Potion.png", "odds": "1 / 14.14", "time50": "30 Sec", "time75": "57 Sec", "time90": "1 Min 36 Sec" },
+    { "reward": "50-100 Crystals", "icon": "icons/wiki/crystal-icon.png", "odds": "1 / 9.9", "time50": "21 Sec", "time75": "42 Sec", "time90": "1 Min 6 Sec" },
+    { "reward": "500-1K Crystals", "icon": "icons/wiki/crystal-icon.png", "odds": "1 / 99", "time50": "3 Min 27 Sec", "time75": "6 Min 51 Sec", "time90": "11 Min 21 Sec" },
+    { "reward": "Corium Dropper", "icon": "icons/items/Corium Dropper.png", "odds": "1 / 100K", "time50": "2.41 Days", "time75": "4.81 Days", "time90": "8 Days" },
+    { "reward": "Unbox Slot Potion", "icon": "icons/items/tier1 Roll Slot Potion.png", "odds": "1 / 198K", "time50": "4.77 Days", "time75": "9.53 Days", "time90": "15.83 Days" }
   ]
 }
