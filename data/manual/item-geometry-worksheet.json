@@ -11,7 +11,8 @@
     },
     "formulaOverride": "Present on every variant of every dropper, upgrader, and furnace (null by default). Hand-added only where a plain mainStat can't express the real behavior (e.g. Wind-Up Dropper, which rolls one of several distinct value/oreSize outcomes per drop instead of having one fixed value). Not auto-generated — there is no fixed shape enforced, describe whatever the real formula actually is as clearly as possible. The \"random-outcome-table\" shape used for Wind-Up Dropper is {type, outcomes: [{probability, value, oreSize}], note} — reuse that shape for similar random-outcome items, or write a different shape for a genuinely different kind of formula (e.g. a size-dependent or conditional one).",
     "variantGeometryOverrides": "The top-level \"geometry\" block is the assumed default for every variant of an item. Some items actually change physically by variant though (e.g. a dropper that drops 1 ore at Base/Shiny but 2 ore at Mythic/Shiny Mythic) — footprint SIZE never differs across variants (verified), but things like drop points, beam reach, or zone size might. When a specific variant genuinely differs from the shared default, fill in that variant’s \"geometryOverrides\" object with only the field(s) that differ (same shape as the top-level \"geometry\" entries) instead of duplicating the whole block. Leave it null when the variant matches the default.",
-    "fileIsHandMaintained": "This file is no longer auto-generated. scripts/build-item-geometry-worksheet.mjs did its one-time bootstrap and now refuses to run at all while this file exists, specifically so it can never wipe hand-typed confirmed values or fields like formulaOverride. Only direct hand edits (by the project owner or Claude, working together in conversation) should ever change this file."
+    "fileIsHandMaintained": "This file is no longer auto-generated. scripts/build-item-geometry-worksheet.mjs did its one-time bootstrap and now refuses to run at all while this file exists, specifically so it can never wipe hand-typed confirmed values or fields like formulaOverride. Only direct hand edits (by the project owner or Claude, working together in conversation) should ever change this file.",
+    "conveyors": "Plain conveyor belt pieces (Quarter/Half/Normal/Supercharged/Centering/Ultracharged Conveyor, Conveyor Wall, and the 4 teleporter sender/receiver pieces, which share the exact same width/length/speed shape in the engine). Unlike droppers/upgraders/furnaces, conveyors have no dropSpawn/beam/zone — ore just travels straight across them — so each entry only has size (width/length) and speed, both already real engine defaults from engine/coordinate-map.mjs's conveyorDefinitions (not guesses), kept here so they can be sanity-checked in-game the same way as everything else and have one physical place recorded. flags carries any special per-type behavior (centers, wall, teleporterColor/teleporterRole) — null when a piece has none."
   },
   "droppers": [
     {
@@ -3000,8 +3001,8 @@
             "width": 0.2,
             "length": 3,
             "speed": 1.0345,
-          "source": "Pre-filled from the computed default (internalTransportProfile: even item width -> belt width 2, else 1, centered) — please still check this one in-game."
-        },
+            "source": "Pre-filled from the computed default (internalTransportProfile: even item width -> belt width 2, else 1, centered) — please still check this one in-game."
+          },
           "confirmed": {
             "shape": "sweep",
             "axis": "x",
@@ -3179,7 +3180,6 @@
           },
           "note": "Pre-filled assuming the beam covers the entire conveyor path (full length, same width/position as the belt above) — this was never actually modeled before, so please check in-game whether the real effect zone is narrower, offset, or shorter than the full belt."
         }
-
       }
     },
     {
@@ -3271,8 +3271,8 @@
             "length": 3,
             "width": 0.2,
             "speed": 90,
-          "source": "computed default (internalTransportProfile: even item width -> belt width 2, else 1, centered)"
-        },
+            "source": "computed default (internalTransportProfile: even item width -> belt width 2, else 1, centered)"
+          },
           "confirmed": {
             "shape": "rotate",
             "plane": "vertical",
@@ -4261,7 +4261,7 @@
           },
           "confirmed": {
             "x": 0,
-            "width":0
+            "width": 0
           },
           "note": "portables do not have."
         },
@@ -10190,7 +10190,7 @@
             "width": 2,
             "length": 1
           },
-      "note": "Base and Shiny retain the length-1 zone and fit ore up to size 2.4. Mythic and Shiny Mythic use the length-0.5 override and fit ore only up to size 1.8."
+          "note": "Base and Shiny retain the length-1 zone and fit ore up to size 2.4. Mythic and Shiny Mythic use the length-0.5 override and fit ore only up to size 1.8."
         }
       }
     },
@@ -10971,5 +10971,298 @@
         }
       }
     }
-  ]
+  ],
+  "conveyors": {
+    "0": {
+      "name": "Quarter Conveyor",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 1,
+          "length": 1,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 1,
+          "length": 1
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": 12,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": 12,
+        "note": "Belt speed in tiles/second-equivalent units, same meaning as every other conveyorSpeed value in this project."
+      },
+      "flags": null
+    },
+    "1": {
+      "name": "Half Conveyor",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 2,
+          "length": 1,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 2,
+          "length": 1
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": 12,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": 12,
+        "note": "Belt speed in tiles/second-equivalent units, same meaning as every other conveyorSpeed value in this project."
+      },
+      "flags": null
+    },
+    "2": {
+      "name": "Normal Conveyor",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 2,
+          "length": 2,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 2,
+          "length": 2
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": 12,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": 12,
+        "note": "Belt speed in tiles/second-equivalent units, same meaning as every other conveyorSpeed value in this project."
+      },
+      "flags": null
+    },
+    "3": {
+      "name": "Supercharged Conveyor",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 2,
+          "length": 2,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 2,
+          "length": 2
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": 18,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": 18,
+        "note": "Belt speed in tiles/second-equivalent units, same meaning as every other conveyorSpeed value in this project."
+      },
+      "flags": null
+    },
+    "4": {
+      "name": "Centering Conveyor",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 2,
+          "length": 2,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 2,
+          "length": 2
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": 12,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": 12,
+        "note": "Belt speed in tiles/second-equivalent units, same meaning as every other conveyorSpeed value in this project."
+      },
+      "flags": {
+        "centers": true
+      }
+    },
+    "5": {
+      "name": "Ultracharged Conveyor",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 4,
+          "length": 2,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 4,
+          "length": 2
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": 24,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": 24,
+        "note": "Belt speed in tiles/second-equivalent units, same meaning as every other conveyorSpeed value in this project."
+      },
+      "flags": null
+    },
+    "6": {
+      "name": "Conveyor Wall",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 1,
+          "length": 2,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 1,
+          "length": 2
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": null,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": null,
+        "note": "null = this piece is a solid wall, not a belt — ore cannot travel across it."
+      },
+      "flags": {
+        "wall": true
+      }
+    },
+    "7": {
+      "name": "Red Teleporter Sender",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 2,
+          "length": 2,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 2,
+          "length": 2
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": null,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": null,
+        "note": "null = this piece does not move ore on its own (a teleporter sender just consumes ore that reaches it)."
+      },
+      "flags": {
+        "teleporterColor": "red",
+        "teleporterRole": "sender"
+      }
+    },
+    "8": {
+      "name": "Red Teleporter Receiver",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 4,
+          "length": 2,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 4,
+          "length": 2
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": 12,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": 12,
+        "note": "Belt speed in tiles/second-equivalent units, same meaning as every other conveyorSpeed value in this project."
+      },
+      "flags": {
+        "teleporterColor": "red",
+        "teleporterRole": "receiver"
+      }
+    },
+    "9": {
+      "name": "Blue Teleporter Sender",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 2,
+          "length": 2,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 2,
+          "length": 2
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": null,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": null,
+        "note": "null = this piece does not move ore on its own (a teleporter sender just consumes ore that reaches it)."
+      },
+      "flags": {
+        "teleporterColor": "blue",
+        "teleporterRole": "sender"
+      }
+    },
+    "10": {
+      "name": "Blue Teleporter Receiver",
+      "type": "conveyor",
+      "size": {
+        "current": {
+          "width": 4,
+          "length": 2,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions — a real, already-in-use engine default, not a guess like most droppers/upgraders/furnaces below"
+        },
+        "confirmed": {
+          "width": 4,
+          "length": 2
+        },
+        "note": "Pre-filled from the live engine value since it is already correct and in production use — still worth a quick in-game sanity check, but this is not an unverified guess the way most other geometry in this file is."
+      },
+      "speed": {
+        "current": {
+          "value": 12,
+          "source": "engine/coordinate-map.mjs conveyorDefinitions"
+        },
+        "confirmed": 12,
+        "note": "Belt speed in tiles/second-equivalent units, same meaning as every other conveyorSpeed value in this project."
+      },
+      "flags": {
+        "teleporterColor": "blue",
+        "teleporterRole": "receiver"
+      }
+    }
+  }
 }
