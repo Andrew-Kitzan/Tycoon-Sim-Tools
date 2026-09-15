@@ -2,6 +2,7 @@
   {
     "name": "Cat Upgrader",
     "robuxCost": 499,
+    "obtainable": false,
     "gives": [
       "Cat Upgrader"
     ],
@@ -10,6 +11,7 @@
   {
     "name": "Dog Upgrader",
     "robuxCost": 499,
+    "obtainable": false,
     "gives": [
       "Dog Upgrader"
     ],
@@ -18,6 +20,7 @@
   {
     "name": "Classic Bundle",
     "robuxCost": 999,
+    "obtainable": false,
     "gives": [
       "Cat Upgrader",
       "Dog Upgrader",
@@ -28,6 +31,7 @@
   {
     "name": "Bombardier Dropper",
     "robuxCost": 499,
+    "obtainable": false,
     "gives": [
       "Bombardier Dropper"
     ],
@@ -36,6 +40,7 @@
   {
     "name": "Hoarded Treasure",
     "robuxCost": 499,
+    "obtainable": false,
     "gives": [
       "Hoarded Treasure"
     ],
@@ -44,6 +49,7 @@
   {
     "name": "Space Pirates Bundle",
     "robuxCost": 999,
+    "obtainable": false,
     "gives": [
       "Bombardier Dropper",
       "Hoarded Treasure",
@@ -52,16 +58,18 @@
     "notes": "Unlocks the Bombardier and treasure too!"
   },
   {
-    "name": "Horsey",
+    "name": "Ore Rocker",
     "robuxCost": 499,
+    "obtainable": false,
     "gives": [
       "Ore Rocker"
     ],
     "notes": "Unlocks a strong upgrader!"
   },
   {
-    "name": "Palace",
+    "name": "Whimsical Palace",
     "robuxCost": 499,
+    "obtainable": false,
     "gives": [
       "Whimsical Palace"
     ],
@@ -70,24 +78,27 @@
   {
     "name": "Fidget Pack",
     "robuxCost": 999,
+    "obtainable": false,
     "gives": [
       "Ore Rocker",
       "Portable Spinner",
       "Whimsical Palace"
     ],
-    "notes": "Unlocks the Horsey and Palace too!"
+    "notes": "Unlocks the Ore Rocker and Whimsical Palace too!"
   },
   {
-    "name": "Carrot",
+    "name": "Carrot Mutator",
     "robuxCost": 499,
+    "obtainable": true,
     "gives": [
       "Carrot Mutator"
     ],
     "notes": "Unlocks a strong upgrader!"
   },
   {
-    "name": "Beanstalk",
+    "name": "Lush Beanstock",
     "robuxCost": 499,
+    "obtainable": true,
     "gives": [
       "Lush Beanstock"
     ],
@@ -96,16 +107,18 @@
   {
     "name": "Clover Pack",
     "robuxCost": 999,
+    "obtainable": true,
     "gives": [
       "Carrot Mutator",
       "Clover Garden",
       "Lush Beanstock"
     ],
-    "notes": "Unlocks the Beanstock and Carrot too!"
+    "notes": "Unlocks the Lush Beanstock and Carrot Mutator too!"
   },
   {
     "name": "50K Crystal Pack",
     "robuxCost": 79,
+    "obtainable": true,
     "gives": [
       "50K Crystals"
     ],
@@ -114,6 +127,7 @@
   {
     "name": "260K Crystal Pack",
     "robuxCost": 399,
+    "obtainable": true,
     "gives": [
       "260K Crystals"
     ],
@@ -122,6 +136,7 @@
   {
     "name": "550K Crystal Pack",
     "robuxCost": 799,
+    "obtainable": true,
     "gives": [
       "550K Crystals"
     ],
@@ -130,6 +145,7 @@
   {
     "name": "3.5M Crystal Pack",
     "robuxCost": 4499,
+    "obtainable": true,
     "gives": [
       "3.5M Crystals",
       "Crystalline Dropper"
@@ -139,6 +155,7 @@
   {
     "name": "Potion Pack",
     "robuxCost": 799,
+    "obtainable": true,
     "gives": [
       "5x tier 6 luck potions",
       "5x tier 6 roll speed potions",
@@ -151,6 +168,7 @@
   {
     "name": "MVP Game Pass",
     "robuxCost": 999,
+    "obtainable": true,
     "gives": [
       "MVP Upgrader",
       "[MVP] chat tag",
@@ -162,6 +180,7 @@
   {
     "name": "2x Crystals",
     "robuxCost": 799,
+    "obtainable": true,
     "gives": [
       "2x crystals"
     ],
@@ -170,6 +189,7 @@
   {
     "name": "2x Luck",
     "robuxCost": 399,
+    "obtainable": true,
     "gives": [
       "2x Luck"
     ],
@@ -178,6 +198,7 @@
   {
     "name": "Triple Unbox",
     "robuxCost": 399,
+    "obtainable": true,
     "gives": [
       "+2 unbox slots"
     ],
@@ -186,6 +207,7 @@
   {
     "name": "Fast Unbox",
     "robuxCost": 399,
+    "obtainable": true,
     "gives": [
       "0.5x unbox speed"
     ],
@@ -194,6 +216,7 @@
   {
     "name": "Bling Dropper",
     "robuxCost": 1236,
+    "obtainable": true,
     "gives": [
       "bling dropper"
     ],
@@ -202,6 +225,7 @@
   {
     "name": "Derp Blaster",
     "robuxCost": 9182,
+    "obtainable": true,
     "gives": [
       "Derp Blaster"
     ],

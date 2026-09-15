@@ -580,6 +580,7 @@
       <tr>
         <td>${escapeHtml(entry.name)}</td>
         <td>${entry.robuxCost == null ? '—' : `R$${formatNumber(entry.robuxCost)}`}</td>
+        <td><span class="wiki-status-badge ${entry.obtainable ? 'is-active' : 'is-expired'}">${entry.obtainable ? 'Yes' : 'No'}</span></td>
         <td>${formatCodeRewards(entry.gives)}</td>
         <td>${entry.notes ? escapeHtml(entry.notes) : '—'}</td>
       </tr>`).join('');
@@ -596,11 +597,12 @@
           <tr>
             <th>Product</th>
             <th>Cost</th>
+            <th>Obtainable?</th>
             <th>Gives</th>
             <th>Notes</th>
           </tr>
         </thead>
-        <tbody>${rows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
+        <tbody>${rows || '<tr><td colspan="5">Not filled in yet.</td></tr>'}</tbody>
       </table>`;
   }
 
