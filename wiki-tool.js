@@ -429,11 +429,22 @@
     return `<span class="wiki-rarity-pill" style="--rarity-color: ${color}">${escapeHtml(rarity)}</span>`;
   }
 
+  // Decoration icons live in their own icons/decoration/{Name}.png folder
+  // (not icons/items/, which is for real database items — decorations
+  // aren't synced into the item database, see the "Not yet done" note in
+  // AI_HANDOFF.md) — same onerror-degrade-to-plain-text pattern as every
+  // other icon on this page for names that don't have one yet.
+  function formatDecorationName(name) {
+    const safeName = escapeHtml(name);
+    const iconSrc = `icons/decoration/${encodeURIComponent(name)}.png`;
+    return `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
+  }
+
   async function renderDecorationPage() {
     const decorations = await loadDecorationData();
     const rows = decorations.map((entry) => `
       <tr>
-        <td>${escapeHtml(entry.name)}</td>
+        <td>${formatDecorationName(entry.name)}</td>
         <td>${entry.size ? escapeHtml(entry.size) : '—'}</td>
         <td>${formatRarity(entry.rarity)}</td>
         <td>${entry.odds ? escapeHtml(entry.odds) : '—'}</td>
