@@ -1,7 +1,11 @@
 [
   {
+    "date": "2026-09-15",
+    "summary": "Built the P2W page — every dev product and game pass now lists its real Robux cost, whether it's still obtainable, and its full reward list with icons (crystals, potions, Luck/Roll Speed/Walkspeed/Unbox Slot multipliers and bonuses, real item icons, and chat tags all render with their own icon instead of plain text)."
+  },
+  {
     "date": "2026-09-14",
-    "summary": "Wiki content build-out: real page navigation across the home page (all 13 sections, each with its own background art), then full pages built for Rebirth, Codes, Conveyor, and Decoration — every reward, code, conveyor piece, and decoration now has real data and its own icon."
+    "summary": "Wiki content build-out: real page navigation across the home page (all 13 sections, each with its own background art), then full pages built for Rebirth, Codes, Conveyor, Decoration, and Brewer — every reward, code, conveyor piece, decoration, and potion upcraft now has real data and its own icon."
   },
   {
     "date": "2026-09-13",

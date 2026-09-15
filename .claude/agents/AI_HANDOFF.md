@@ -65,7 +65,27 @@ region before trusting a bounding box, and keep the patch rectangle as small
 as it can be while still fully covering the confirmed badge** — do not pad
 it generously "to be safe," since the padding is exactly what causes this.
 
+**When a code change is confirmed correct on disk but doesn't seem to show
+up in the browser, don't assume it's a real bug before ruling out
+caching.** Happened twice: once in this session's own Browser-pane preview
+tool (already documented below — `tabs_create` a fresh tab or cache-bust the
+`<link>`/`<script>` src), and separately the PLAYER's own regular browser
+window also showed stale `styles.css`/`wiki-tool.js` after a hard refresh
+(Ctrl+Shift+R) failed to fix it — confirmed as pure browser cache only once
+they tried Incognito mode and it worked there. If a player reports "I did a
+hard refresh and it's still wrong" for a change you've already verified is
+correct on disk (`grep`/`cat` the file directly to be sure), suggest
+Incognito/Private mode as the next diagnostic step before assuming the code
+itself is wrong.
+
 ## Last worked on
+
+2026-09-15 (P2W page) — see "2026-09-15 P2W wiki page" below. New
+`data/manual/p2w-dev-products-data.json` (dev products + game passes) and a
+full page built on top, `formatCodeRewards()` in `wiki-tool.js` extended
+with 5 more icon-matching cases (roll speed/crystal/luck multipliers,
+walkspeed, unbox slots) on top of the potion/crystal-amount/item cases it
+already had for Codes.
 
 2026-09-14 (later session, conveyor icons — complete) — all 11
 conveyor-family icons are now in `icons/conveyor/` and the Conveyor page
@@ -180,6 +200,99 @@ the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-15 P2W wiki page
+
+Follows the Rebirth/Codes page-building pattern (fetch-and-cache a
+`data/manual/*.json` file, render a `.wiki-data-table`, icon+badge chips
+that degrade to plain text via `onerror` when nothing matches) — read the
+Rebirth entry further down first if this is unfamiliar.
+
+**`data/manual/p2w-dev-products-data.json`**: started as 14 products I
+transcribed from `data/Tycoon Sim Database.xlsx`'s "Premium Shop(P2W)"
+sheet (no Robux prices exist anywhere in that source — I could only get
+product names and what they unlock from the sheet's free-text "Obtainement
+Method" column). The player then filled in real Robux costs, corrected/
+expanded the `gives` lists, added 10 more real products the spreadsheet
+never had (crystal packs, Potion Pack, 2x Crystals/Luck, Triple/Fast Unbox,
+Bling Dropper, Derp Blaster), and added `notes` and `obtainable` fields
+(9 products are marked `false` — Cat/Dog Upgrader, Classic Bundle,
+Bombardier Dropper, Hoarded Treasure, Space Pirates Bundle, Ore Rocker,
+Whimsical Palace, Fidget Pack — confirmed no longer purchasable; everything
+else defaults `true`). Schema per entry: `{name, robuxCost, obtainable,
+gives: [...], notes}`.
+
+**Renamed 4 products for consistency** with their real in-game item names:
+Horsey → Ore Rocker, Palace → Whimsical Palace, Carrot → Carrot Mutator,
+Beanstalk → Lush Beanstock (the spreadsheet's casual "Obtainement Method"
+wording, e.g. "Buy the Horsey," used the short/casual name, not the real
+item name).
+
+**`formatCodeRewards()` in `wiki-tool.js` (originally built for Codes) is
+now the shared reward-list formatter for both Codes and P2W** — the P2W
+page's `Gives` column reuses it as-is. It was extended this session with 5
+new icon-matching cases, checked in this order before falling through to
+the generic `icons/items/{entry}.png` guess and finally plain text:
+1. Potion match (pre-existing, `POTION_ICON_FILES`).
+2. Flat crystal amount (`"50K Crystals"`, pre-existing) — now also shows a
+   "Crystals" label after the badge (see below).
+3. Roll speed multiplier (`"0.5x unbox speed"` / `"Nx roll speed"`) →
+   `icons/wiki/roll-speed-icon.png`.
+4. Crystal multiplier (`"1.5x crystal multi"` / `"2x crystals"`, distinct
+   from the flat-amount case above — same icon, but the multiplier itself
+   is the badge instead of a `+N` amount).
+5. Luck multiplier (`"2x Luck"`) → `icons/wiki/luck-icon.png` (reused from
+   Rebirth's Stat Rewards).
+6. Walkspeed bonus (`"+8 walkspeed"`) → `icons/wiki/walkspeed-icon.png`.
+7. Unbox slot count (`"+2 unbox slots"`) → `icons/wiki/unbox-slot-icon.png`
+   (reused from Rebirth).
+8. A leading `"[Tag]"` (e.g. `"[MVP] chat tag"`) renders in red TEXT (not a
+   background pill — player explicitly corrected this after an initial
+   pill-badge attempt), the rest of the string plain.
+
+**Every one of these 6 icon+badge cases now also prints a plain-text label
+after the icon** (Crystals / Roll Speed / Crystal Multi / Luck / Walkspeed /
+Unbox Slots) — they didn't originally, unlike item/potion chips which
+always showed a name next to their icon; the player asked for this
+consistency after seeing bare icon+badge pairs with no label.
+
+**`normalizePotionKey()` now folds trailing "potions" (plural) to
+"potion"** — P2W's Potion Pack listed its 5 rewards as `"5x tier 6 luck
+potions"` (plural, lowercase), which didn't match `POTION_ICON_FILES`'
+singular-only keys until this fix. Any future plural/lowercase potion
+phrasing elsewhere on the site benefits from this automatically.
+
+**Icon sourcing, same "real screenshot or player-confirmed AI-cleaned
+version" rule as every other icon this project has used** — `roll-speed-
+icon.png` and `walkspeed-icon.png` came from
+`C:\Users\...\.codex\generated_images\...` (confirmed real/cleaned, not
+fabricated, same as the potion/stat icon batch earlier). **One walkspeed
+icon was explicitly REJECTED first** — a glossy purple "x2" DeviantArt
+stock icon that didn't match the site's flat game-art style AND had the
+wrong badge value baked in (a "x2" multiplier icon for what's actually a
+flat "+8" bonus) — flagged to the player before use, they agreed and sent
+the real one instead. **Always sanity-check a supplied icon's art style
+against the rest of the site and its baked-in value (if any) against the
+actual data value it's meant to represent, especially for icons NOT sourced
+from `Documents\Tycoon Sim\Icons\`.**
+
+**Real "name mismatch silently breaks an icon" bug, again**: MVP Game
+Pass's `gives` list said `"MVP Upgrader"`, but the real item name (per a
+past session documented further down this file) is just `"MVP"`, and
+`icons/items/MVP.png` already exists under that correct name. Fixed by
+correcting the JSON text to `"MVP"` instead of adding a duplicate
+`"MVP Upgrader.png"` file — **before adding a new icon file for something
+that sounds like it should already exist, grep `icons/items/` first.**
+
+**Status pills reused as "Obtainable"/"Unobtainable"** (not "Yes"/"No" —
+player's explicit wording ask) via the same `.wiki-status-badge`
+is-active/is-expired classes Codes already uses for Active/Expired.
+
+**Browser-cache lesson**: see the new "Standing gotchas" entry above — a
+player-reported "still not showing after hard refresh" for CSS/JS changes
+already verified correct on disk turned out to be pure browser cache,
+confirmed by Incognito mode working. Don't second-guess already-verified-
+correct code on a report like that; suggest Incognito next instead.
 
 ## 2026-09-14 Conveyor and Decoration wiki pages
 
