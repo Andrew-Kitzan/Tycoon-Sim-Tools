@@ -859,7 +859,13 @@
       return;
     }
     const preview = data.slice(0, count);
-    container.innerHTML = `${formatFn(preview)}<button type="button" class="wiki-view-all-updates" id="${buttonId}">View All Updates &rarr;</button>`;
+    // Entries wrapped in their own div so the container has exactly 2 flex
+    // children (this list + the button) — with justify-content:space-between
+    // that pins the button flush to the container's bottom edge and the
+    // entry list flush to the top, so both panels' buttons start/end at the
+    // exact same y position once the panels themselves are forced to equal
+    // height below, regardless of how much slack either one has.
+    container.innerHTML = `<div class="wiki-update-list">${formatFn(preview)}</div><button type="button" class="wiki-view-all-updates" id="${buttonId}">View All Updates &rarr;</button>`;
     document.querySelector(`#${buttonId}`)?.addEventListener('click', () => openPage(pageKey));
   }
 
