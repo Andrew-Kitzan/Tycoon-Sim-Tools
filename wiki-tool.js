@@ -272,11 +272,12 @@
   }
 
   // Code rewards mix potion entries ("1x Tier 5 Luck Potion" — same
-  // POTION_ICON_FILES icon+badge treatment as the Rebirth page), real items
-  // with a generic icons/items/{Name}.png icon (Cupcake-inator, Intern
-  // Dropper), and plain currency/text ("50K Crystals", "Moonstone") that has
-  // no icon yet — the onerror fallback already used everywhere else on this
-  // page degrades that last case to plain text automatically.
+  // POTION_ICON_FILES icon+badge treatment as the Rebirth page), crystal
+  // amounts ("50K Crystals" — same crystal-icon.png treatment as Rebirth's
+  // Crystal Reward column), real items with a generic
+  // icons/items/{Name}.png icon (Cupcake-inator, Intern Dropper), and plain
+  // text ("Moonstone") that has no icon yet — the onerror fallback already
+  // used everywhere else on this page degrades that last case automatically.
   function formatCodeRewards(list) {
     if (!Array.isArray(list) || !list.length) return '—';
     const chips = list.map((entry) => {
@@ -291,6 +292,16 @@
             <span class="wiki-reward-badge">+${escapeHtml(countText)}</span>
           </span>
           ${escapeHtml(name)}
+        </span>`;
+      }
+      const crystalMatch = String(entry).match(/^([0-9][0-9.]*[a-zA-Z]*)\s*Crystals?$/i);
+      const crystalAmount = crystalMatch && parseAbbreviated(crystalMatch[1]);
+      if (crystalMatch && crystalAmount != null) {
+        return `<span class="wiki-reward-chip">
+          <span class="wiki-reward-icon-wrap">
+            <img class="wiki-reward-icon wiki-reward-icon--epic" src="icons/wiki/crystal-icon.png" alt="" onerror="this.parentElement.remove()">
+            <span class="wiki-reward-badge">+${formatCompact(crystalAmount)}</span>
+          </span>
         </span>`;
       }
       const safeName = escapeHtml(entry);
