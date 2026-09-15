@@ -8,7 +8,7 @@
   ],
   "potionTiers": [
     { "tier": 1, "rarity": "Common", "multiplier": "1.05x", "duration": "30 Sec" },
-    { "tier": 2, "rarity": "Uncommon", "multiplier": "1.10x", "duration": "1 Min" },
+    { "tier": 2, "rarity": "Uncommon", "multiplier": "1.10x", "duration": "1 Min - 2 Min" },
     { "tier": 3, "rarity": "Rare", "multiplier": "1.25x", "duration": "1 Min 30 Sec" },
     { "tier": 4, "rarity": "Epic", "multiplier": "1.5x", "duration": "2 Min" },
     { "tier": 5, "rarity": "Legendary", "multiplier": "2x", "duration": "3 Min" },
