@@ -1,1 +1,130 @@
-[]
+[
+  {
+    "rebirth": 1,
+    "cost": "1M",
+    "itemRewards": ["Plasma Upgrader"],
+    "crystalReward": 500,
+    "statRewards": ["+2 Plot Size", "+1 Luck"],
+    "potionRewards": ["5x Tier 3 Luck Potion", "5x Tier 3 Shiny Luck Potion", "5x Tier 3 Roll Speed Potion"]
+  },
+  {
+    "rebirth": 2,
+    "cost": "10B",
+    "itemRewards": [
+      "Fire Crystal Dropper"
+    ],
+    "crystalReward": "2.5K",
+    "statRewards": [
+      "+4 Plot Size",
+      "+1 Luck"
+    ],
+    "potionRewards": [
+      "5x Tier 3 Luck Potion",
+      "5x Tier 3 Roll Speed Potion"
+    ]
+  },
+  {
+    "rebirth": 3,
+    "cost": "50T",
+    "itemRewards": [
+      "Prismatic Upgrader"
+    ],
+    "crystalReward": "10K",
+    "statRewards": [
+      "+1 Unbox Slot",
+      "+1 Luck"
+    ],
+    "potionRewards": [
+      "5x Tier 4 Luck Potion",
+      "5x Tier 4 Shiny Luck Potion",
+      "5x Tier 4 Roll Speed Potion"
+    ]
+  },
+  {
+    "rebirth": 4,
+    "cost": "10Qd",
+    "itemRewards": [
+      "Ore Wash"
+    ],
+    "crystalReward": "500K",
+    "statRewards": [
+      "+2 Plot Size",
+      "+1 Luck"
+    ],
+    "potionRewards": [
+      "5x Tier 5 Luck Potion",
+      "5x Tier 5 Shiny Luck Potion",
+      "5x Tier 5 Mythic Luck Potion"
+    ]
+  },
+  {
+    "rebirth": 5,
+    "cost": "25Qn",
+    "itemRewards": [
+      "Kunzite Dropper",
+      "Red Teleporter Reciever",
+      "Red Teleporter Sender",
+      "Blue Teleporter Reciever",
+      "Blue Teleporter Sender"
+    ],
+    "crystalReward": "500K",
+    "statRewards": [
+      "+4 Plot Size",
+      "+1 Luck"
+    ],
+    "potionRewards": [
+      "10x Tier 5 Luck Potion",
+      "10x Tier 5 Shiny Luck Potion",
+      "10x Tier 5 Mythic Luck Potion"
+    ]
+  },
+  {
+    "rebirth": 6,
+    "cost": "5Sx",
+    "itemRewards": [
+      "Electric Overdrive"
+    ],
+    "crystalReward": "1.5M",
+    "statRewards": [
+      "+3 Luck"
+    ],
+    "potionRewards": [
+      "10x Tier 5 Luck Potion",
+      "10x Tier 5 Shiny Luck Potion",
+      "10x Tier 5 Mythic Luck Potion"
+    ]
+  },
+  {
+    "rebirth": 7,
+    "cost": "1Sp",
+    "itemRewards": [
+      "Meltdown Dropper"
+    ],
+    "crystalReward": "1.5M",
+    "statRewards": [
+      "+3 Luck"
+    ],
+    "potionRewards": [
+      "10x Tier 5 Luck Potion",
+      "10x Tier 5 Shiny Luck Potion",
+      "10x Tier 5 Mythic Luck Potion"
+    ]
+  },
+  {
+    "rebirth": 8,
+    "cost": "1Ud",
+    "itemRewards": [
+      "Holophase Device"
+    ],
+    "crystalReward": "1.5M",
+    "statRewards": [
+      "+3 Luck"
+    ],
+    "potionRewards": [
+      "10x Tier 5 Luck Potion",
+      "10x Tier 5 Shiny Luck Potion",
+      "10x Tier 5 Mythic Luck Potion",
+      "1x tier 1 Unbox Slot Potion"
+    ]
+  }
+]

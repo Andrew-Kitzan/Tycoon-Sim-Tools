@@ -40,17 +40,59 @@
     return Array.isArray(list) && list.length ? list.map(escapeHtml).join(', ') : '—';
   }
 
+  // Same suffix scale used elsewhere on the site for big cash/crystal numbers
+  // (app.js's abbreviatedRate, abbrev-calculator.js's DISPLAY_UNITS,
+  // capgrader-generator.js's money parser) — keep this in sync with those if
+  // that table ever grows. Small values (below 1,000) render as a plain
+  // comma-grouped number instead of e.g. "500.00" with no suffix.
+  const ABBREV_UNITS = [
+    [1e42, 'Td'], [1e39, 'Dd'], [1e36, 'Ud'], [1e33, 'Dc'],
+    [1e30, 'No'], [1e27, 'Oc'], [1e24, 'Sp'], [1e21, 'Sx'], [1e18, 'Qn'],
+    [1e15, 'Qd'], [1e12, 'T'], [1e9, 'B'], [1e6, 'M'], [1e3, 'K'],
+  ];
+  function formatCompact(value) {
+    const unit = ABBREV_UNITS.find(([minimum]) => value >= minimum);
+    if (!unit) return value.toLocaleString();
+    const [divisor, suffix] = unit;
+    const truncated = Math.floor((value / divisor) * 100) / 100;
+    return `${truncated.toFixed(2)}${suffix}`;
+  }
+
+  // Lets rebirth-data.json's cost/crystalReward be typed the same shorthand
+  // way the Calculator tool accepts ("1.5M", "500k") instead of a long run of
+  // zeros, since that's exactly what's easy to mistype by hand. A plain
+  // number still works too (e.g. 500) — only strings get parsed here.
+  const PARSE_UNITS_BY_LENGTH_DESC = [...ABBREV_UNITS]
+    .map(([value, suffix]) => [suffix.toLowerCase(), value])
+    .sort((a, b) => b[0].length - a[0].length);
+  function parseAbbreviated(value) {
+    if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+    if (typeof value !== 'string') return null;
+    const match = value.trim().match(/^(-?[0-9]*\.?[0-9]+)\s*([a-zA-Z]*)$/);
+    if (!match) return null;
+    const [, numberText, suffixText] = match;
+    const num = Number(numberText);
+    if (!Number.isFinite(num)) return null;
+    if (!suffixText) return num;
+    const unit = PARSE_UNITS_BY_LENGTH_DESC.find(([suffix]) => suffix === suffixText.toLowerCase());
+    return unit ? num * unit[1] : null;
+  }
+
   async function renderRebirthPage() {
     const rows = await loadRebirthData();
-    const tableRows = rows.map((row) => `
+    const tableRows = rows.map((row) => {
+      const cost = row.cost == null ? null : parseAbbreviated(row.cost);
+      const crystals = row.crystalReward == null ? null : parseAbbreviated(row.crystalReward);
+      return `
       <tr>
         <td>${formatNumber(row.rebirth)}</td>
-        <td>${row.cost == null ? '—' : formatNumber(row.cost)}</td>
+        <td>${cost == null ? '—' : '$' + formatCompact(cost)}</td>
         <td>${formatList(row.itemRewards)}</td>
-        <td>${row.crystalReward == null ? '—' : formatNumber(row.crystalReward)}</td>
+        <td>${crystals == null ? '—' : formatCompact(crystals)}</td>
         <td>${formatList(row.statRewards)}</td>
         <td>${formatList(row.potionRewards)}</td>
-      </tr>`).join('');
+      </tr>`;
+    }).join('');
     return `
       <p>Rebirthing resets your cash to $0 in exchange for permanent rewards —
       it's the game's core prestige loop. Since cash is the only thing you
