@@ -19,7 +19,7 @@
   let rebirthDataPromise = null;
   function loadRebirthData() {
     if (!rebirthDataPromise) {
-      rebirthDataPromise = fetch('data/manual/rebirth-data.json')
+      rebirthDataPromise = fetch('data/manual/rebirth-data.json', { cache: 'no-store' })
         .then((res) => res.json())
         .catch(() => []);
     }
@@ -267,7 +267,7 @@
   let codesDataPromise = null;
   function loadCodesData() {
     if (!codesDataPromise) {
-      codesDataPromise = fetch('data/manual/codes-data.json')
+      codesDataPromise = fetch('data/manual/codes-data.json', { cache: 'no-store' })
         .then((res) => res.json())
         .catch(() => []);
     }
@@ -417,7 +417,7 @@
   let geometryWorksheetPromise = null;
   function loadGeometryWorksheet() {
     if (!geometryWorksheetPromise) {
-      geometryWorksheetPromise = fetch('data/manual/item-geometry-worksheet.json')
+      geometryWorksheetPromise = fetch('data/manual/item-geometry-worksheet.json', { cache: 'no-store' })
         .then((res) => res.json())
         .catch(() => null);
     }
@@ -497,7 +497,7 @@
   let decorationDataPromise = null;
   function loadDecorationData() {
     if (!decorationDataPromise) {
-      decorationDataPromise = fetch('data/manual/decoration-data.json')
+      decorationDataPromise = fetch('data/manual/decoration-data.json', { cache: 'no-store' })
         .then((res) => res.json())
         .catch(() => []);
     }
@@ -565,7 +565,7 @@
   let brewerDataPromise = null;
   function loadBrewerData() {
     if (!brewerDataPromise) {
-      brewerDataPromise = fetch('data/manual/brewer-data.json')
+      brewerDataPromise = fetch('data/manual/brewer-data.json', { cache: 'no-store' })
         .then((res) => res.json())
         .catch(() => null);
     }
@@ -639,7 +639,7 @@
   let p2wDataPromise = null;
   function loadP2wData() {
     if (!p2wDataPromise) {
-      p2wDataPromise = fetch('data/manual/p2w-dev-products-data.json')
+      p2wDataPromise = fetch('data/manual/p2w-dev-products-data.json', { cache: 'no-store' })
         .then((res) => res.json())
         .catch(() => []);
     }
@@ -791,7 +791,7 @@
   }
 
   async function renderUpdatesLogPage() {
-    const updates = await fetch('data/manual/wiki-updates-data.json').then((res) => res.json()).catch(() => []);
+    const updates = await fetch('data/manual/wiki-updates-data.json', { cache: 'no-store' }).then((res) => res.json()).catch(() => []);
     if (!Array.isArray(updates) || !updates.length) {
       return '<p>Not filled in yet.</p>';
     }
@@ -821,7 +821,7 @@
   }
 
   async function renderGameUpdatesLogPage() {
-    const updates = await fetch('data/manual/game-updates-data.json').then((res) => res.json()).catch(() => []);
+    const updates = await fetch('data/manual/game-updates-data.json', { cache: 'no-store' }).then((res) => res.json()).catch(() => []);
     if (!Array.isArray(updates) || !updates.length) {
       return '<p>Not filled in yet.</p>';
     }
@@ -928,8 +928,8 @@
     const containerB = document.querySelector(configB.containerId);
     if (!containerA || !containerB) return;
     Promise.all([
-      fetch(configA.dataUrl).then((res) => res.json()).catch(() => []),
-      fetch(configB.dataUrl).then((res) => res.json()).catch(() => []),
+      fetch(configA.dataUrl, { cache: 'no-store' }).then((res) => res.json()).catch(() => []),
+      fetch(configB.dataUrl, { cache: 'no-store' }).then((res) => res.json()).catch(() => []),
     ]).then(([dataA, dataB]) => {
       const a = { ...configA, container: containerA };
       const b = { ...configB, container: containerB };
