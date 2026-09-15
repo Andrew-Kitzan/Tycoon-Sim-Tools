@@ -786,7 +786,7 @@
   // Game Updates in the 2-column grid. Tune WIKI_UPDATES_PREVIEW_COUNT up
   // if that gap reopens as entries get longer, or back down if Wiki & Tools
   // ever ends up taller than Game Updates instead.
-  const WIKI_UPDATES_PREVIEW_COUNT = 9;
+  const WIKI_UPDATES_PREVIEW_COUNT = 6;
   const GAME_UPDATES_PREVIEW_COUNT = 4;
 
   // "Wiki & Tools Updates" — a changelog of THIS companion site/tools, not
