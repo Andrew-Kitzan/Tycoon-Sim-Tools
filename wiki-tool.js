@@ -174,8 +174,8 @@
     if (amount == null) return '—';
     return `<span class="wiki-reward-chip">
       <span class="wiki-reward-icon-wrap">
-        <img class="wiki-reward-icon" src="icons/wiki/cash-icon.png" alt="" onerror="this.parentElement.remove()">
-        <span class="wiki-reward-badge">$${formatCompact(amount)}</span>
+        <img class="wiki-reward-icon wiki-reward-icon--lg" src="icons/wiki/cash-icon.png" alt="" onerror="this.parentElement.remove()">
+        <span class="wiki-reward-badge wiki-reward-badge--lg">$${formatCompact(amount)}</span>
       </span>
     </span>`;
   }
