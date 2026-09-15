@@ -1043,7 +1043,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-status-badge.is-active { background: color-mix(in srgb, #4caf6b 22%, var(--surface)); border: 1px solid #4caf6b; color: #8fe0ab; }
 .wiki-status-badge.is-expired { background: color-mix(in srgb, #e0483f 22%, var(--surface)); border: 1px solid #e0483f; color: #ff9d94; }
 .wiki-rarity-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 800; background: color-mix(in srgb, var(--rarity-color) 22%, var(--surface)); border: 1px solid var(--rarity-color); color: var(--rarity-color); }
-.wiki-chat-tag { display: inline-block; padding: 1px 6px; border-radius: 5px; font-size: .8rem; font-weight: 800; background: #e0483f; color: #fff; }
+.wiki-chat-tag { font-weight: 800; color: #e0483f; }
 
 @media (max-width: 860px) {
   .wiki-updates { grid-template-columns: 1fr; }
