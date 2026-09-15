@@ -78,7 +78,36 @@ correct on disk (`grep`/`cat` the file directly to be sure), suggest
 Incognito/Private mode as the next diagnostic step before assuming the code
 itself is wrong.
 
+**Update (2026-09-15): the `data/manual/*.json` half of this is now fixed at
+the source, not just diagnosed.** A player hit the stale-cache symptom again
+on `brewer-data.json` (an edited potion duration kept showing the old text
+even after clearing site data in their normal browser window — only
+Incognito showed the fix). Rather than keep treating this as a one-off
+support step, every `fetch('data/manual/*.json', ...)` call in `wiki-tool.js`
+now passes `{ cache: 'no-store' }`, so the wiki always re-requests the live
+file from the server instead of letting the browser serve a cached response.
+**Player's explicit policy going forward: only player-generated state
+(current page, toggles, typed input) is allowed to persist client-side —
+game/wiki content must never be served stale.** `wiki-tool.js` has no
+`localStorage` usage yet; if a "remember last page" feature is added later,
+that's the one thing allowed to use it. If you add a new `fetch(...)` call
+for any `data/manual/*.json` (or other content) file, add `{ cache:
+'no-store' }` to it too — don't let this regress one file at a time.
+
 ## Last worked on
+
+2026-09-15 (later session still, brewer data fix + fetch caching hardening)
+— see the "Update (2026-09-15)" paragraph appended to the browser-caching
+"Standing gotcha" above. Fixed a real data typo (Uncommon potion duration
+literally said "1 Min 60 Sec" instead of "1 Min" in
+`data/manual/brewer-data.json`), then — because the player kept seeing the
+old value even after clearing site data — added `{ cache: 'no-store' }` to
+every `data/manual/*.json` fetch in `wiki-tool.js` so this class of bug
+can't recur. Player also set an explicit policy: only player
+input/state (current page, toggles, form values) may ever persist
+client-side; wiki/game content must always be fetched fresh. No
+`localStorage` usage exists yet in this project — if that changes, it
+should be scoped to player state only, per that policy.
 
 2026-09-15 (later session, update-panel pixel-alignment polish) — see the
 end of "2026-09-15 Home page update logs" below (same entry, appended to).
