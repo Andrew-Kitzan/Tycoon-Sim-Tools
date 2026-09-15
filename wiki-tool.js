@@ -370,9 +370,20 @@
   // icons/items/, same reasoning as icons/decoration/ — conveyors aren't
   // real database items either). Same onerror-degrade-to-plain-text pattern
   // as every other icon on this page for pieces that don't have one yet.
+  //
+  // "Normal Conveyor" is engine/coordinate-map.mjs's internal
+  // conveyorDefinitions key (must stay exactly that for the planner to
+  // resolve it) — the player confirmed the game itself just calls it
+  // "Conveyor", so this maps engine name -> real display name for this
+  // page only. Extend this if another conveyor's engine key ever turns out
+  // to not match its real in-game name.
+  const CONVEYOR_DISPLAY_NAMES = {
+    'Normal Conveyor': 'Conveyor',
+  };
   function formatConveyorName(name) {
-    const safeName = escapeHtml(name);
-    const iconSrc = `icons/conveyor/${encodeURIComponent(name)}.png`;
+    const displayName = CONVEYOR_DISPLAY_NAMES[name] ?? name;
+    const safeName = escapeHtml(displayName);
+    const iconSrc = `icons/conveyor/${encodeURIComponent(displayName)}.png`;
     return `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
   }
 
