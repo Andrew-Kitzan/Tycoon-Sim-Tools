@@ -748,9 +748,20 @@
   // Recalculates every .wiki-enchant-time cell's displayed duration based on
   // the speed the player types into #wiki-enchant-speed-input, using each
   // cell's data-base-seconds (the real 1x time) set when the page rendered.
+  // The typed speed is the player's own input, not game content, so it's
+  // remembered across visits via localStorage (see the cache-policy rule:
+  // player input/state is the one thing allowed to persist client-side).
+  const ENCHANT_SPEED_STORAGE_KEY = 'wiki-enchant-speed';
   function wireEnchanterSpeedInput() {
     const input = document.querySelector('#wiki-enchant-speed-input');
     if (!input) return;
+    try {
+      const saved = localStorage.getItem(ENCHANT_SPEED_STORAGE_KEY);
+      if (saved) input.value = saved;
+    } catch {
+      // Best-effort only — private browsing / blocked storage just falls
+      // back to the default 1x each visit.
+    }
     function recalc() {
       const speed = Number(input.value);
       const effectiveSpeed = Number.isFinite(speed) && speed > 0 ? speed : 1;
@@ -758,6 +769,11 @@
         const baseSeconds = Number(cell.dataset.baseSeconds);
         cell.textContent = formatSecondsAsDuration(baseSeconds / effectiveSpeed);
       });
+      try {
+        localStorage.setItem(ENCHANT_SPEED_STORAGE_KEY, input.value);
+      } catch {
+        // Best-effort only.
+      }
     }
     input.addEventListener('input', recalc);
     recalc();
