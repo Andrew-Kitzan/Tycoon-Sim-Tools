@@ -8,17 +8,17 @@
     "masteryAppliesOffline": false
   },
   "upgradePaths": [
-    { "rarity": "Common", "from": "Base", "to": "Shiny", "cost": null },
-    { "rarity": "Uncommon", "from": "Base", "to": "Shiny", "cost": null },
-    { "rarity": "Rare", "from": "Base", "to": "Shiny", "cost": null },
-    { "rarity": "Epic", "from": "Base", "to": "Shiny", "cost": null },
-    { "rarity": "Legendary", "from": "Base", "to": "Shiny", "cost": null },
-    { "rarity": "Legendary", "from": "Base", "to": "Mythic", "cost": null },
-    { "rarity": "Legendary", "from": "Shiny", "to": "Shiny Mythic", "cost": null },
-    { "rarity": "Legendary", "from": "Mythic", "to": "Shiny Mythic", "cost": null },
-    { "rarity": "Secret", "from": "Base", "to": "Shiny", "cost": null },
-    { "rarity": "Secret", "from": "Base", "to": "Mythic", "cost": null },
-    { "rarity": "Secret", "from": "Shiny", "to": "Shiny Mythic", "cost": null },
-    { "rarity": "Secret", "from": "Mythic", "to": "Shiny Mythic", "cost": null }
+    { "rarity": "Common", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Uncommon", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Rare", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Epic", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Legendary", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Legendary", "from": "Base", "to": "Mythic", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Legendary", "from": "Shiny", "to": "Shiny Mythic", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Legendary", "from": "Mythic", "to": "Shiny Mythic", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Secret", "from": "Base", "to": "Shiny", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Secret", "from": "Base", "to": "Mythic", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Secret", "from": "Shiny", "to": "Shiny Mythic", "fromMultiplier": null, "toMultiplier": null, "time": null },
+    { "rarity": "Secret", "from": "Mythic", "to": "Shiny Mythic", "fromMultiplier": null, "toMultiplier": null, "time": null }
   ]
 }

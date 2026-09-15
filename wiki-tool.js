@@ -661,16 +661,22 @@
     const data = await loadEnchanterData();
     const mechanics = data?.mechanics ?? {};
     const paths = data?.upgradePaths ?? [];
-    const pathRows = paths.map((entry) => `
+    const pathRows = paths.map((entry) => {
+      const fromMulti = entry.fromMultiplier ? escapeHtml(entry.fromMultiplier) : '—';
+      const toMulti = entry.toMultiplier ? escapeHtml(entry.toMultiplier) : '—';
+      return `
       <tr>
         <td>${formatRarity(entry.rarity)}</td>
         <td>${escapeHtml(entry.from)} &rarr; ${escapeHtml(entry.to)}</td>
-        <td>${formatCrystalCost(entry.cost)}</td>
-      </tr>`).join('');
+        <td>${fromMulti} &rarr; ${toMulti}</td>
+        <td>${entry.time ? escapeHtml(entry.time) : '—'}</td>
+      </tr>`;
+    }).join('');
     return `
-      <p>The Enchanter upgrades an item into a better variant. Common
-      through Epic items only ever have Base and Shiny forms, so there's
-      just one upgrade: <strong>Base &rarr; Shiny</strong>.
+      <p>The Enchanter upgrades an item into a better variant — <strong>no
+      crystal cost, just time</strong>. Common through Epic items only ever
+      have Base and Shiny forms, so there's just one upgrade:
+      <strong>Base &rarr; Shiny</strong>.
       <strong>P2W Legendary items only exist in Shiny form</strong> to begin
       with, so they have nothing to enchant into. Every other Legendary
       (non-P2W) item and every Secret item can reach Shiny Mythic, but
@@ -693,10 +699,11 @@
           <tr>
             <th>Rarity</th>
             <th>Upgrade</th>
-            <th>Cost</th>
+            <th>Multiplier</th>
+            <th>Time</th>
           </tr>
         </thead>
-        <tbody>${pathRows || '<tr><td colspan="3">Not filled in yet.</td></tr>'}</tbody>
+        <tbody>${pathRows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
       </table>`;
   }
 
