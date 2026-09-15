@@ -335,6 +335,127 @@
       </table>`;
   }
 
+  // Conveyor page reads straight from data/manual/item-geometry-worksheet.json's
+  // "conveyors" section (added this session) instead of its own separate
+  // data file — the player explicitly asked not to duplicate the same
+  // width/length/speed numbers in two places. That worksheet's job is
+  // engine-verification, not wiki content, so this page adds its own
+  // plain-language notes on top rather than editing that file's own note
+  // fields for wiki-facing wording.
+  let geometryWorksheetPromise = null;
+  function loadGeometryWorksheet() {
+    if (!geometryWorksheetPromise) {
+      geometryWorksheetPromise = fetch('data/manual/item-geometry-worksheet.json')
+        .then((res) => res.json())
+        .catch(() => null);
+    }
+    return geometryWorksheetPromise;
+  }
+
+  function conveyorNotes(flags) {
+    if (!flags) return '—';
+    const notes = [];
+    if (flags.centers) notes.push('Centers ore as it crosses.');
+    if (flags.wall) notes.push('Solid wall — blocks routing, does not move ore.');
+    if (flags.teleporterColor && flags.teleporterRole === 'sender') {
+      notes.push(`Sends ore out via the ${flags.teleporterColor} teleporter.`);
+    }
+    if (flags.teleporterColor && flags.teleporterRole === 'receiver') {
+      notes.push(`Receives ore from the ${flags.teleporterColor} teleporter.`);
+    }
+    return notes.length ? notes.map(escapeHtml).join(' ') : '—';
+  }
+
+  async function renderConveyorPage() {
+    const worksheet = await loadGeometryWorksheet();
+    const conveyors = worksheet?.conveyors ? Object.values(worksheet.conveyors) : [];
+    const rows = conveyors.map((entry) => {
+      const size = entry.size?.confirmed;
+      const speed = entry.speed?.confirmed;
+      return `
+      <tr>
+        <td>${escapeHtml(entry.name)}</td>
+        <td>${size ? `${size.width}x${size.length}` : '—'}</td>
+        <td>${speed == null ? '—' : formatNumber(speed)}</td>
+        <td>${conveyorNotes(entry.flags)}</td>
+      </tr>`;
+    }).join('');
+    return `
+      <p>Every conveyor belt piece, with its footprint size and relative
+      speed (higher moves ore faster — same value the planner tools use, not
+      a fixed real-world unit). This is the exact same data tracked in the
+      base-builder engine's own item-geometry worksheet, not a separate copy
+      — editing one place keeps both in sync.</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Conveyor</th>
+            <th>Size</th>
+            <th>Speed</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
+  // Decoration data lives in data/manual/decoration-data.json — same
+  // plain-hand-edited-JSON convention as rebirth-data.json/codes-data.json.
+  let decorationDataPromise = null;
+  function loadDecorationData() {
+    if (!decorationDataPromise) {
+      decorationDataPromise = fetch('data/manual/decoration-data.json')
+        .then((res) => res.json())
+        .catch(() => []);
+    }
+    return decorationDataPromise;
+  }
+
+  // Same rarity color scale as luck-crate-generator.js's RARITY_COLORS /
+  // .luck-item-cell — this file already keeps its own copy for
+  // crystal/cash's Epic/Uncommon icon tints, extended here to the full set
+  // since Decoration items span every rarity.
+  const RARITY_COLORS = {
+    Common: '#8a97a0',
+    Uncommon: '#4caf6b',
+    Rare: '#3f8ee0',
+    Epic: '#9b59f2',
+    Legendary: '#f0a93a',
+    Secret: '#e0483f',
+  };
+  function formatRarity(rarity) {
+    if (!rarity) return '—';
+    const color = RARITY_COLORS[rarity] ?? RARITY_COLORS.Common;
+    return `<span class="wiki-rarity-pill" style="--rarity-color: ${color}">${escapeHtml(rarity)}</span>`;
+  }
+
+  async function renderDecorationPage() {
+    const decorations = await loadDecorationData();
+    const rows = decorations.map((entry) => `
+      <tr>
+        <td>${escapeHtml(entry.name)}</td>
+        <td>${entry.size ? escapeHtml(entry.size) : '—'}</td>
+        <td>${formatRarity(entry.rarity)}</td>
+        <td>${entry.odds ? escapeHtml(entry.odds) : '—'}</td>
+        <td>${entry.obtain ? escapeHtml(entry.obtain) : '—'}</td>
+      </tr>`).join('');
+    return `
+      <p>Cosmetic base decorations — these don't affect production, they're
+      purely for how your base looks.</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Decoration</th>
+            <th>Size</th>
+            <th>Rarity</th>
+            <th>Odds</th>
+            <th>How to Get</th>
+          </tr>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="5">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
   const PAGES = {
     index: {
       title: 'Index',
@@ -370,11 +491,11 @@
     },
     decoration: {
       title: 'Decoration',
-      body: '<p>Decorative base items. Not written yet.</p>',
+      body: renderDecorationPage,
     },
     conveyor: {
       title: 'Conveyor',
-      body: '<p>Conveyor types and how routing works. Not written yet.</p>',
+      body: renderConveyorPage,
     },
     enchanter: {
       title: 'Enchanter',

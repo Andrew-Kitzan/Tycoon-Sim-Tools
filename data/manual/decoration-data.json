@@ -1,0 +1,19 @@
+[
+  { "name": "Barrel", "size": "1x1", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Crates", "size": "3x2", "rarity": "Common", "odds": "1.24", "obtain": "Sold by Traveling Merchant" },
+  { "name": "Fire Pit", "size": "1x1", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Lamp Post", "size": "1x1", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Nostalgic Tree", "size": "2x2", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Pile of Rocks", "size": "3x2", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Spotlight", "size": "1x1", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Torch Light", "size": "1x1", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Tree", "size": "2x2", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Wooden Bench", "size": "3x1", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Wooden Fence", "size": "2x1", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Wooden Fence Corner", "size": "1x1", "rarity": "Common", "odds": null, "obtain": "Own by Default" },
+  { "name": "Fireworks", "size": "1x1", "rarity": "Rare", "odds": "1/4.41", "obtain": "Sold by Traveling Merchant" },
+  { "name": "Dance Floor", "size": "2x2", "rarity": "Epic", "odds": "1/8.39", "obtain": "Sold by Traveling Merchant" },
+  { "name": "THE EPIK DUCK", "size": "2x2", "rarity": "Legendary", "odds": "1/160.35", "obtain": "Sold by Traveling Merchant" },
+  { "name": "Money Moves", "size": "2x2", "rarity": "Legendary", "odds": "1/160.35", "obtain": "Sold by Traveling Merchant" },
+  { "name": "Submitter Statue", "size": "2x2", "rarity": "Legendary", "odds": null, "obtain": "Submit an item that gets added to the game" }
+]
