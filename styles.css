@@ -1030,6 +1030,11 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
   font-size: .62rem; font-weight: 800; line-height: 1.3; white-space: nowrap;
 }
 .wiki-reward-icon--lg { width: 44px; height: 44px; border-radius: 9px; }
+/* Same rarity color scale as luck-crate-generator.js's RARITY_COLORS /
+   .luck-item-cell (Epic #9b59f2, Uncommon #4caf6b) — reused here as a
+   static per-icon background rather than a dynamic per-item one. */
+.wiki-reward-icon--epic { border-color: #9b59f2; background: color-mix(in srgb, #9b59f2 22%, var(--surface)); }
+.wiki-reward-icon--uncommon { border-color: #4caf6b; background: color-mix(in srgb, #4caf6b 22%, var(--surface)); }
 .wiki-reward-badge--lg { left: -8px; bottom: -8px; padding: 2px 6px; font-size: .78rem; }
 
 @media (max-width: 860px) {
