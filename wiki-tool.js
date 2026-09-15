@@ -645,6 +645,61 @@
       </table>`;
   }
 
+  // Enchanter data lives in data/manual/enchanter-data.json — same
+  // plain-hand-edited-JSON convention as every other data/manual/ file.
+  let enchanterDataPromise = null;
+  function loadEnchanterData() {
+    if (!enchanterDataPromise) {
+      enchanterDataPromise = fetch('data/manual/enchanter-data.json', { cache: 'no-store' })
+        .then((res) => res.json())
+        .catch(() => null);
+    }
+    return enchanterDataPromise;
+  }
+
+  async function renderEnchanterPage() {
+    const data = await loadEnchanterData();
+    const mechanics = data?.mechanics ?? {};
+    const paths = data?.upgradePaths ?? [];
+    const pathRows = paths.map((entry) => `
+      <tr>
+        <td>${formatRarity(entry.rarity)}</td>
+        <td>${escapeHtml(entry.from)} &rarr; ${escapeHtml(entry.to)}</td>
+        <td>${formatCrystalCost(entry.cost)}</td>
+      </tr>`).join('');
+    return `
+      <p>The Enchanter upgrades an item into a better variant. Common
+      through Epic items only ever have Base and Shiny forms, so there's
+      just one upgrade: <strong>Base &rarr; Shiny</strong>.
+      <strong>P2W Legendary items only exist in Shiny form</strong> to begin
+      with, so they have nothing to enchant into. Every other Legendary
+      (non-P2W) item and every Secret item can reach Shiny Mythic, but
+      it's not a strict straight line — <strong>a Base item can be
+      enchanted directly into either Shiny or Mythic</strong> (the player's
+      choice), and <strong>whichever one it becomes can then be enchanted
+      again into Shiny Mythic</strong>.</p>
+      <p>The Enchanter has <strong>${escapeHtml(mechanics.slots ?? 3)}
+      slots</strong>, so up to that many items can enchant at once. While
+      you're online, enchanting runs at <strong>${escapeHtml(mechanics.onlineSpeedMultiplier ?? '1.5x')}
+      speed</strong>; while you're offline it drops to
+      <strong>${escapeHtml(mechanics.offlineSpeedMultiplier ?? '1x')}
+      speed</strong>. The Enchanting mastery has
+      ${escapeHtml(mechanics.masteryLevels ?? 3)} levels, and each level adds
+      <strong>${escapeHtml(mechanics.masteryBonusPerLevel ?? '+0.5x')}</strong>
+      onto your online enchant speed — mastery levels do
+      <strong>not</strong> affect offline speed at all.</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Rarity</th>
+            <th>Upgrade</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody>${pathRows || '<tr><td colspan="3">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
   // P2W (dev products + game passes) data lives in
   // data/manual/p2w-dev-products-data.json — same plain-hand-edited-JSON
   // convention as every other data/manual/ file.
@@ -743,7 +798,7 @@
     },
     enchanter: {
       title: 'Enchanter',
-      body: '<p>The Enchanter and what it can do to your items. Not written yet.</p>',
+      body: renderEnchanterPage,
     },
     brewer: {
       title: 'Brewer',
