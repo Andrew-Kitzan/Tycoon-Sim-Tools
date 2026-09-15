@@ -330,6 +330,17 @@
           </span>
         </span>`;
       }
+      // Luck multipliers (e.g. "2x Luck") reuse the Luck stat icon from the
+      // Rebirth page, with the multiplier as the badge.
+      const luckMultiMatch = String(entry).match(/^([0-9.]+x)\s+luck$/i);
+      if (luckMultiMatch) {
+        return `<span class="wiki-reward-chip">
+          <span class="wiki-reward-icon-wrap">
+            <img class="wiki-reward-icon" src="icons/wiki/luck-icon.png" alt="" onerror="this.parentElement.remove()">
+            <span class="wiki-reward-badge">${escapeHtml(luckMultiMatch[1])}</span>
+          </span>
+        </span>`;
+      }
       // Unbox slot counts (e.g. "+2 unbox slots") reuse the Unbox Slot stat
       // icon from the Rebirth page, same icon+badge pattern.
       const unboxSlotMatch = String(entry).match(/^\+?([0-9]+)\s+unbox\s+slots?$/i);
