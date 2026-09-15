@@ -96,6 +96,88 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-09-15 (new session, Enchanter + Furnace Loot pages) — built two more
+wiki pages, both from scratch based on real mechanic info the player
+described plus a real furnace-loot script the player pasted in as
+screenshots.
+
+**Enchanter** (`data/manual/enchanter-data.json`, `renderEnchanterPage()`)
+— items upgrade Base &rarr; Shiny &rarr; Mythic &rarr; Shiny Mythic, but it's
+NOT a strict line: a Base item can go directly to either Shiny or Mythic
+(player's choice), and whichever one it becomes can then go to Shiny
+Mythic. Common-Epic (and, importantly, **P2W items even at Legendary
+rarity**) only ever have Base/Shiny — this took a real correction mid-page,
+the player initially said P2W Legendary was Shiny-only, then corrected
+that it's actually Base+Shiny like everything else Common-Epic, just never
+reaching Mythic. There's no crystal cost to enchant, only real time (30 Sec
+Common up to 48 Hours Secret, same time for every upgrade path within a
+rarity) and each variant has a flat stat multiplier (Base 1x, Shiny 1.1x,
+Mythic 1.25x, Shiny Mythic 1.5x) shown via `variantMultipliers` — a single
+shared lookup table, not repeated per row, since 12 rows would've been 12
+places for the same 4 numbers to drift out of sync. The standout feature:
+a "Your enchant speed" number input above the table (defaults 1x, player
+types 1.5/3/12/etc. matching their real speed) that live-recalculates
+every row's displayed time via `parseDurationToSeconds()`/
+`formatSecondsAsDuration()` and a `data-base-seconds` attribute stashed on
+each `<td>`. **This is `wiki-tool.js`'s first use of `localStorage`** (key
+`wiki-enchant-speed`) — every other tool in the project already used it for
+player state (see the cache-policy note above), this was just the Wiki
+tool's first need for it. Wired via a new optional `page.after` hook run
+once a function-bodied `PAGES` entry's HTML is inserted (`openPage()` now
+calls `page.after()` after setting `pageBody.innerHTML`) — reuse that
+pattern instead of special-casing `openPage()` again if another page needs
+post-render JS.
+
+**Furnace Loot** (`data/manual/furnace-loot-data.json`,
+`renderFurnaceLootPage()`) — reverse-engineered from real Luau script
+screenshots the player provided. The "More Furnace Loot!" mastery (5
+levels, Cash tiers 1-4 then Crystals tier 5) sets a `FurnaceLoot` stat
+(confirmed non-cumulative — level N sets the stat to N, it does not stack
+1+2+3+4+5) which drives two formulas straight from the script:
+`dropChance = min((FurnaceLoot/50) * DropRateMultiplier, 1)` (0% with no
+mastery — confirmed by the player's own in-game testing, this isn't a
+passive bonus) and `maxActiveDrops` linearly interpolated from 10 (no
+mastery) to 20 (level 5) based on where the stat sits. `DropRateMultiplier`
+is normally always 1x — only an admin-only event can change it, so it's
+noted but not made adjustable like Enchanter's speed box. **The actual
+loot-odds table (Tier 1/2 Potions, 50-100/500-1K Crystals, Corium Dropper,
+Unbox Slot Potion) intentionally does NOT match the raw script weights** —
+the player was explicit that the drop pool's been tweaked since the script
+was written, and the real odds now live in the "Furance Loot" section of
+`data/Tycoon Sim Database.xlsx`'s "Other Info" sheet (read via
+`engine/xlsx-reader.mjs`'s `openXlsx()`/`readSheet()`, no Python/openpyxl
+needed — that's already a project dependency for other data sync scripts).
+**If the loot pool changes again, re-pull from that spreadsheet section,
+not the script weights.** Also added a reusable `.wiki-section-heading`
+style (`<h3 class="wiki-section-heading">`) to break up a page's tables
+from its intro text instead of everything running together — used here
+for "Furnace Loot Mastery"/"Loot Odds & Timing", and retrofitted onto
+Brewer ("Upcraft Costs"/"Potion Effects by Tier") and Rebirth ("Rewards by
+Rebirth") too, since the player asked for the same treatment there once
+they saw it.
+
+**Real bug fix on the Furnace Loot table**: the mastery table originally
+included a "No mastery" baseline row showing "10 max active drops" next to
+"0%" drop chance — the player immediately caught that this is
+self-contradictory (you can't ever reach a 10-drop cap if your chance to
+get any drop at all is 0%). Fixed by just removing that row; the 0%-at-
+no-mastery fact is still stated in the intro paragraph where it belongs as
+a plain fact, not a table row implying it's a reachable state.
+
+**Corium Dropper icon replaced** (`icons/items/Corium Dropper.png`) with a
+player-supplied version that has the baked-in count badge already removed
+— arrived as a 1254x1254 PNG (~1.3MB) from an AI-image-generation tool
+output path, confirmed by the player to be the real in-game icon just
+upscaled/edited, not a fabricated one. Resized to 110x109 via the
+project's existing `sharp` npm dependency (`node_modules/sharp` — no need
+to install anything) to match every other `icons/items/` icon's real
+dimensions; the original oversized file would have been ~50x heavier than
+every sibling icon. **If a player supplies a from-a-generation-tool-looking
+image path for a wiki icon again, ask whether it's the real asset
+(possibly just upscaled/edited) before using it — this project's whole
+icon set is real game screenshots, never fabricated art**, so it's worth
+confirming explicitly rather than assuming from the path alone.
+
 2026-09-15 (final session of the day, Bling Dropper icon + Drillbit & Co.
 link) — two small P2W fixes. (1) Bling Dropper's `gives` entry in
 `data/manual/p2w-dev-products-data.json` was lowercase (`"bling dropper"`),
