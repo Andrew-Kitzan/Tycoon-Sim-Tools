@@ -1018,6 +1018,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 }
 .wiki-view-all-updates:hover, .wiki-view-all-updates:focus-visible { border-color: var(--accent); outline: none; }
 .wiki-update-version { font-size: .78rem; font-weight: 800; color: var(--accent); }
+.wiki-update-date-inline { font-size: .76rem; font-weight: 600; color: var(--muted); }
 .wiki-update-title { margin: 1px 0 4px; color: var(--text); font-size: .84rem; font-weight: 800; }
 .wiki-update-highlights { margin: 0; padding-left: 18px; color: var(--text); font-size: .84rem; line-height: 1.5; }
 .wiki-update-highlights li { margin-bottom: 2px; }

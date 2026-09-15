@@ -773,12 +773,21 @@
 
   // Both home-page update panels ("Wiki & Tools Updates" and "Game
   // Updates") share this exact preview+view-all pattern: fetch a
-  // data/manual/*.json file, show only the UPDATES_PREVIEW_COUNT most
+  // data/manual/*.json file, show only each panel's own preview-count most
   // recent entries, and once there are more than that, add a "View All"
   // button that opens a dedicated full-log page instead of letting the
   // home page grow without bound. Add new entries newest-first, one entry
   // per real release/work session — don't split one release into several.
-  const UPDATES_PREVIEW_COUNT = 4;
+  //
+  // The two counts are independent (not a shared constant) because Game
+  // Updates entries are much bulkier per-entry (title + several bullet
+  // highlights) than Wiki & Tools' one-paragraph entries — showing the same
+  // count of each would leave Wiki & Tools looking short/empty next to
+  // Game Updates in the 2-column grid. Tune WIKI_UPDATES_PREVIEW_COUNT up
+  // if that gap reopens as entries get longer, or back down if Wiki & Tools
+  // ever ends up taller than Game Updates instead.
+  const WIKI_UPDATES_PREVIEW_COUNT = 9;
+  const GAME_UPDATES_PREVIEW_COUNT = 4;
 
   // "Wiki & Tools Updates" — a changelog of THIS companion site/tools, not
   // the actual game. data/manual/wiki-updates-data.json, {date, summary}
@@ -816,7 +825,7 @@
   function formatGameUpdateEntries(updates) {
     return updates.map((entry) => `
       <div class="wiki-update-entry">
-        <div class="wiki-update-version">${escapeHtml(entry.version)}${entry.status ? ` <span class="wiki-status-badge is-pending">${escapeHtml(entry.status)}</span>` : ''}</div>
+        <div class="wiki-update-version">${escapeHtml(entry.version)}${entry.date ? ` <span class="wiki-update-date-inline">${escapeHtml(entry.date)}</span>` : ''}${entry.status ? ` <span class="wiki-status-badge is-pending">${escapeHtml(entry.status)}</span>` : ''}</div>
         <p class="wiki-update-title">${escapeHtml(entry.title)}</p>
         <ul class="wiki-update-highlights">${(entry.highlights ?? []).map((h) => `<li>${escapeHtml(h)}</li>`).join('')}</ul>
       </div>`).join('');
@@ -834,9 +843,9 @@
   }
 
   // Wires one update panel: fetches its data, renders the preview (with a
-  // "View All" button past UPDATES_PREVIEW_COUNT entries) into
-  // containerId, and points that button at openPage(pageKey).
-  function wireUpdatesPanel(containerId, dataUrl, formatFn, pageKey, buttonId) {
+  // "View All" button past previewCount entries) into containerId, and
+  // points that button at openPage(pageKey).
+  function wireUpdatesPanel(containerId, dataUrl, formatFn, pageKey, buttonId, previewCount) {
     const container = document.querySelector(containerId);
     if (!container) return;
     fetch(dataUrl)
@@ -846,8 +855,8 @@
           container.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
           return;
         }
-        const preview = updates.slice(0, UPDATES_PREVIEW_COUNT);
-        const viewAllButton = updates.length > UPDATES_PREVIEW_COUNT
+        const preview = updates.slice(0, previewCount);
+        const viewAllButton = updates.length > previewCount
           ? `<button type="button" class="wiki-view-all-updates" id="${buttonId}">View All Updates &rarr;</button>`
           : '';
         container.innerHTML = formatFn(preview) + viewAllButton;
@@ -858,6 +867,6 @@
       });
   }
 
-  wireUpdatesPanel('#wiki-tools-updates', 'data/manual/wiki-updates-data.json', formatUpdateEntries, 'updates', 'wiki-view-all-updates');
-  wireUpdatesPanel('#game-updates', 'data/manual/game-updates-data.json', formatGameUpdateEntries, 'game-updates', 'game-view-all-updates');
+  wireUpdatesPanel('#wiki-tools-updates', 'data/manual/wiki-updates-data.json', formatUpdateEntries, 'updates', 'wiki-view-all-updates', WIKI_UPDATES_PREVIEW_COUNT);
+  wireUpdatesPanel('#game-updates', 'data/manual/game-updates-data.json', formatGameUpdateEntries, 'game-updates', 'game-view-all-updates', GAME_UPDATES_PREVIEW_COUNT);
 })();

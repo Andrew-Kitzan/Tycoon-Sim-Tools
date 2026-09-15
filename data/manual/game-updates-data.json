@@ -1,6 +1,7 @@
 [
   {
     "version": "v3.0.0",
+    "date": "2026-09-06",
     "title": "Back to working on the game",
     "status": "In Development",
     "highlights": [
@@ -13,6 +14,7 @@
   },
   {
     "version": "v2.0.10",
+    "date": "2026-08-01",
     "title": "Bug fixes",
     "highlights": [
       "Fixed admin abuse commands and admin abuse effects not appearing in new servers",
@@ -22,6 +24,7 @@
   },
   {
     "version": "v2.1",
+    "date": "2026-07-24",
     "title": "New crates, ranks, rebirth, and bundle",
     "highlights": [
       "2 new Crates appeared with a countdown",
@@ -34,6 +37,7 @@
   },
   {
     "version": "v2.0.8",
+    "date": "2026-07-16",
     "title": "Patches for update",
     "highlights": [
       "New base indicator + teleport-back-to-base button",
@@ -46,6 +50,7 @@
   },
   {
     "version": "v2.0.7",
+    "date": "2026-07-16",
     "title": "Some patches, more tomorrow",
     "highlights": [
       "Traveling Merchant is now unique per player and appears every hour instead of randomly",
@@ -57,6 +62,7 @@
   },
   {
     "version": "v2.0.0",
+    "date": "2026-07-10",
     "title": "Decorations, summer, and traveling salesman",
     "highlights": [
       "2 new Summer Crates with 13 new items",
@@ -69,6 +75,7 @@
   },
   {
     "version": "v1.1.2",
+    "date": "2026-07-03",
     "title": "Events! Alien Invasion pt 2",
     "highlights": [
       "New recurring event every 30 minutes, giving every player a free boost",
@@ -80,6 +87,7 @@
   },
   {
     "version": "v1.1.1",
+    "date": "2026-06-27",
     "title": "Small balance changes",
     "highlights": [
       "3 new Index Tiers",
@@ -91,6 +99,7 @@
   },
   {
     "version": "v1.1.0",
+    "date": "2026-06-26",
     "title": "Alien Update!!",
     "highlights": [
       "2 new Crates (12 new items) and 3 new Limited Items",
@@ -103,6 +112,7 @@
   },
   {
     "version": "v1.0.8",
+    "date": "2026-06-13",
     "title": "Fixes",
     "highlights": [
       "Advanced Tooltips now shows when admin abuse is starting",
@@ -111,6 +121,7 @@
   },
   {
     "version": "v1.0.7",
+    "date": "2026-06-13",
     "title": "Admin abuse fixes",
     "highlights": [
       "Unaffordable crates now queue instead of blocking further unboxing",
@@ -121,6 +132,7 @@
   },
   {
     "version": "v1.0.6",
+    "date": "2026-06-13",
     "title": "Balance + bug fixes",
     "highlights": [
       "Cookie Upgrader, Sugar Churner, and Gumball Enchanter buffed",
@@ -131,6 +143,7 @@
   },
   {
     "version": "v1.0.5",
+    "date": "2026-06-12",
     "title": "Quick balance change",
     "highlights": [
       "Forbidden Gate now costs 500K Crystals, reward reduced to 100qd (from 500qd)",
@@ -141,6 +154,7 @@
   },
   {
     "version": "v1.0.4",
+    "date": "2026-06-12",
     "title": "New content + base layouts!",
     "highlights": [
       "New Crates: Space Crate (5 items) and Candy Crate (6 items), plus a new hidden Secret",
@@ -152,6 +166,7 @@
   },
   {
     "version": "v1.0.3",
+    "date": "2026-06-06",
     "title": "Admin abuse prep",
     "highlights": [
       "Second Dragon's Breath now only destroys ore 30% of the time",
@@ -162,6 +177,7 @@
   },
   {
     "version": "v1.0.2",
+    "date": "2026-06-04",
     "title": "MVP buff, gifting gamepasses, bug fixes",
     "highlights": [
       "You can now gift gamepasses and products to other players",
@@ -172,6 +188,7 @@
   },
   {
     "version": "v1.0.1",
+    "date": "2026-06-01",
     "title": "New crate and furnace loot!",
     "highlights": [
       "Furnace Loot added — earn potions and crystals for free by processing ore",
