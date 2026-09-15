@@ -1,0 +1,131 @@
+[
+  {
+    "name": "Cat Upgrader",
+    "robuxCost": null,
+    "gives": [
+      "Cat Upgrader",
+      "Cat Upgrader Shiny"
+    ]
+  },
+  {
+    "name": "Dog Upgrader",
+    "robuxCost": null,
+    "gives": [
+      "Dog Upgrader",
+      "Dog Upgrader Shiny"
+    ]
+  },
+  {
+    "name": "Classic Bundle",
+    "robuxCost": null,
+    "gives": [
+      "Cat Upgrader",
+      "Cat Upgrader Shiny",
+      "Dog Upgrader",
+      "Dog Upgrader Shiny",
+      "Sword Heights",
+      "Sword Heights Shiny"
+    ]
+  },
+  {
+    "name": "Bombardier Dropper",
+    "robuxCost": null,
+    "gives": [
+      "Bombardier Dropper",
+      "Bombardier Dropper Shiny"
+    ]
+  },
+  {
+    "name": "Hoarded Treasure",
+    "robuxCost": null,
+    "gives": [
+      "Hoarded Treasure",
+      "Hoarded Treasure Shiny"
+    ]
+  },
+  {
+    "name": "Space Pirates Bundle",
+    "robuxCost": null,
+    "gives": [
+      "Bombardier Dropper",
+      "Bombardier Dropper Shiny",
+      "Hoarded Treasure",
+      "Hoarded Treasure Shiny",
+      "Space Pirates",
+      "Space Pirates Shiny"
+    ]
+  },
+  {
+    "name": "Horsey",
+    "robuxCost": null,
+    "gives": [
+      "Ore Rocker",
+      "Ore Rocker Shiny"
+    ]
+  },
+  {
+    "name": "Palace",
+    "robuxCost": null,
+    "gives": [
+      "Whimsical Palace",
+      "Whimsical Palace Shiny"
+    ]
+  },
+  {
+    "name": "Fidget Pack",
+    "robuxCost": null,
+    "gives": [
+      "Ore Rocker",
+      "Ore Rocker Shiny",
+      "Portable Spinner",
+      "Portable Spinner Shiny",
+      "Whimsical Palace",
+      "Whimsical Palace Shiny"
+    ]
+  },
+  {
+    "name": "Carrot",
+    "robuxCost": null,
+    "gives": [
+      "Carrot Mutator",
+      "Carrot Mutator Shiny"
+    ]
+  },
+  {
+    "name": "Beanstalk",
+    "robuxCost": null,
+    "gives": [
+      "Lush Beanstock",
+      "Lush Beanstock Shiny"
+    ]
+  },
+  {
+    "name": "Clover Pack",
+    "robuxCost": null,
+    "gives": [
+      "Carrot Mutator",
+      "Carrot Mutator Shiny",
+      "Clover Garden",
+      "Clover Garden Shiny",
+      "Lush Beanstock",
+      "Lush Beanstock Shiny"
+    ]
+  },
+  {
+    "name": "3.5M Crystal Pack",
+    "robuxCost": null,
+    "gives": [
+      "3.5M Crystals",
+      "Crystalline Dropper",
+      "Crystalline Dropper Shiny"
+    ]
+  },
+  {
+    "name": "MVP Game Pass",
+    "robuxCost": null,
+    "gives": [
+      "MVP",
+      "MVP Shiny"
+    ]
+  }
+]
