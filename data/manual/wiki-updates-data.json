@@ -1,0 +1,34 @@
+[
+  {
+    "date": "2026-09-14",
+    "summary": "Wiki content build-out: real page navigation across the home page (all 13 sections, each with its own background art), then full pages built for Rebirth, Codes, Conveyor, and Decoration — every reward, code, conveyor piece, and decoration now has real data and its own icon."
+  },
+  {
+    "date": "2026-09-13",
+    "summary": "The Wiki tool itself was added and made the site's default landing page. Capgrader Generator results now show colored Base/Shiny variant badges with a twinkling sparkle effect on Shiny rows."
+  },
+  {
+    "date": "2026-09-11",
+    "summary": "Capgrader Generator chains can now mix Base and Shiny copies of the same item within one chain (previously it only ever used the single \"best\" owned variant), plus dependency/ordering fixes. The MPA / Chopping Block tool was also added."
+  },
+  {
+    "date": "2026-09-10",
+    "summary": "MPA / Chopping Block graduated out of WIP status, a real rotation bug affecting the Base Portable Upgrader was fixed, and 5 new capgraders were added to the database."
+  },
+  {
+    "date": "2026-09-09",
+    "summary": "Bug fixes: the Calculator tool no longer bleeds into other tools, and stale Capgrader Generator results are properly cleared after editing your setup."
+  },
+  {
+    "date": "2026-09-08",
+    "summary": "Added the Calculator tool — a scientific calculator that understands the game's own number abbreviations (K, M, B, T, and beyond)."
+  },
+  {
+    "date": "2026-08-28",
+    "summary": "Added the Luck / Crate Simulator tool, plus a shared help widget for Capgrader Generator and Luck Simulator."
+  },
+  {
+    "date": "2026-08-27",
+    "summary": "Site bring-up: Capgrader Generator and the feedback widget (bug reports and suggestions, with image/video attachments) went live."
+  }
+]

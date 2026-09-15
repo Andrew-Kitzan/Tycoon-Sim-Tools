@@ -570,4 +570,33 @@
     tile.addEventListener('click', () => openPage(tile.dataset.wikiPage));
   });
   backButton?.addEventListener('click', goHome);
+
+  // "Wiki & Tools Updates" panel on the home page — a running changelog of
+  // this companion site/tools (NOT the actual game; "Game Updates" next to
+  // it stays "Coming soon" on purpose, that's separate scope). Data lives
+  // in data/manual/wiki-updates-data.json, same plain-hand-edited-JSON
+  // convention as every other data/manual/ file — add a new
+  // {date, summary} entry (newest first) whenever a day's worth of work
+  // wraps up; group everything from one day into a single entry rather
+  // than one per commit. Runs immediately (not lazily like the PAGES
+  // renderers) since this panel is visible on the home page by default.
+  const updatesContainer = document.querySelector('#wiki-tools-updates');
+  if (updatesContainer) {
+    fetch('data/manual/wiki-updates-data.json')
+      .then((res) => res.json())
+      .then((updates) => {
+        if (!Array.isArray(updates) || !updates.length) {
+          updatesContainer.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
+          return;
+        }
+        updatesContainer.innerHTML = updates.map((entry) => `
+          <div class="wiki-update-entry">
+            <div class="wiki-update-date">${escapeHtml(entry.date)}</div>
+            <p class="wiki-update-summary">${escapeHtml(entry.summary)}</p>
+          </div>`).join('');
+      })
+      .catch(() => {
+        updatesContainer.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
+      });
+  }
 })();
