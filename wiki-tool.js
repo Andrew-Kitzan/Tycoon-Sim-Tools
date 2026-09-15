@@ -341,6 +341,16 @@
           </span>
         </span>`;
       }
+      // Walkspeed bonuses (e.g. "+8 walkspeed") get the same treatment.
+      const walkspeedMatch = String(entry).match(/^\+?([0-9]+)\s+walkspeed$/i);
+      if (walkspeedMatch) {
+        return `<span class="wiki-reward-chip">
+          <span class="wiki-reward-icon-wrap">
+            <img class="wiki-reward-icon" src="icons/wiki/walkspeed-icon.png" alt="" onerror="this.parentElement.remove()">
+            <span class="wiki-reward-badge">+${escapeHtml(walkspeedMatch[1])}</span>
+          </span>
+        </span>`;
+      }
       // Unbox slot counts (e.g. "+2 unbox slots") reuse the Unbox Slot stat
       // icon from the Rebirth page, same icon+badge pattern.
       const unboxSlotMatch = String(entry).match(/^\+?([0-9]+)\s+unbox\s+slots?$/i);
