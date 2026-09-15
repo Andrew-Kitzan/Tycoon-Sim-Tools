@@ -998,6 +998,14 @@
       title: 'P2W',
       body: renderP2wPage,
     },
+    'crystals-farming': {
+      title: 'Crystals Farming',
+      body: '<p>The best ways to farm crystals. Not written yet.</p>',
+    },
+    'base-progression': {
+      title: 'Base Design/Progression',
+      body: '<p>How to design and grow your base over time. Not written yet.</p>',
+    },
   };
 
   function openPage(key) {
