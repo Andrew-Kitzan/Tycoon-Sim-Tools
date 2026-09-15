@@ -58,19 +58,34 @@
   // spacing inconsistently (a pre-existing quirk of that folder, not
   // introduced here) — a generic encodeURIComponent(name) guess like the one
   // formatItemRewards() uses would miss half of them. This maps a normalized
-  // "tier N word word potion" key to the exact real filename for every
-  // potion that currently appears in rebirth-data.json. Add an entry here
-  // whenever a new potion name shows up in that file.
+  // "tier N word word potion" key to the exact real filename — every potion
+  // across all 6 tiers is mapped (not just the tiers rebirth-data.json
+  // happens to use), since codes-data.json can reference any tier too.
   const POTION_ICON_FILES = {
+    'tier1luckpotion': 'Tier1 Luck Potion.png',
+    'tier1shinyluckpotion': 'Tier1 Shiny Luck Potion.png',
+    'tier1rollspeedpotion': 'Tier1 Roll Speed Potion.png',
+    'tier1mythicpotion': 'tier1 Mythic Potion.png',
+    'tier2luckpotion': 'tier2 Luck Potion.png',
+    'tier2shinyluckpotion': 'tier2 Shiny Luck Potion.png',
+    'tier2rollspeedpotion': 'tier2 Roll Speed Potion.png',
+    'tier2mythicluckpotion': 'tier2 Mythic Luck Potion.png',
     'tier3luckpotion': 'Tier3 Luck Potion.png',
     'tier3shinyluckpotion': 'Tier3 Shiny Luck Potion.png',
     'tier3rollspeedpotion': 'Tier3 Roll Speed Potion.png',
+    'tier3mythicluckpotion': 'Tier3 Mythic Luck Potion.png',
     'tier4luckpotion': 'tier4 Luck Potion.png',
     'tier4shinyluckpotion': 'tier4 Shiny Luck Potion.png',
     'tier4rollspeedpotion': 'tier4 Roll Speed Potion.png',
+    'tier4mythicluckpotion': 'tier4 Mythic Luck Potion.png',
     'tier5luckpotion': 'Tier5 Luck Potion.png',
     'tier5shinyluckpotion': 'Tier5 Shiny Luck Potion.png',
+    'tier5rollspeedpotion': 'Tier5 Roll Speed Potion.png',
     'tier5mythicluckpotion': 'Tier5 Mythic Luck Potion.png',
+    'tier6luckpotion': 'tier6 Luck Potion.png',
+    'tier6shinyluckpotion': 'tier6 Shiny Luck Potion.png',
+    'tier6rollspeedpotion': 'tier6 Roll Speed Potion.png',
+    'tier6mythicluckpotion': 'tier6 Mythic Luck Potion.png',
     // Filename is a leftover misnaming from when this icon was saved — the
     // player confirmed it's actually the Unbox Slot Potion icon, not
     // renamed on disk to avoid unrelated churn (same convention as the
@@ -243,6 +258,72 @@
       </table>`;
   }
 
+  // Codes reward data lives in data/manual/codes-data.json — same
+  // plain-hand-edited-JSON convention as rebirth-data.json, fetched once and
+  // cached the same way.
+  let codesDataPromise = null;
+  function loadCodesData() {
+    if (!codesDataPromise) {
+      codesDataPromise = fetch('data/manual/codes-data.json')
+        .then((res) => res.json())
+        .catch(() => []);
+    }
+    return codesDataPromise;
+  }
+
+  // Code rewards mix potion entries ("1x Tier 5 Luck Potion" — same
+  // POTION_ICON_FILES icon+badge treatment as the Rebirth page), real items
+  // with a generic icons/items/{Name}.png icon (Cupcake-inator, Intern
+  // Dropper), and plain currency/text ("50K Crystals", "Moonstone") that has
+  // no icon yet — the onerror fallback already used everywhere else on this
+  // page degrades that last case to plain text automatically.
+  function formatCodeRewards(list) {
+    if (!Array.isArray(list) || !list.length) return '—';
+    const chips = list.map((entry) => {
+      const potionMatch = String(entry).match(/^(\d+)x\s+(.*)$/i);
+      const potionIcon = potionMatch && POTION_ICON_FILES[normalizePotionKey(potionMatch[2])];
+      if (potionMatch && potionIcon) {
+        const [, countText, name] = potionMatch;
+        const iconSrc = `icons/items/${encodeURIComponent(potionIcon)}`;
+        return `<span class="wiki-reward-chip">
+          <span class="wiki-reward-icon-wrap">
+            <img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.parentElement.remove()">
+            <span class="wiki-reward-badge">+${escapeHtml(countText)}</span>
+          </span>
+          ${escapeHtml(name)}
+        </span>`;
+      }
+      const safeName = escapeHtml(entry);
+      const iconSrc = `icons/items/${encodeURIComponent(entry)}.png`;
+      return `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
+    }).join('');
+    return `<span class="wiki-reward-list">${chips}</span>`;
+  }
+
+  async function renderCodesPage() {
+    const codes = await loadCodesData();
+    const rows = codes.map((entry) => `
+      <tr>
+        <td class="wiki-code-text">${escapeHtml(entry.code)}</td>
+        <td><span class="wiki-status-badge ${entry.active ? 'is-active' : 'is-expired'}">${entry.active ? 'Active' : 'Expired'}</span></td>
+        <td>${formatCodeRewards(entry.rewards)}</td>
+      </tr>`).join('');
+    return `
+      <p>Enter these in the game's Codes menu for free rewards. Codes can be
+      deactivated at any time — if one stops working, it's most likely
+      expired rather than mistyped.</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Status</th>
+            <th>Reward(s)</th>
+          </tr>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="3">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
   const PAGES = {
     index: {
       title: 'Index',
@@ -274,7 +355,7 @@
     },
     codes: {
       title: 'Codes',
-      body: '<p>Active and expired codes. Not written yet.</p>',
+      body: renderCodesPage,
     },
     decoration: {
       title: 'Decoration',

@@ -7,37 +7,37 @@
   {
     "code": "MOREUNBOXES",
     "active": true,
-    "rewards": ["1x Unbox Slot Potion"]
+    "rewards": ["1x Tier 1 Unbox Slot Potion"]
   },
   {
     "code": "TIZZY",
     "active": true,
-    "rewards": ["1x Tier 4 Luck Potion", "1x Tier 4 Mythic Luck Potion"]
+    "rewards": ["1x Tier 5 Luck Potion", "1x Tier 5 Mythic Luck Potion"]
   },
   {
     "code": "derp",
     "active": false,
-    "rewards": ["Luck Potion", "Unbox Slot Potion"]
+    "rewards": ["1x Tier 5 Luck Potion", "1x Tier 1 Unbox Slot Potion"]
   },
   {
     "code": "safety",
     "active": true,
-    "rewards": ["Luck Potion", "10K Crystals"]
+    "rewards": ["10K Crystals"]
   },
   {
     "code": "Space",
     "active": true,
-    "rewards": ["Moonstone", "Luck"]
+    "rewards": ["Moonstone", "1x Tier 6 Luck Potion"]
   },
   {
     "code": "derpy",
     "active": true,
-    "rewards": ["Luck Potion", "Unbox Slot Potion"]
+    "rewards": ["1x Tier 5 Luck Potion", "1x Tier 1 Unbox Slot Potion"]
   },
   {
     "code": "auxinite",
     "active": true,
-    "rewards": ["Unbox Slot Potion", "Luck Potion"]
+    "rewards": ["1x Tier 5 Luck Potion", "1x Tier 1 Unbox Slot Potion"]
   },
   {
     "code": "intern",

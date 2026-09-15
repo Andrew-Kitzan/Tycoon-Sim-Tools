@@ -1034,6 +1034,10 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
    static per-icon background rather than a dynamic per-item one. */
 .wiki-reward-icon--epic { border-color: #9b59f2; background: color-mix(in srgb, #9b59f2 22%, var(--surface)); }
 .wiki-reward-icon--uncommon { border-color: #4caf6b; background: color-mix(in srgb, #4caf6b 22%, var(--surface)); }
+.wiki-code-text { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-weight: 800; letter-spacing: .02em; }
+.wiki-status-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 800; }
+.wiki-status-badge.is-active { background: color-mix(in srgb, #4caf6b 22%, var(--surface)); border: 1px solid #4caf6b; color: #8fe0ab; }
+.wiki-status-badge.is-expired { background: color-mix(in srgb, #e0483f 22%, var(--surface)); border: 1px solid #e0483f; color: #ff9d94; }
 
 @media (max-width: 860px) {
   .wiki-updates { grid-template-columns: 1fr; }
