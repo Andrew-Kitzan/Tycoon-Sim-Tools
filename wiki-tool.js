@@ -98,8 +98,8 @@
       it's the game's core prestige loop. In general, rebirth as soon as
       you're able to — don't sit on the cash. The one exception is coming
       back from being AFK with a lot more cash than the rebirth costs: spend
-      the excess on crates (a separate, standalone system, not tied to the
-      Merchant) before you rebirth so that extra cash isn't wasted.</p>
+      the excess on crates before you rebirth so that extra cash isn't
+      wasted.</p>
       <p><strong>What you lose:</strong> your cash resets to $0 the moment
       you rebirth, no matter how much you had banked above the cost — there's
       no benefit to holding extra cash past what the next rebirth requires.
