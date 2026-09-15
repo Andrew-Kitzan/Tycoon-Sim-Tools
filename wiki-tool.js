@@ -36,10 +36,6 @@
     return typeof value === 'number' ? value.toLocaleString() : escapeHtml(value ?? '—');
   }
 
-  function formatList(list) {
-    return Array.isArray(list) && list.length ? list.map(escapeHtml).join(', ') : '—';
-  }
-
   // Item reward icons reuse the site-wide icons/items/{Name}.png convention
   // (same path shape as mpa-chopping-block.js's itemIconHtml — Base variant,
   // no suffix, since rebirth rewards aren't listed with a variant). No
@@ -106,6 +102,34 @@
           <span class="wiki-reward-badge">+${escapeHtml(countText)}</span>
         </span>
         ${escapeHtml(name)}
+      </span>`;
+    }).join('');
+    return `<span class="wiki-reward-list">${chips}</span>`;
+  }
+
+  // Stat reward strings are "+2 Plot Size" / "+1 Luck" — only the stats with
+  // a real icon below get the icon+badge treatment; anything else (Unbox
+  // Slot, ...) stays plain text until an icon exists for it, same
+  // graceful-degrade pattern as formatItemRewards()/formatPotionRewards().
+  const STAT_ICON_FILES = {
+    'luck': 'luck-icon.png',
+    'plot size': 'plot-size-icon.png',
+  };
+  function formatStatRewards(list) {
+    if (!Array.isArray(list) || !list.length) return '—';
+    const chips = list.map((entry) => {
+      const match = String(entry).match(/^([+-]\d+)\s+(.*)$/);
+      const iconFile = match && STAT_ICON_FILES[match[2].trim().toLowerCase()];
+      if (!match || !iconFile) {
+        return `<span class="wiki-reward-chip">${escapeHtml(entry)}</span>`;
+      }
+      const [, amountText, label] = match;
+      return `<span class="wiki-reward-chip">
+        <span class="wiki-reward-icon-wrap">
+          <img class="wiki-reward-icon" src="icons/wiki/${iconFile}" alt="" onerror="this.parentElement.remove()">
+          <span class="wiki-reward-badge">${escapeHtml(amountText)}</span>
+        </span>
+        ${escapeHtml(label)}
       </span>`;
     }).join('');
     return `<span class="wiki-reward-list">${chips}</span>`;
@@ -190,7 +214,7 @@
         <td>${formatCostReward(cost)}</td>
         <td>${formatItemRewards(row.itemRewards)}</td>
         <td>${formatCrystalReward(row.crystalReward)}</td>
-        <td>${formatList(row.statRewards)}</td>
+        <td>${formatStatRewards(row.statRewards)}</td>
         <td>${formatPotionRewards(row.potionRewards)}</td>
       </tr>`;
     }).join('');
