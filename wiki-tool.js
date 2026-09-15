@@ -75,6 +75,11 @@
     'tier5luckpotion': 'Tier5 Luck Potion.png',
     'tier5shinyluckpotion': 'Tier5 Shiny Luck Potion.png',
     'tier5mythicluckpotion': 'Tier5 Mythic Luck Potion.png',
+    // Filename is a leftover misnaming from when this icon was saved — the
+    // player confirmed it's actually the Unbox Slot Potion icon, not
+    // renamed on disk to avoid unrelated churn (same convention as the
+    // index-icon.png/enchanter-bg.png mismatches noted in AI_HANDOFF.md).
+    'tier1unboxslotpotion': 'tier1 Roll Slot Potion.png',
   };
   function normalizePotionKey(name) {
     return name.toLowerCase().replace(/\s+/g, '');
