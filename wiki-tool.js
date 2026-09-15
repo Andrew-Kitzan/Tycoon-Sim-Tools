@@ -307,6 +307,17 @@
           </span>
         </span>`;
       }
+      // Roll speed multipliers (e.g. "0.5x unbox speed") get the same
+      // icon+badge treatment as crystals/potions instead of plain text.
+      const rollSpeedMatch = String(entry).match(/^([0-9.]+x)\s+(?:unbox|roll)\s+speed$/i);
+      if (rollSpeedMatch) {
+        return `<span class="wiki-reward-chip">
+          <span class="wiki-reward-icon-wrap">
+            <img class="wiki-reward-icon" src="icons/wiki/roll-speed-icon.png" alt="" onerror="this.parentElement.remove()">
+            <span class="wiki-reward-badge">${escapeHtml(rollSpeedMatch[1])}</span>
+          </span>
+        </span>`;
+      }
       // A leading "[Tag]" (a chat-tag reward, e.g. "[MVP] chat tag") renders
       // the bracketed part in the tag's own color, matching how it actually
       // looks in-game chat, instead of plain text.
