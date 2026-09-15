@@ -288,6 +288,7 @@
       you rebirth, no matter how much you had banked above the cost — there's
       no benefit to holding extra cash past what the next rebirth requires.
       That's the only thing rebirthing takes from you.</p>
+      <h3 class="wiki-section-heading">Rewards by Rebirth</h3>
       <table class="wiki-data-table">
         <thead>
           <tr>
@@ -757,6 +758,7 @@
       up with each tier. <strong>Unbox Slot Potion is the only potion with
       just one tier</strong> — it has no lower/higher version, so it can't be
       upcrafted.</p>
+      <h3 class="wiki-section-heading">Upcraft Costs</h3>
       <table class="wiki-data-table">
         <thead>
           <tr>
@@ -768,7 +770,7 @@
         </thead>
         <tbody>${upcraftRows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
       </table>
-      <p>Each tier's actual potion effect, for reference:</p>
+      <h3 class="wiki-section-heading">Potion Effects by Tier</h3>
       <table class="wiki-data-table">
         <thead>
           <tr>
