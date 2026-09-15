@@ -488,6 +488,79 @@
       </table>`;
   }
 
+  // Brewer data lives in data/manual/brewer-data.json — same
+  // plain-hand-edited-JSON convention as every other data/manual/ file.
+  let brewerDataPromise = null;
+  function loadBrewerData() {
+    if (!brewerDataPromise) {
+      brewerDataPromise = fetch('data/manual/brewer-data.json')
+        .then((res) => res.json())
+        .catch(() => null);
+    }
+    return brewerDataPromise;
+  }
+
+  function formatCrystalCost(amount) {
+    const parsed = amount == null ? null : parseAbbreviated(amount);
+    if (parsed == null) return '—';
+    return `<span class="wiki-reward-chip">
+      <span class="wiki-reward-icon-wrap">
+        <img class="wiki-reward-icon wiki-reward-icon--epic" src="icons/wiki/crystal-icon.png" alt="" onerror="this.parentElement.remove()">
+        <span class="wiki-reward-badge">${formatCompact(parsed)}</span>
+      </span>
+    </span>`;
+  }
+
+  async function renderBrewerPage() {
+    const data = await loadBrewerData();
+    const upcrafts = data?.upcrafts ?? [];
+    const tiers = data?.potionTiers ?? [];
+    const upcraftRows = upcrafts.map((entry) => `
+      <tr>
+        <td>${formatRarity(entry.from)}</td>
+        <td>${formatRarity(entry.to)}</td>
+        <td>5x ${escapeHtml(entry.from)} &rarr; 1x ${escapeHtml(entry.to)}</td>
+        <td>${formatCrystalCost(entry.cost)}</td>
+      </tr>`).join('');
+    const tierRows = tiers.map((entry) => `
+      <tr>
+        <td>Tier ${escapeHtml(entry.tier)}</td>
+        <td>${formatRarity(entry.rarity)}</td>
+        <td>${entry.multiplier ? escapeHtml(entry.multiplier) : '—'}</td>
+        <td>${entry.duration ? escapeHtml(entry.duration) : '—'}</td>
+      </tr>`).join('');
+    return `
+      <p>The Brewer upcrafts potions: 5 lower-tier potions of the same type
+      (Luck, Shiny Luck, Mythic Luck, or Roll Speed) combine into 1 potion of
+      that same type, one rarity tier higher — for a crystal cost that goes
+      up with each tier. <strong>Unbox Slot Potion is the only potion with
+      just one tier</strong> — it has no lower/higher version, so it can't be
+      upcrafted.</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Upcraft</th>
+            <th>Cost (per upcraft)</th>
+          </tr>
+        </thead>
+        <tbody>${upcraftRows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
+      </table>
+      <p>Each tier's actual potion effect, for reference:</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Rarity</th>
+            <th>Multiplier</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>${tierRows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
   const PAGES = {
     index: {
       title: 'Index',
@@ -535,7 +608,7 @@
     },
     brewer: {
       title: 'Brewer',
-      body: '<p>The Brewer and what it produces. Not written yet.</p>',
+      body: renderBrewerPage,
     },
     p2w: {
       title: 'P2W',
