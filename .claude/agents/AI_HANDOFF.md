@@ -80,6 +80,15 @@ itself is wrong.
 
 ## Last worked on
 
+2026-09-15 (later session, home-page update logs) — see "2026-09-15 Home
+page update logs: Wiki & Tools Updates + Game Updates" below. Both home-page
+panels ("Wiki & Tools Updates" and "Game Updates") now show a real,
+data-driven changelog with a preview + "View All Updates" page pattern once
+the list outgrows the panel. Game Updates is populated with the actual
+game's full real patch history (v1.0.1 through the in-development v3.0.0),
+sourced from the dev's own public GitHub patch-notes repo, including real
+per-version release dates pulled from that repo's own commit history.
+
 2026-09-15 (P2W page) — see "2026-09-15 P2W wiki page" below. New
 `data/manual/p2w-dev-products-data.json` (dev products + game passes) and a
 full page built on top, `formatCodeRewards()` in `wiki-tool.js` extended
@@ -200,6 +209,97 @@ the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-15 Home page update logs: Wiki & Tools Updates + Game Updates
+
+Both `.wiki-update-panel`s on the wiki home page (previously "Coming soon."
+placeholders since the very first Wiki home-page session) now show a real
+changelog. Same underlying pattern for both, refactored into shared
+helpers in `wiki-tool.js`:
+
+- **`wireUpdatesPanel(containerId, dataUrl, formatFn, pageKey, buttonId,
+  previewCount)`** fetches a `data/manual/*.json` file, renders only the
+  `previewCount` most recent entries into the panel, and — only once the
+  data actually has more entries than that — appends a "View All Updates"
+  button that calls `openPage(pageKey)`. Called once per panel with its own
+  data source/format function/page key/preview count.
+- **Preview counts are deliberately INDEPENDENT per panel**
+  (`WIKI_UPDATES_PREVIEW_COUNT = 9`, `GAME_UPDATES_PREVIEW_COUNT = 4`), not
+  a shared constant — Game Updates entries are much bulkier per-entry
+  (title + several bullet highlights) than Wiki & Tools' one-paragraph
+  entries, so equal counts left Wiki & Tools looking short/empty next to
+  Game Updates in the 2-column `.wiki-updates` grid (a player screenshot
+  caught this directly). **If this imbalance reopens as entries grow, tune
+  these two numbers independently rather than re-sharing one constant.**
+  `WIKI_UPDATES_PREVIEW_COUNT` was raised 4 → 8 → 9 over the course of this
+  fixing it — 9 happens to be the current total entry count, so no "View
+  All" button shows for Wiki & Tools right now; it'll reappear automatically
+  the moment a 10th entry is added, no code change needed.
+- Each panel also has its own **dedicated full-log page** reachable ONLY via
+  that button (`updates` / `game-updates` — neither is one of the 13
+  nav-grid tiles): `renderUpdatesLogPage()` / `renderGameUpdatesLogPage()`,
+  both re-fetching the same JSON and rendering every entry via the same
+  `formatUpdateEntries()`/`formatGameUpdateEntries()` the preview uses, so
+  the preview and full page can never drift out of sync with each other.
+
+**"Wiki & Tools Updates"** (`data/manual/wiki-updates-data.json`,
+`{date, summary}`) is a changelog of THIS companion site/tools — unchanged
+in shape from when it was first built (see the entry further down), just
+given the preview/full-page treatment here. Keep adding one entry per real
+work session, newest first, summarizing a whole day's commits into one
+paragraph rather than one entry per commit (established convention, still
+holds).
+
+**"Game Updates"** (`data/manual/game-updates-data.json`,
+`{version, date, title, status?, highlights: [...]}`) is brand new — a
+changelog of the ACTUAL GAME's patches, which had no in-wiki data source at
+all before this. Sourced from the dev's own public patch-notes repo,
+**github.com/foshesss/drillbit-patchnotes** (the player pointed this out
+directly — worth remembering as the canonical source if this ever needs
+updating again, fetched via the GitHub REST API / raw.githubusercontent.com,
+no auth needed since it's public). That repo has 3 folders — `v1/` (11
+files, v1.0.1-v1.1.2), `v2/` (4 files: v2.0.0, v2.0.7, v2.0.10, v2.1 —
+**note `v2.1.diff` actually contains TWO version's worth of notes
+concatenated in one file, "v2.0.8" and "v2.1"** — there is no separate
+`v2.0.8.diff` file, that content is just an earlier section inside
+`v2.1.diff`; this project's own `game-updates-data.json` still lists them
+as two separate entries since their content is genuinely distinct, but
+`v2.0.8`'s `date` field is an ESTIMATE (`2026-07-16`, matched to when
+`v2.1.diff`'s edit history was in that neighborhood) since it has no commit
+history of its own to pull an exact date from — don't treat that one date
+as as authoritative as the others), and `v3/` (1 file, v3.0.0, still **in
+development, not actually released** — confirmed by the player, rendered
+via a `status: "In Development"` field → an amber `.wiki-status-badge
+.is-pending` badge next to the version, new CSS variant added alongside the
+existing green/red is-active/is-expired ones).
+
+**Highlights are condensed, not verbatim** — the real patch notes run to
+20+ bullets for some versions (especially v2.0.0); each entry here picks
+the 3-6 most notable items rather than reproducing the full list. If a
+player asks about something specific that isn't listed, the full original
+text is still on the source repo.
+
+**Real release order was confirmed, not assumed, once dates were added**:
+the player had already told a previous turn in this same conversation that
+"v2.0.10 came after v2.1" despite the lower version number, and this
+session's dates prove it with real commit timestamps —
+**v2.0.10 = 2026-08-01, v2.1 = 2026-07-24**, a full week apart. The
+`game-updates-data.json` array order (newest-first) reflects this real
+chronological order throughout, NOT version-number order — don't
+"correct" the ordering back to numeric sort without re-checking real dates
+first, since this project's actual dev apparently ships out of numeric
+order sometimes.
+
+**Getting a file's real commit date from a public GitHub repo** (reusable
+recipe if this needs to happen again for any repo):
+```
+curl -s "https://api.github.com/repos/OWNER/REPO/commits?path=PATH&per_page=1"
+```
+returns the most recent commit touching that exact path, `.[0].commit.committer.date`
+is what you want. This silently returns an empty array (not an error) if the
+path never existed under that exact name — check for that before assuming a
+file has no history (this is exactly how the "v2.0.8 has no file" discovery
+above was made).
 
 ## 2026-09-15 P2W wiki page
 
