@@ -658,7 +658,7 @@
     const maxStat = data?.maxFurnaceLootStat ?? 5;
     const tiers = data?.masteryTiers ?? [];
     const lootOdds = data?.lootOdds ?? [];
-    const tierRows = [{ level: 0, currency: null, cost: null }, ...tiers].map((tier) => {
+    const tierRows = tiers.map((tier) => {
       const dropChancePct = (tier.level / denom) * 100;
       const activeDropsCap = maxStat > baseStat
         ? minDrops + ((tier.level - baseStat) / (maxStat - baseStat)) * (maxDrops - minDrops)
@@ -668,7 +668,7 @@
         : '—';
       return `
       <tr>
-        <td>${tier.level === 0 ? 'No mastery' : `Level ${tier.level}`}</td>
+        <td>Level ${tier.level}</td>
         <td>${costCell}</td>
         <td>${dropChancePct % 1 === 0 ? dropChancePct : dropChancePct.toFixed(1)}%</td>
         <td>${Math.floor(activeDropsCap)}</td>
