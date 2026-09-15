@@ -685,6 +685,10 @@
       title: 'Update Log',
       body: renderUpdatesLogPage,
     },
+    'game-updates': {
+      title: 'Game Update Log',
+      body: renderGameUpdatesLogPage,
+    },
     index: {
       title: 'Index',
       body: '<p>Every Dropper, Upgrader, and Furnace in the game, organized by index tier — plus what each tier rewards. Not written yet.</p>',
@@ -767,50 +771,25 @@
   });
   backButton?.addEventListener('click', goHome);
 
-  // "Wiki & Tools Updates" panel on the home page — a running changelog of
-  // this companion site/tools (NOT the actual game; "Game Updates" next to
-  // it stays "Coming soon" on purpose, that's separate scope). Data lives
-  // in data/manual/wiki-updates-data.json, same plain-hand-edited-JSON
-  // convention as every other data/manual/ file — add a new
-  // {date, summary} entry (newest first) whenever a day's worth of work
-  // wraps up; group everything from one day into a single entry rather
-  // than one per commit. Runs immediately (not lazily like the PAGES
-  // renderers) since this panel is visible on the home page by default.
-  //
-  // The panel only ever shows the WIKI_UPDATES_PREVIEW_COUNT most recent
-  // entries — once there are more than that, a "View All Updates" button
-  // appears and opens the full #wiki-updates-log page (below) instead of
-  // letting the home page grow without bound. If Game Updates ever gets a
-  // real data source too, give it this exact same preview+full-page
-  // pattern rather than inventing a new one.
-  const WIKI_UPDATES_PREVIEW_COUNT = 4;
+  // Both home-page update panels ("Wiki & Tools Updates" and "Game
+  // Updates") share this exact preview+view-all pattern: fetch a
+  // data/manual/*.json file, show only the UPDATES_PREVIEW_COUNT most
+  // recent entries, and once there are more than that, add a "View All"
+  // button that opens a dedicated full-log page instead of letting the
+  // home page grow without bound. Add new entries newest-first, one entry
+  // per real release/work session — don't split one release into several.
+  const UPDATES_PREVIEW_COUNT = 4;
+
+  // "Wiki & Tools Updates" — a changelog of THIS companion site/tools, not
+  // the actual game. data/manual/wiki-updates-data.json, {date, summary}
+  // entries, same plain-hand-edited-JSON convention as every other
+  // data/manual/ file.
   function formatUpdateEntries(updates) {
     return updates.map((entry) => `
       <div class="wiki-update-entry">
         <div class="wiki-update-date">${escapeHtml(entry.date)}</div>
         <p class="wiki-update-summary">${escapeHtml(entry.summary)}</p>
       </div>`).join('');
-  }
-
-  const updatesContainer = document.querySelector('#wiki-tools-updates');
-  if (updatesContainer) {
-    fetch('data/manual/wiki-updates-data.json')
-      .then((res) => res.json())
-      .then((updates) => {
-        if (!Array.isArray(updates) || !updates.length) {
-          updatesContainer.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
-          return;
-        }
-        const preview = updates.slice(0, WIKI_UPDATES_PREVIEW_COUNT);
-        const viewAllButton = updates.length > WIKI_UPDATES_PREVIEW_COUNT
-          ? '<button type="button" class="wiki-view-all-updates" id="wiki-view-all-updates">View All Updates &rarr;</button>'
-          : '';
-        updatesContainer.innerHTML = formatUpdateEntries(preview) + viewAllButton;
-        document.querySelector('#wiki-view-all-updates')?.addEventListener('click', () => openPage('updates'));
-      })
-      .catch(() => {
-        updatesContainer.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
-      });
   }
 
   async function renderUpdatesLogPage() {
@@ -822,4 +801,63 @@
       <p>The full history of updates to this wiki and its tools.</p>
       ${formatUpdateEntries(updates)}`;
   }
+
+  // "Game Updates" — a changelog of the ACTUAL GAME's patches, sourced from
+  // the dev's own public patch-notes repo
+  // (github.com/foshesss/drillbit-patchnotes) since the game has no
+  // in-wiki data source of its own. data/manual/game-updates-data.json,
+  // {version, title, highlights: [...]} entries — ordered by real release
+  // order, which is NOT always the same as version-number order (v2.0.10
+  // actually shipped after v2.1, confirmed by the player — don't "fix" that
+  // ordering back to numeric just because it looks wrong). v2.0.10's
+  // highlights also include real additions (a new Rebirth, 2 new Crates, a
+  // new P2W bundle) that the source repo's own posted notes for that
+  // version omitted — confirmed firsthand by the player, not guessed.
+  function formatGameUpdateEntries(updates) {
+    return updates.map((entry) => `
+      <div class="wiki-update-entry">
+        <div class="wiki-update-version">${escapeHtml(entry.version)}</div>
+        <p class="wiki-update-title">${escapeHtml(entry.title)}</p>
+        <ul class="wiki-update-highlights">${(entry.highlights ?? []).map((h) => `<li>${escapeHtml(h)}</li>`).join('')}</ul>
+      </div>`).join('');
+  }
+
+  async function renderGameUpdatesLogPage() {
+    const updates = await fetch('data/manual/game-updates-data.json').then((res) => res.json()).catch(() => []);
+    if (!Array.isArray(updates) || !updates.length) {
+      return '<p>Not filled in yet.</p>';
+    }
+    return `
+      <p>The game's own patch history, sourced from the developer's public
+      patch-notes repository.</p>
+      ${formatGameUpdateEntries(updates)}`;
+  }
+
+  // Wires one update panel: fetches its data, renders the preview (with a
+  // "View All" button past UPDATES_PREVIEW_COUNT entries) into
+  // containerId, and points that button at openPage(pageKey).
+  function wireUpdatesPanel(containerId, dataUrl, formatFn, pageKey, buttonId) {
+    const container = document.querySelector(containerId);
+    if (!container) return;
+    fetch(dataUrl)
+      .then((res) => res.json())
+      .then((updates) => {
+        if (!Array.isArray(updates) || !updates.length) {
+          container.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
+          return;
+        }
+        const preview = updates.slice(0, UPDATES_PREVIEW_COUNT);
+        const viewAllButton = updates.length > UPDATES_PREVIEW_COUNT
+          ? `<button type="button" class="wiki-view-all-updates" id="${buttonId}">View All Updates &rarr;</button>`
+          : '';
+        container.innerHTML = formatFn(preview) + viewAllButton;
+        document.querySelector(`#${buttonId}`)?.addEventListener('click', () => openPage(pageKey));
+      })
+      .catch(() => {
+        container.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
+      });
+  }
+
+  wireUpdatesPanel('#wiki-tools-updates', 'data/manual/wiki-updates-data.json', formatUpdateEntries, 'updates', 'wiki-view-all-updates');
+  wireUpdatesPanel('#game-updates', 'data/manual/game-updates-data.json', formatGameUpdateEntries, 'game-updates', 'game-view-all-updates');
 })();

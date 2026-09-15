@@ -1,0 +1,69 @@
+[
+  {
+    "version": "v3.0.0",
+    "title": "Back to working on the game",
+    "highlights": [
+      "New Build Mode: Box Select, Axis Binding, and a bunch of new filters",
+      "Added a Mailbox that tells you about updates in-game",
+      "Rewrote gifting logic; added Mail support for future special events",
+      "Life 8 Rebirth price reduced (1Ud -> 50N), plus 2 new tiles of space",
+      "Started cleaning up the codebase"
+    ]
+  },
+  {
+    "version": "v2.0.10",
+    "title": "Bug fixes",
+    "highlights": [
+      "Fixed admin abuse commands and admin abuse effects not appearing in new servers",
+      "Added serials to the Robot Apocalypse",
+      "Also added, undocumented in the original patch notes: 1 new Rebirth, 2 new Crates, and a new P2W bundle"
+    ]
+  },
+  {
+    "version": "v2.1",
+    "title": "New crates, ranks, rebirth, and bundle",
+    "highlights": [
+      "2 new Crates appeared with a countdown",
+      "2 new Index ranks: SIGMA and NYAN",
+      "New Rebirth",
+      "Brand new P2W Bundle",
+      "QoL: shows how many of a given crate you've unboxed",
+      "Fixed Enchanter flashing an expensive price before adjusting for a skip"
+    ]
+  },
+  {
+    "version": "v2.0.8",
+    "title": "Patches for update",
+    "highlights": [
+      "New base indicator + teleport-back-to-base button",
+      "Potion crafting now increments by 5 instead of 1",
+      "Offline Earning now works",
+      "Enchant Skipping now scales off previous prices (Common 100 crystals up to Secret 2.5M)",
+      "Minefield Refiner destruction chance reduced from 50% to 30%",
+      "Ore no longer destroyed when it touches a base wall"
+    ]
+  },
+  {
+    "version": "v2.0.7",
+    "title": "Some patches, more tomorrow",
+    "highlights": [
+      "Traveling Merchant is now unique per player and appears every hour instead of randomly",
+      "Fixed Electric Overdrive's and Anchor Upgrader's upgrade hitbox",
+      "Intern Dropper no longer falls apart",
+      "Added Submitter Trophies for submitters to use on their base",
+      "Reduced price of Ocean Crate to 10Oc, from 1N"
+    ]
+  },
+  {
+    "version": "v2.0.0",
+    "title": "Decorations, summer, and traveling salesman",
+    "highlights": [
+      "2 new Summer Crates with 13 new items",
+      "New Rebirth",
+      "Decorations: decorate your base with up to 10 different decorations",
+      "Traveling Salesman: Alien Items (if you missed them) plus new decoration items",
+      "New codes: auxinite, intern, sorryfordelay",
+      "New Enchanting, Unbox Slot, and Luck mastery upgrades"
+    ]
+  }
+]
