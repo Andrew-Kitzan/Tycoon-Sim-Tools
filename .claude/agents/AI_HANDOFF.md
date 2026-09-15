@@ -80,6 +80,26 @@ itself is wrong.
 
 ## Last worked on
 
+2026-09-15 (later session, update-panel pixel-alignment polish) — see the
+end of "2026-09-15 Home page update logs" below (same entry, appended to).
+After the update-log system below first shipped, the player pushed for the
+two home-page panels' "View All Updates" buttons to actually line up —
+this went through several real iterations (naive fixed preview counts →
+CSS Grid `align-items:stretch` removal → dynamic height-measurement
+balancing → a buggy "first crossover" greedy pick → a correct exhaustive
+closest-fit search → forcing both panels to identical heights → finally
+flexbox `justify-content:space-between` so the buttons sit at the *exact*
+same top/bottom offset within their own panel, not just similar panel
+heights). **If you touch `.wiki-update-panel`/`wireBalancedUpdatePanels()`
+again, read the full entry below before changing the layout approach** —
+each earlier-looking-simpler version was tried and replaced for a concrete
+reason logged there, not overlooked accidentally. Also fixed a real,
+separate bug found along the way: `.wiki-frame`'s background looked
+zoomed/cropped on any long scrolling page (worst on the new Game Update Log)
+because `background-size: cover` was sizing against the element's own
+content-driven height instead of the viewport — `background-attachment:
+fixed` fixed it, applies to every wiki page, not just the two update pages.
+
 2026-09-15 (later session, home-page update logs) — see "2026-09-15 Home
 page update logs: Wiki & Tools Updates + Game Updates" below. Both home-page
 panels ("Wiki & Tools Updates" and "Game Updates") now show a real,
@@ -300,6 +320,81 @@ is what you want. This silently returns an empty array (not an error) if the
 path never existed under that exact name — check for that before assuming a
 file has no history (this is exactly how the "v2.0.8 has no file" discovery
 above was made).
+
+**Follow-up polish pass (same day, after the above first shipped): making
+the two panels' buttons actually line up.** Once both panels were live, the
+player pushed for the "View All Updates" buttons in each to sit at roughly
+the same height, with minimal wasted whitespace below either list. This
+went through several real, materially different attempts — if you touch
+`.wiki-update-panel` / the balancing functions again, know *why* each
+earlier one was replaced before changing the approach again:
+
+1. **Fixed preview counts** (the `WIKI_UPDATES_PREVIEW_COUNT` /
+   `GAME_UPDATES_PREVIEW_COUNT` constants described above) only ever looked
+   right at one specific content length and one screen width — as either
+   JSON file grew, the two lists' rendered heights drifted apart again.
+2. Turned out part of the mismatch was CSS itself, not content: `.wiki-updates`
+   is a CSS Grid, and Grid's default `align-items: stretch` was force-growing
+   the shorter panel to match its taller sibling's row height — so the
+   shorter panel's leftover space collected as dead air below its own
+   button. Fixed with `align-items: start` on `.wiki-updates` so each panel
+   only takes the height its own content needs.
+3. Replaced the static constants with **dynamic height measurement**:
+   `measureEntryHeights(entries, formatFn)` renders a full candidate entry
+   list into the real live container (so it picks up the container's actual
+   width/font/padding) purely to read back each entry's real pixel height,
+   then discards that render.
+4. First real balancing attempt — `balanceUpdatePanels()` — walked entry
+   counts for both panels upward together and stopped at the first point
+   where one panel's cumulative height caught up to or passed the other's.
+   This was a **buggy greedy "first crossover"** approach: it could overshoot
+   by close to a full entry's height, since it never checked whether stopping
+   one entry earlier (or later) on either side would have been a closer
+   match. A player screenshot showed a visible ~90-120px gap between the two
+   buttons that this produced.
+5. Fixed by replacing the crossover search with a **true exhaustive
+   closest-fit search**: try every (i, j) pair of entry counts for panel A
+   and panel B (bounded by each panel's own entry count), compute
+   `Math.abs(heightA(i) - heightB(j))` for each pair, keep whichever pair
+   minimizes that difference. O(n*m) but n/m are small (low double digits at
+   most), so cost is negligible. This is the version now in place.
+6. Even the best entry-count pair can't close the gap to zero, since content
+   only comes in whole-entry increments — so after picking counts,
+   `wireBalancedUpdatePanels()` explicitly sets
+   `panelA.style.height = panelB.style.height = Math.max(heightA, heightB) + 'px'`
+   on the two `.wiki-update-panel` elements themselves, forcing pixel-exact
+   equal panel heights regardless of the residual content-height gap. Relies
+   on the site's global `* { box-sizing: border-box; }` so the inline
+   `height` actually matches what `getBoundingClientRect()` reports.
+7. Equal panel heights alone still didn't put the *buttons* at the same
+   y-offset, because the shorter panel's leftover space sat below its
+   button in normal block flow (list, then gap, then button, then empty
+   space) rather than being distributed around it. Fixed by wrapping each
+   panel's rendered entries in one `.wiki-update-list` div, giving each
+   panel's inner container exactly 2 flex children (the list, and the
+   button), then:
+   `.wiki-update-panel > div { display:flex; flex-direction:column;
+   justify-content:space-between; gap:12px; flex:1 1 auto; min-height:0; }`
+   — `space-between` pins the list to the top and the button to the bottom
+   of whatever height the panel now has, so both buttons land at the
+   identical offset from their own panel's top AND bottom edge. Verified via
+   `getBoundingClientRect()` on both buttons (1199.4px from top, 19px from
+   bottom — identical on both panels) since the Browser pane's screenshot
+   tool was unreliable this session (see "Standing gotchas").
+8. `wireBalancedUpdatePanels()` re-runs on window resize, so the balance
+   holds across screen widths, not just the width it was first computed at.
+
+**Separate real bug found and fixed along the way, unrelated to the
+balancing work above**: `.wiki-frame`'s background image looked
+zoomed-in/cropped on any long scrolling wiki page (most obvious on the new
+full-history Game Update Log page). Cause: `background-size: cover` was
+sizing the image against `.wiki-frame`'s own content-driven height (which
+grows past one viewport on a long page), not the viewport itself. Fixed
+with `background-attachment: fixed`, which sizes `cover` against the
+viewport regardless of how tall the scrolling content is. This affects
+every wiki page that can grow past one screen, not just the two update-log
+pages — worth remembering if a future long page reports the same zoomed
+look.
 
 ## 2026-09-15 P2W wiki page
 
