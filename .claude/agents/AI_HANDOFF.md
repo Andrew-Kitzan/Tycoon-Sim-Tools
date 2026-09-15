@@ -49,6 +49,16 @@ file) as the cause.
 
 ## Last worked on
 
+2026-09-14 — see "2026-09-14 Wiki home page: real navigation, all 13 tiles
+backgrounded" below. Long session, all UI/content-scaffolding work on the
+Wiki tool's home page — no other tool touched. The nav grid went from
+static placeholder boxes to a real (if content-empty) page-switching
+system, and every single tile now has a themed background image + accent
+color supplied by the player one at a time over many turns. Session ended
+here because the player was near their context limit and is continuing in
+a new chat — this entry is written assuming zero shared memory with this
+conversation.
+
 2026-09-13 — see "2026-09-13 Wiki content-structure research (not yet
 planned/built — reference for later)" below. Pure research, no code
 changed: browsed a real fan wiki for structure/navigation ideas (category
@@ -84,6 +94,146 @@ the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-14 Wiki home page: real navigation, all 13 tiles backgrounded
+
+Picks up directly from the 2026-09-13 Wiki tool entries below (read those
+first for how the tool avoids the shared app-shell chrome, why it's the
+default tool, and the `[hidden]`-vs-`display` bug that bit it twice).
+Everything in this entry is still just the **home page** — no actual wiki
+content/article system exists yet, see "Not done" at the bottom.
+
+**1. Removed the left sidebar, added a "Navigate" heading.** The home page
+previously had a `#wiki-sidebar` (title + empty "Navigation" placeholder box)
+next to the main content — player asked to drop it entirely and put a plain
+`<h2 class="wiki-nav-heading">Navigate</h2>` above the tile grid instead.
+`.wiki-body` went back to a single-column flex layout (`.wiki-main` is now
+its only child). If you see references to a sidebar in older parts of this
+file or in git history, that's stale — it's gone.
+
+**2. Real (if content-empty) page navigation now exists** — `wiki-tool.js`:
+- `index.html` has two sibling divs inside `.wiki-main`:
+  `#wiki-home-view` (the hero + nav grid + updates, what you see by default)
+  and `#wiki-page-view` (`hidden` by default — a back button, a title, and a
+  body), both new. **`.wiki-home-view[hidden]`/`.wiki-page-view[hidden]`
+  needed the same explicit `{ display: none; }` override as everything else
+  in the "Standing gotchas" section** — already added, don't remove it.
+- Every nav tile is now a real `<button data-wiki-page="KEY">` (was a bare
+  `<div>` before). `wiki-tool.js` has a `PAGES` object keyed by that same
+  string, each entry `{ title, body }` (body is a raw HTML string, currently
+  always just one `<p>...Not written yet.</p>`). Clicking a tile hides
+  `#wiki-home-view`, shows `#wiki-page-view`, and fills in the title/body.
+  The back button (`#wiki-page-back`) reverses that. **The 13 valid keys
+  right now, in the order they appear in `index.html`**: `index`,
+  `conveyor`, `decoration`, `mastery`, `rebirth`, `achievements`,
+  `furnace-loot`, `events`, `merchant`, `enchanter`, `brewer`, `p2w`,
+  `codes`. That's a player-specified order (see the "tile order" ask, not
+  alphabetical or otherwise meaningful) — don't silently re-sort it.
+- This is intentionally the simplest possible thing that could work — no
+  routing, no URL/history integration, no content beyond a placeholder
+  sentence per page. Next real step (not started, player hasn't asked)
+  would be an actual content-authoring system per page.
+
+**3. Every tile now has its own background image + accent color** — this
+was almost the entire session, one image at a time from the player's local
+`Documents\Tycoon Sim\Spreadsheet Pic\` folder. The pattern, once
+established, is genuinely reusable and cheap per tile:
+- **Shared CSS base**: `.wiki-nav-tile-bg` (in `styles.css`, search for it)
+  handles the `background-size: cover`, the dark gradient `::before` overlay
+  for text legibility, and hover behavior via two CSS custom properties —
+  `--tile-accent` (border color) and `--tile-accent-hover` (border/outline
+  color on hover). A tile-specific class (e.g. `.wiki-nav-tile-rebirth`)
+  just sets those two variables plus `background-image: url(...)` — nothing
+  else needs touching per tile.
+- **HTML per tile**: `<button class="wiki-nav-tile wiki-nav-tile-bg
+  wiki-nav-tile-KEY" data-wiki-page="KEY"><span>Label</span></button>` — the
+  `<span>` wrapper matters, `.wiki-nav-tile-bg span` is what gets the
+  `z-index`/`text-shadow` treatment to stay legible over the image. A plain
+  tile (no background yet) skips both extra classes and the `<span>` — just
+  `<button class="wiki-nav-tile" data-wiki-page="KEY">Label</button>`. As of
+  this entry **every tile has a background — there are no plain tiles left**
+  (Merchant was the last one filled in this session).
+- **The hover-drops-the-image bug and its real fix** (already covered in
+  "Standing gotchas" above for the general `[hidden]` case, but this is a
+  separate, tile-specific gotcha worth restating precisely since it'll bite
+  again the moment someone adds a 14th tile by hand instead of copying the
+  pattern): the *generic* hover rule for plain tiles
+  (`.wiki-nav-tile:not(.wiki-nav-tile-bg):hover { background: rgba(...); }`)
+  uses the `background` **shorthand**, which resets `background-image` to
+  `none` on anything it matches. The fix is the `:not(.wiki-nav-tile-bg)`
+  exclusion already in that selector — it must stay, and any new
+  image-background tile MUST carry the `wiki-nav-tile-bg` class or it'll
+  silently lose its image on hover exactly like Rebirth's flame gif did the
+  first time (see the 2026-09-13 entry for the full debugging saga — turned
+  out to be a stale browser stylesheet the first time it was investigated,
+  but the *real*, permanent fix ended up being this `:not()` exclusion plus
+  never re-declaring `background-image` inside a tile-specific `:hover`
+  rule at all, since re-declaring the same url risked some browsers
+  restarting a gif's animation on a dark first frame).
+- **Full current tile → image → accent-color table** (all files are in
+  `icons/wiki/`, all committed as real binary assets, not generated):
+
+  | Tile (`data-wiki-page`) | Image file | Accent / hover accent |
+  |---|---|---|
+  | `index` | `index-bg.png` (two dragons) | `#c9541f` / `#ffb066` |
+  | `conveyor` | `conveyor-bg.png` | `#b83fa0` / `#ff8fe0` |
+  | `decoration` | `decoration-bg.png` (rubber ducks) | `#c9a227` / `#ffe066` |
+  | `mastery` | `mastery-bg.png` | `#8fa3b3` / `#e8f2ff` |
+  | `rebirth` | `index-icon.png` (furnace/loot pile — **note the filename is misleading, this was originally meant for Index, got moved to Rebirth, filename never renamed**) | `#b8802f` / `#ffcf7e` |
+  | `achievements` | `achievements-bg.png` | `#7a3fa8` / `#d9a6ff` |
+  | `furnace-loot` | `furnace-loot-bg.png` | `#6fae2e` / `#c6f26b` |
+  | `events` | `events-bg.png` (**cropped**, see below) | `#8a5a2e` / `#e0a860` |
+  | `merchant` | `merchant-bg.png` | `#b81f1f` / `#ff7a7a` |
+  | `enchanter` | `enchanter-portal-bg.png` | `#2fd6a0` / `#8fffe0` |
+  | `brewer` | `brewer-bg.png` | `#a03fd6` / `#e0a6ff` |
+  | `p2w` | `enchanter-bg.png` (**note**: this was Enchanter's *original*
+    background before the player asked for it to move to a new P2W tile and
+    for Enchanter to get a different, new image — filename still says
+    "enchanter" but it's P2W's image now) | `#2f8fd6` / `#8fd6ff` |
+  | `codes` | `codes-bg.png` | `#d6337a` / `#ff85c0` |
+
+  **`icons/wiki/index-icon.png` is unused by anything named "index"
+  anymore** and `icons/wiki/enchanter-bg.png` is unused by anything named
+  "enchanter" anymore — both filenames are now historical/misleading
+  relative to what they're actually used for. Nobody has asked for a
+  rename; don't do one unprompted since it'd just be churn, but don't be
+  confused by the mismatch either.
+
+- **Not every image was a clean crop.** Tiles are a wide `2.4/1`
+  `aspect-ratio`, but not every source screenshot was landscape enough —
+  `background-size: cover` center-crops hard on a portrait-ish source. The
+  very first Index attempt (a different image, since replaced) and the
+  first Enchanter attempt (`enchanter-bg.png`, now reused for P2W, ratio
+  ~1.34:1) both lost their most interesting visual detail (a glowing
+  archway, a crane arm) to the crop. Always mention this tradeoff to the
+  player when a new image comes in portrait-ish rather than silently
+  shipping a bad crop — they've been receptive to swapping for a better
+  shot when told plainly, and even reused a "failed" crop for a different
+  tile rather than discarding it (the P2W move).
+- **Text removal technique, if it comes up again**: the raw
+  `events-bg.png` source had real in-game UI text baked into the screenshot
+  ("Index — View your collection!", "Luck Modifier — Toggle your luck!")
+  overlaid across the top ~150px, which the player wanted gone while
+  keeping everything else (an "Event Schedule" signpost, unrelated to that
+  UI text) untouched. No image-editing tool was available in this
+  environment (no PIL, no real ImageMagick — `C:\Windows\System32\convert.exe`
+  is the Windows FAT→NTFS converter, NOT ImageMagick, don't be fooled by
+  `which convert` finding it) — **`npm install jimp --no-save` in the
+  scratchpad directory worked fine** (pure JS, no native build step) and a
+  plain top-band crop (`img.crop({x:0,y:150,w,h:height-150})`) cleanly
+  removed both text blocks without needing real inpainting, since
+  everything below that y-coordinate in the source was already clean. Only
+  works when the unwanted content is confined to a droppable band at an
+  edge — for text/objects embedded mid-frame, this technique doesn't apply
+  and a real inpainting tool would be needed (not available here).
+
+**Not done**: still no actual per-page content beyond the placeholder
+sentence, no search functionality behind the search bar, no decision made
+on how a real content-authoring workflow should work for the eventual wiki
+articles. The player was about to run low on context and said they'd
+continue in a new chat — there was no specific "next step" queued beyond
+that; take direction from whatever they ask for first in the new session
+rather than assuming content-writing is next.
 
 ## 2026-09-13 Wiki content-structure research (not yet planned/built — reference for later)
 

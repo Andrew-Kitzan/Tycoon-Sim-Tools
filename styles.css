@@ -915,19 +915,8 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-search input::placeholder { color: var(--muted); }
 .wiki-search input:focus-visible { outline: 2px solid var(--accent); border-color: var(--accent); }
 
-.wiki-body { display: flex; align-items: flex-start; gap: 22px; padding: 26px 32px 34px; }
+.wiki-body { display: flex; padding: 26px 32px 34px; }
 .wiki-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
-
-.wiki-sidebar {
-  flex: 0 0 240px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: rgba(8,16,20,.62);
-}
-.wiki-sidebar-title { margin: 0; font-size: 1.05rem; font-weight: 800; text-align: left; color: var(--text); }
-.wiki-sidebar-heading { margin: 16px 0 8px; font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: left; }
-.wiki-sidebar-list { min-height: 140px; border: 1px dashed var(--line); border-radius: 10px; }
 
 .wiki-hero { padding: 34px 30px; border: 1px solid var(--line); border-radius: 14px; background: rgba(8,14,18,.6); text-align: center; }
 .wiki-hero-eyebrow { margin: 0 0 6px; color: var(--muted); font-size: .95rem; }
@@ -946,17 +935,88 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 }
 .wiki-hero-link:hover, .wiki-hero-link:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
 
+.wiki-nav-heading { margin: 0; color: var(--text); font-size: 1.3rem; font-weight: 800; text-align: center; }
 .wiki-nav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
-.wiki-nav-tile { aspect-ratio: 2.4 / 1; border: 1px dashed var(--line); border-radius: 10px; background: rgba(8,14,18,.35); }
+.wiki-nav-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  aspect-ratio: 2.4 / 1;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(8,14,18,.55);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+}
+/* Shared base for any nav tile with its own background image (Rebirth,
+   Achievements, and — as icons come in — future tiles too). Each tile just
+   sets background-image plus --tile-accent/--tile-accent-hover; everything
+   else (overlay, text legibility, hover behavior) is shared here. */
+.wiki-nav-tile-bg {
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  border-color: var(--tile-accent, var(--line));
+}
+.wiki-nav-tile-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6,12,22,.35), rgba(6,12,22,.72));
+}
+.wiki-nav-tile-bg span { position: relative; z-index: 1; text-shadow: 0 1px 6px rgba(0,0,0,.8); }
+/* Excludes tiles with their own background image: the generic hover rule's
+   "background: rgba(...)" shorthand would reset background-image to none,
+   and re-declaring the same url in a separate hover rule risks some
+   browsers restarting a gif's animation (landing on a dark first frame) —
+   simplest fix is to never touch background on these tiles on hover at all. */
+.wiki-nav-tile:not(.wiki-nav-tile-bg):hover,
+.wiki-nav-tile:not(.wiki-nav-tile-bg):focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+  outline: none;
+  background: rgba(8,14,18,.75);
+}
+.wiki-nav-tile-bg:hover, .wiki-nav-tile-bg:focus-visible {
+  color: var(--text);
+  border-color: var(--tile-accent-hover, var(--tile-accent));
+  outline: 3px solid var(--tile-accent-hover, var(--tile-accent));
+  outline-offset: 2px;
+}
+
+.wiki-nav-tile-rebirth { --tile-accent: #b8802f; --tile-accent-hover: #ffcf7e; background-image: url('icons/wiki/index-icon.png'); }
+.wiki-nav-tile-achievements { --tile-accent: #7a3fa8; --tile-accent-hover: #d9a6ff; background-image: url('icons/wiki/achievements-bg.png'); }
+.wiki-nav-tile-decoration { --tile-accent: #c9a227; --tile-accent-hover: #ffe066; background-image: url('icons/wiki/decoration-bg.png'); }
+.wiki-nav-tile-mastery { --tile-accent: #8fa3b3; --tile-accent-hover: #e8f2ff; background-image: url('icons/wiki/mastery-bg.png'); }
+.wiki-nav-tile-events { --tile-accent: #8a5a2e; --tile-accent-hover: #e0a860; background-image: url('icons/wiki/events-bg.png'); }
+.wiki-nav-tile-furnace-loot { --tile-accent: #6fae2e; --tile-accent-hover: #c6f26b; background-image: url('icons/wiki/furnace-loot-bg.png'); }
+.wiki-nav-tile-conveyor { --tile-accent: #b83fa0; --tile-accent-hover: #ff8fe0; background-image: url('icons/wiki/conveyor-bg.png'); }
+.wiki-nav-tile-codes { --tile-accent: #d6337a; --tile-accent-hover: #ff85c0; background-image: url('icons/wiki/codes-bg.png'); }
+.wiki-nav-tile-p2w { --tile-accent: #2f8fd6; --tile-accent-hover: #8fd6ff; background-image: url('icons/wiki/enchanter-bg.png'); }
+.wiki-nav-tile-enchanter { --tile-accent: #2fd6a0; --tile-accent-hover: #8fffe0; background-image: url('icons/wiki/enchanter-portal-bg.png'); }
+.wiki-nav-tile-merchant { --tile-accent: #b81f1f; --tile-accent-hover: #ff7a7a; background-image: url('icons/wiki/merchant-bg.png'); }
+.wiki-nav-tile-brewer { --tile-accent: #a03fd6; --tile-accent-hover: #e0a6ff; background-image: url('icons/wiki/brewer-bg.png'); }
+.wiki-nav-tile-index { --tile-accent: #c9541f; --tile-accent-hover: #ffb066; background-image: url('icons/wiki/index-bg.png'); }
 
 .wiki-updates { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .wiki-update-panel { padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: rgba(8,14,18,.6); }
 .wiki-update-panel h3 { margin: 0 0 10px; font-size: .95rem; color: var(--accent); }
 .wiki-update-placeholder { margin: 0; color: var(--muted); font-size: .84rem; }
 
+.wiki-home-view, .wiki-page-view { display: flex; flex-direction: column; gap: 26px; }
+.wiki-home-view[hidden], .wiki-page-view[hidden] { display: none; }
+.wiki-page-back { align-self: flex-start; padding: 8px 14px; border: 1px solid var(--line); border-radius: 8px; background: rgba(8,14,18,.7); color: var(--text); font-weight: 700; font-size: .84rem; cursor: pointer; }
+.wiki-page-back:hover, .wiki-page-back:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+.wiki-page-title { margin: 0; color: var(--accent); font-size: 1.6rem; font-weight: 900; }
+.wiki-page-body { padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: rgba(8,14,18,.6); color: var(--text); line-height: 1.6; }
+.wiki-page-body p { margin: 0 0 12px; }
+.wiki-page-body p:last-child { margin-bottom: 0; }
+
 @media (max-width: 860px) {
-  .wiki-body { flex-direction: column; }
-  .wiki-sidebar { flex-basis: auto; width: 100%; }
-  .wiki-sidebar-title, .wiki-sidebar-heading { text-align: left; }
   .wiki-updates { grid-template-columns: 1fr; }
 }

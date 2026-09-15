@@ -346,44 +346,52 @@
           </div>
 
           <div class="wiki-body">
-            <aside class="wiki-sidebar" aria-label="Wiki navigation">
-              <p class="wiki-sidebar-title">Tycoon Simulator Wiki</p>
-              <nav class="wiki-sidebar-nav">
-                <p class="wiki-sidebar-heading">Navigation</p>
-                <div class="wiki-sidebar-list"></div>
-              </nav>
-            </aside>
-
             <div class="wiki-main">
-              <div class="wiki-hero">
-                <p class="wiki-hero-eyebrow">Welcome to the...</p>
-                <h1 class="wiki-hero-title">Tycoon Simulator Wiki</h1>
-                <p class="wiki-hero-sub">A wiki run by <strong>Minecraftwiner1</strong> for <strong>Tycoon Simulator</strong>, made by <strong>derpmonster83</strong> and <strong>Auxiliary_cord</strong>.</p>
-                <div class="wiki-hero-links">
-                  <a class="wiki-hero-link" href="https://www.roblox.com/games/123076957357158/Tycoon-Simulator" target="_blank" rel="noopener noreferrer">Play the Game</a>
-                  <a class="wiki-hero-link" href="https://www.roblox.com/communities/35607303/Derp-LLC#!/about" target="_blank" rel="noopener noreferrer">Roblox Group</a>
-                  <a class="wiki-hero-link" href="https://discord.gg/YWsMAMdftq" target="_blank" rel="noopener noreferrer">Discord</a>
+              <div id="wiki-home-view" class="wiki-home-view">
+                <div class="wiki-hero">
+                  <p class="wiki-hero-eyebrow">Welcome to the...</p>
+                  <h1 class="wiki-hero-title">Tycoon Simulator Wiki</h1>
+                  <p class="wiki-hero-sub">A wiki run by <strong>Minecraftwiner1</strong> for <strong>Tycoon Simulator</strong>, made by <strong>derpmonster83</strong> and <strong>Auxiliary_cord</strong>.</p>
+                  <div class="wiki-hero-links">
+                    <a class="wiki-hero-link" href="https://www.roblox.com/games/123076957357158/Tycoon-Simulator" target="_blank" rel="noopener noreferrer">Play the Game</a>
+                    <a class="wiki-hero-link" href="https://www.roblox.com/communities/35607303/Derp-LLC#!/about" target="_blank" rel="noopener noreferrer">Roblox Group</a>
+                    <a class="wiki-hero-link" href="https://discord.gg/YWsMAMdftq" target="_blank" rel="noopener noreferrer">Discord</a>
+                  </div>
+                </div>
+
+                <h2 class="wiki-nav-heading">Navigate</h2>
+                <div class="wiki-nav-grid" aria-label="Wiki page categories">
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-index" data-wiki-page="index"><span>Index</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-conveyor" data-wiki-page="conveyor"><span>Conveyor</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-decoration" data-wiki-page="decoration"><span>Decoration</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-mastery" data-wiki-page="mastery"><span>Mastery</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-rebirth" data-wiki-page="rebirth"><span>Rebirth</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-achievements" data-wiki-page="achievements"><span>Achievements</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-furnace-loot" data-wiki-page="furnace-loot"><span>Furnace Loot</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-events" data-wiki-page="events"><span>Events</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-merchant" data-wiki-page="merchant"><span>Merchant</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-enchanter" data-wiki-page="enchanter"><span>Enchanter</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-brewer" data-wiki-page="brewer"><span>Brewer</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-p2w" data-wiki-page="p2w"><span>P2W</span></button>
+                  <button type="button" class="wiki-nav-tile wiki-nav-tile-bg wiki-nav-tile-codes" data-wiki-page="codes"><span>Codes</span></button>
+                </div>
+
+                <div class="wiki-updates">
+                  <div class="wiki-update-panel">
+                    <h3>Game Updates</h3>
+                    <p class="wiki-update-placeholder">Coming soon.</p>
+                  </div>
+                  <div class="wiki-update-panel">
+                    <h3>Wiki &amp; Tools Updates</h3>
+                    <p class="wiki-update-placeholder">Coming soon.</p>
+                  </div>
                 </div>
               </div>
 
-              <div class="wiki-nav-grid" aria-label="Wiki page categories">
-                <div class="wiki-nav-tile"></div>
-                <div class="wiki-nav-tile"></div>
-                <div class="wiki-nav-tile"></div>
-                <div class="wiki-nav-tile"></div>
-                <div class="wiki-nav-tile"></div>
-                <div class="wiki-nav-tile"></div>
-              </div>
-
-              <div class="wiki-updates">
-                <div class="wiki-update-panel">
-                  <h3>Game Updates</h3>
-                  <p class="wiki-update-placeholder">Coming soon.</p>
-                </div>
-                <div class="wiki-update-panel">
-                  <h3>Wiki &amp; Tools Updates</h3>
-                  <p class="wiki-update-placeholder">Coming soon.</p>
-                </div>
+              <div id="wiki-page-view" class="wiki-page-view" hidden>
+                <button type="button" id="wiki-page-back" class="wiki-page-back">&larr; Back to Navigate</button>
+                <h2 id="wiki-page-title" class="wiki-page-title"></h2>
+                <div id="wiki-page-body" class="wiki-page-body"></div>
               </div>
             </div>
           </div>
@@ -707,5 +715,6 @@
     <script src="mpa-chopping-block.js"></script>
     <script src="feedback.js"></script>
     <script src="help.js"></script>
+    <script src="wiki-tool.js"></script>
   </body>
 </html>
