@@ -891,6 +891,13 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
   background-image: url('icons/wiki/background.png');
   background-size: cover;
   background-position: center;
+  /* Without `fixed`, background-size:cover scales the image to cover this
+     element's own (content-driven) box — on a long scrolling page like the
+     Update Log, that box gets much taller than the viewport, so the image
+     gets stretched/zoomed far beyond its normal look. `fixed` sizes cover
+     against the viewport instead, so it looks the same on every page
+     regardless of how much content that page has. */
+  background-attachment: fixed;
 }
 .wiki-frame::before {
   content: "";

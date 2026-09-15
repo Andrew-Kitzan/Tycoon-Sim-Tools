@@ -772,23 +772,12 @@
   backButton?.addEventListener('click', goHome);
 
   // Both home-page update panels ("Wiki & Tools Updates" and "Game
-  // Updates") share this exact preview+view-all pattern: fetch a
-  // data/manual/*.json file, show only each panel's own preview-count most
-  // recent entries, and once there are more than that, add a "View All"
-  // button that opens a dedicated full-log page instead of letting the
-  // home page grow without bound. Add new entries newest-first, one entry
-  // per real release/work session — don't split one release into several.
+  // Updates") share this exact preview+view-all pattern: show only the most
+  // recent entries, with a "View All" button that opens a dedicated
+  // full-log page for the rest instead of letting the home page grow
+  // without bound. Add new entries newest-first, one entry per real
+  // release/work session — don't split one release into several.
   //
-  // The two counts are independent (not a shared constant) because Game
-  // Updates entries are much bulkier per-entry (title + several bullet
-  // highlights) than Wiki & Tools' one-paragraph entries — showing the same
-  // count of each would leave Wiki & Tools looking short/empty next to
-  // Game Updates in the 2-column grid. Tune WIKI_UPDATES_PREVIEW_COUNT up
-  // if that gap reopens as entries get longer, or back down if Wiki & Tools
-  // ever ends up taller than Game Updates instead.
-  const WIKI_UPDATES_PREVIEW_COUNT = 6;
-  const GAME_UPDATES_PREVIEW_COUNT = 4;
-
   // "Wiki & Tools Updates" — a changelog of THIS companion site/tools, not
   // the actual game. data/manual/wiki-updates-data.json, {date, summary}
   // entries, same plain-hand-edited-JSON convention as every other
@@ -842,33 +831,81 @@
       ${formatGameUpdateEntries(updates)}`;
   }
 
-  // Wires one update panel: fetches its data, renders the preview (with a
-  // "View All" button, into containerId, and points that button at
-  // openPage(pageKey). The button always shows whenever there's at least
-  // one entry, even if the preview already fits every entry that exists
-  // right now — it'll be needed again the moment one more entry is added,
-  // and a button that sometimes disappears is more surprising than one
-  // that's just always there.
-  function wireUpdatesPanel(containerId, dataUrl, formatFn, pageKey, buttonId, previewCount) {
-    const container = document.querySelector(containerId);
-    if (!container) return;
-    fetch(dataUrl)
-      .then((res) => res.json())
-      .then((updates) => {
-        if (!Array.isArray(updates) || !updates.length) {
-          container.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
-          return;
-        }
-        const preview = updates.slice(0, previewCount);
-        const viewAllButton = `<button type="button" class="wiki-view-all-updates" id="${buttonId}">View All Updates &rarr;</button>`;
-        container.innerHTML = formatFn(preview) + viewAllButton;
-        document.querySelector(`#${buttonId}`)?.addEventListener('click', () => openPage(pageKey));
-      })
-      .catch(() => {
-        container.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
-      });
+  // Balances how many entries each of the two update panels previews so
+  // their "View All Updates" buttons land close to level with each other,
+  // instead of a fixed entry count per panel (which only looked right at
+  // one screen width/content length — Game Updates' bullet-heavy entries
+  // and Wiki & Tools' one-paragraph entries wrap very differently as the
+  // column width changes). Re-measures on resize since column width
+  // directly changes how tall each entry wraps to (most visibly at the
+  // ~860px single-column breakpoint).
+  //
+  // Method: render each panel's FULL entry list once (in its real
+  // container, so real width/padding/fonts apply) purely to measure each
+  // entry's actual rendered height, then pick the largest entry count for
+  // each panel such that neither panel's cumulative preview height exceeds
+  // the other's by more than one entry — the finest granularity possible
+  // without splitting an entry in half. Falls back to 1 entry per panel if
+  // one side has no data at all.
+  function measureEntryHeights(container, formatFn, data) {
+    if (!data.length) return [];
+    container.innerHTML = formatFn(data);
+    return [...container.querySelectorAll('.wiki-update-entry')].map((el) => el.getBoundingClientRect().height);
   }
 
-  wireUpdatesPanel('#wiki-tools-updates', 'data/manual/wiki-updates-data.json', formatUpdateEntries, 'updates', 'wiki-view-all-updates', WIKI_UPDATES_PREVIEW_COUNT);
-  wireUpdatesPanel('#game-updates', 'data/manual/game-updates-data.json', formatGameUpdateEntries, 'game-updates', 'game-view-all-updates', GAME_UPDATES_PREVIEW_COUNT);
+  function finalizePanel(container, formatFn, data, count, pageKey, buttonId) {
+    if (!data.length) {
+      container.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
+      return;
+    }
+    const preview = data.slice(0, count);
+    container.innerHTML = `${formatFn(preview)}<button type="button" class="wiki-view-all-updates" id="${buttonId}">View All Updates &rarr;</button>`;
+    document.querySelector(`#${buttonId}`)?.addEventListener('click', () => openPage(pageKey));
+  }
+
+  function balanceUpdatePanels(a, b, dataA, dataB) {
+    if (!dataA.length && !dataB.length) {
+      a.container.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
+      b.container.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
+      return;
+    }
+    const heightsA = measureEntryHeights(a.container, a.formatFn, dataA);
+    const heightsB = measureEntryHeights(b.container, b.formatFn, dataB);
+    const sum = (arr, n) => arr.slice(0, n).reduce((total, h) => total + h, 0);
+    let i = Math.min(1, dataA.length);
+    let j = Math.min(1, dataB.length);
+    while (true) {
+      const heightA = sum(heightsA, i);
+      const heightB = sum(heightsB, j);
+      if (heightA < heightB && i < dataA.length) { i += 1; }
+      else if (heightB < heightA && j < dataB.length) { j += 1; }
+      else break;
+    }
+    finalizePanel(a.container, a.formatFn, dataA, i, a.pageKey, a.buttonId);
+    finalizePanel(b.container, b.formatFn, dataB, j, b.pageKey, b.buttonId);
+  }
+
+  function wireBalancedUpdatePanels(configA, configB) {
+    const containerA = document.querySelector(configA.containerId);
+    const containerB = document.querySelector(configB.containerId);
+    if (!containerA || !containerB) return;
+    Promise.all([
+      fetch(configA.dataUrl).then((res) => res.json()).catch(() => []),
+      fetch(configB.dataUrl).then((res) => res.json()).catch(() => []),
+    ]).then(([dataA, dataB]) => {
+      const a = { ...configA, container: containerA };
+      const b = { ...configB, container: containerB };
+      balanceUpdatePanels(a, b, dataA, dataB);
+      let resizeTimer = null;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => balanceUpdatePanels(a, b, dataA, dataB), 200);
+      });
+    });
+  }
+
+  wireBalancedUpdatePanels(
+    { containerId: '#wiki-tools-updates', dataUrl: 'data/manual/wiki-updates-data.json', formatFn: formatUpdateEntries, pageKey: 'updates', buttonId: 'wiki-view-all-updates' },
+    { containerId: '#game-updates', dataUrl: 'data/manual/game-updates-data.json', formatFn: formatGameUpdateEntries, pageKey: 'game-updates', buttonId: 'game-view-all-updates' },
+  );
 })();
