@@ -625,6 +625,106 @@
     </span>`;
   }
 
+  function formatCashCost(amount) {
+    const parsed = amount == null ? null : parseAbbreviated(amount);
+    if (parsed == null) return '—';
+    return `<span class="wiki-reward-chip">
+      <span class="wiki-reward-icon-wrap">
+        <img class="wiki-reward-icon wiki-reward-icon--uncommon" src="icons/wiki/cash-icon.png" alt="" onerror="this.parentElement.remove()">
+        <span class="wiki-reward-badge">$${formatCompact(parsed)}</span>
+      </span>
+    </span>`;
+  }
+
+  // Furnace Loot data lives in data/manual/furnace-loot-data.json — same
+  // plain-hand-edited-JSON convention as every other data/manual/ file.
+  let furnaceLootDataPromise = null;
+  function loadFurnaceLootData() {
+    if (!furnaceLootDataPromise) {
+      furnaceLootDataPromise = fetch('data/manual/furnace-loot-data.json', { cache: 'no-store' })
+        .then((res) => res.json())
+        .catch(() => null);
+    }
+    return furnaceLootDataPromise;
+  }
+
+  async function renderFurnaceLootPage() {
+    const data = await loadFurnaceLootData();
+    const denom = data?.dropChanceDenominator ?? 50;
+    const minDrops = data?.minActiveDrops ?? 10;
+    const maxDrops = data?.maxActiveDrops ?? 20;
+    const baseStat = data?.baseFurnaceLootStat ?? 0;
+    const maxStat = data?.maxFurnaceLootStat ?? 5;
+    const tiers = data?.masteryTiers ?? [];
+    const lootOdds = data?.lootOdds ?? [];
+    const tierRows = [{ level: 0, currency: null, cost: null }, ...tiers].map((tier) => {
+      const dropChancePct = (tier.level / denom) * 100;
+      const activeDropsCap = maxStat > baseStat
+        ? minDrops + ((tier.level - baseStat) / (maxStat - baseStat)) * (maxDrops - minDrops)
+        : minDrops;
+      const costCell = tier.currency === 'crystals' ? formatCrystalCost(tier.cost)
+        : tier.currency === 'cash' ? formatCashCost(tier.cost)
+        : '—';
+      return `
+      <tr>
+        <td>${tier.level === 0 ? 'No mastery' : `Level ${tier.level}`}</td>
+        <td>${costCell}</td>
+        <td>${dropChancePct % 1 === 0 ? dropChancePct : dropChancePct.toFixed(1)}%</td>
+        <td>${Math.floor(activeDropsCap)}</td>
+      </tr>`;
+    }).join('');
+    const oddsRows = lootOdds.map((entry) => `
+      <tr>
+        <td>${escapeHtml(entry.reward)}</td>
+        <td>${escapeHtml(entry.odds)}</td>
+        <td>${escapeHtml(entry.time50)}</td>
+        <td>${escapeHtml(entry.time75)}</td>
+        <td>${escapeHtml(entry.time90)}</td>
+      </tr>`).join('');
+    return `
+      <p>Furnaces have a chance to roll bonus loot on top of whatever
+      they're processing — but only if you've bought the
+      <strong>"More Furnace Loot!"</strong> mastery. With no mastery at
+      all, that chance is <strong>0%</strong> — this isn't a passive
+      bonus, you have to buy into it. The mastery has 5 levels, and each
+      level does two things at once: it raises your drop chance per roll,
+      and it raises the max number of loot drops you can have queued up
+      waiting to be collected at once (10 with no mastery, up to 20 fully
+      maxed). <strong>The only other thing that affects the drop chance is
+      an admin-only event multiplier the devs can trigger — players can't
+      get it any other way, so treat the numbers below as the real rate.</strong></p>
+      <p>Once you hit your active-drops cap, you have to
+      <strong>wait ${escapeHtml(data?.collectCooldownSeconds ?? 60)} seconds</strong>
+      before you can collect again.</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Mastery</th>
+            <th>Cost</th>
+            <th>Drop Chance (per roll)</th>
+            <th>Max Active Drops</th>
+          </tr>
+        </thead>
+        <tbody>${tierRows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
+      </table>
+      <p>What each drop can actually be, and the real odds — sourced from
+      in-game testing rather than the raw script weights, since the drop
+      pool has been tweaked since. Times assume fully maxed mastery
+      (20 loot/min):</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Reward</th>
+            <th>Odds</th>
+            <th>50% Chance By</th>
+            <th>75% Chance By</th>
+            <th>90% Chance By</th>
+          </tr>
+        </thead>
+        <tbody>${oddsRows || '<tr><td colspan="5">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
   async function renderBrewerPage() {
     const data = await loadBrewerData();
     const upcrafts = data?.upcrafts ?? [];
@@ -862,7 +962,7 @@
     },
     'furnace-loot': {
       title: 'Furnace Loot',
-      body: '<p>What every furnace can produce. Not written yet.</p>',
+      body: renderFurnaceLootPage,
     },
     codes: {
       title: 'Codes',

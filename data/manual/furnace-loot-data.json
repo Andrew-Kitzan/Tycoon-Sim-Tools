@@ -1,0 +1,23 @@
+{
+  "collectCooldownSeconds": 60,
+  "dropChanceDenominator": 50,
+  "minActiveDrops": 10,
+  "maxActiveDrops": 20,
+  "baseFurnaceLootStat": 0,
+  "maxFurnaceLootStat": 5,
+  "masteryTiers": [
+    { "level": 1, "currency": "cash", "cost": 100000 },
+    { "level": 2, "currency": "cash", "cost": 1000000 },
+    { "level": 3, "currency": "cash", "cost": 10000000 },
+    { "level": 4, "currency": "cash", "cost": 100000000 },
+    { "level": 5, "currency": "crystals", "cost": 50000 }
+  ],
+  "lootOdds": [
+    { "reward": "Tier 1 Potions", "odds": "1 / 4.95", "time50": "12 Sec", "time75": "21 Sec", "time90": "33 Sec" },
+    { "reward": "Tier 2 Potions", "odds": "1 / 14.14", "time50": "30 Sec", "time75": "57 Sec", "time90": "1 Min 36 Sec" },
+    { "reward": "50-100 Crystals", "odds": "1 / 9.9", "time50": "21 Sec", "time75": "42 Sec", "time90": "1 Min 6 Sec" },
+    { "reward": "500-1K Crystals", "odds": "1 / 99", "time50": "3 Min 27 Sec", "time75": "6 Min 51 Sec", "time90": "11 Min 21 Sec" },
+    { "reward": "Corium Dropper", "odds": "1 / 100K", "time50": "2.41 Days", "time75": "4.81 Days", "time90": "8 Days" },
+    { "reward": "Unbox Slot Potion", "odds": "1 / 198K", "time50": "4.77 Days", "time75": "9.53 Days", "time90": "15.83 Days" }
+  ]
+}
