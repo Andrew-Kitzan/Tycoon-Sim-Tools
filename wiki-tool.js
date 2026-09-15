@@ -871,18 +871,34 @@
     }
     const heightsA = measureEntryHeights(a.container, a.formatFn, dataA);
     const heightsB = measureEntryHeights(b.container, b.formatFn, dataB);
-    const sum = (arr, n) => arr.slice(0, n).reduce((total, h) => total + h, 0);
-    let i = Math.min(1, dataA.length);
-    let j = Math.min(1, dataB.length);
-    while (true) {
-      const heightA = sum(heightsA, i);
-      const heightB = sum(heightsB, j);
-      if (heightA < heightB && i < dataA.length) { i += 1; }
-      else if (heightB < heightA && j < dataB.length) { j += 1; }
-      else break;
+    const cumulative = (heights) => heights.reduce((acc, h) => {
+      acc.push((acc[acc.length - 1] ?? 0) + h);
+      return acc;
+    }, []);
+    const cumA = cumulative(heightsA); // cumA[n-1] = height of the first n entries
+    const cumB = cumulative(heightsB);
+    // Try every possible entry count for A (including 0 if that side has no
+    // data), find the count for B that lands closest to it, and keep
+    // whichever (i, j) pair anywhere across that whole search comes closest
+    // overall — a real closest-fit instead of "first count that's tall
+    // enough," which could overshoot by up to a whole entry's height.
+    let bestI = Math.min(1, dataA.length);
+    let bestJ = Math.min(1, dataB.length);
+    let bestDiff = Infinity;
+    for (let i = dataA.length ? 1 : 0; i <= dataA.length; i += 1) {
+      const heightA = i === 0 ? 0 : cumA[i - 1];
+      for (let j = dataB.length ? 1 : 0; j <= dataB.length; j += 1) {
+        const heightB = j === 0 ? 0 : cumB[j - 1];
+        const diff = Math.abs(heightA - heightB);
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          bestI = i;
+          bestJ = j;
+        }
+      }
     }
-    finalizePanel(a.container, a.formatFn, dataA, i, a.pageKey, a.buttonId);
-    finalizePanel(b.container, b.formatFn, dataB, j, b.pageKey, b.buttonId);
+    finalizePanel(a.container, a.formatFn, dataA, bestI, a.pageKey, a.buttonId);
+    finalizePanel(b.container, b.formatFn, dataB, bestJ, b.pageKey, b.buttonId);
   }
 
   function wireBalancedUpdatePanels(configA, configB) {
