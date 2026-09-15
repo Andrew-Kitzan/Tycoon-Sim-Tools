@@ -816,7 +816,7 @@
   function formatGameUpdateEntries(updates) {
     return updates.map((entry) => `
       <div class="wiki-update-entry">
-        <div class="wiki-update-version">${escapeHtml(entry.version)}</div>
+        <div class="wiki-update-version">${escapeHtml(entry.version)}${entry.status ? ` <span class="wiki-status-badge is-pending">${escapeHtml(entry.status)}</span>` : ''}</div>
         <p class="wiki-update-title">${escapeHtml(entry.title)}</p>
         <ul class="wiki-update-highlights">${(entry.highlights ?? []).map((h) => `<li>${escapeHtml(h)}</li>`).join('')}</ul>
       </div>`).join('');

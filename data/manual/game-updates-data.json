@@ -2,6 +2,7 @@
   {
     "version": "v3.0.0",
     "title": "Back to working on the game",
+    "status": "In Development",
     "highlights": [
       "New Build Mode: Box Select, Axis Binding, and a bunch of new filters",
       "Added a Mailbox that tells you about updates in-game",
