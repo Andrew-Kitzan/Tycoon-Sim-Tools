@@ -47,7 +47,39 @@ a value further based on a single report without first ruling this out (or
 stale cache — see the dev-server caching quirk noted elsewhere in this
 file) as the cause.
 
+**When removing a baked-in badge/number from a game-screenshot icon (the
+"stretch/mirror a patch over the badge" technique used throughout the
+2026-09-14 Rebirth-icons entry below), always find the badge's real pixel
+bounding box with a direct crop you actually look at — never size the patch
+off a blunt full-image darkness scan.** A naive "any pixel darker than
+threshold X" scan gets fooled by the icon's OWN dark outline strokes/shadows
+far from the actual badge (a crate's black edge line, a clover's stem
+shadow) and reports a bounding box much wider than the real badge — which
+then makes the fix patch far bigger than needed and smears/overwrites clean,
+already-correct detail that was never covered by anything. This happened
+three times in one session (Luck icon's stem, the crate icons, the plot-tile
+edge) before being caught by the player comparing the result to the original
+image and caught again by cropping the suspected badge region directly to
+confirm its true extent before patching. **Always crop-and-view the specific
+region before trusting a bounding box, and keep the patch rectangle as small
+as it can be while still fully covering the confirmed badge** — do not pad
+it generously "to be safe," since the padding is exactly what causes this.
+
 ## Last worked on
+
+2026-09-14 (later session, icons) — see "2026-09-14 Rebirth page reward
+icons: potions, crystal/cash/luck/plot-size/unbox-slot" below. **Outstanding,
+not yet done**: the player asked for a fresh side-by-side check of every
+icon this session edited (the 6 potion icons + the misnamed Unbox Slot
+Potion icon, plus Luck/Plot Size/Unbox Slot) against their original
+un-edited source images, specifically looking for anything not yet as clean
+as it should be — three separate cleanliness bugs (see the new "Standing
+gotchas" entry above) were already found and fixed in the Luck/Plot
+Size/Unbox Slot icons this session via player feedback, and the potion set
+was fixed earlier in the session using the same flawed wide-patch technique
+but has NOT been re-audited with the corrected tight-bbox approach yet — it
+may have the same kind of smearing sitting undetected. Next session should
+do this comparison before anything else if the player hasn't already.
 
 2026-09-14 (later session) — see "2026-09-14 Rebirth page: first real
 content page + new data/manual/ folder" below. Started actually writing wiki
@@ -98,6 +130,91 @@ the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-14 Rebirth page reward icons: potions, crystal/cash/luck/plot-size/unbox-slot
+
+Picks up directly from "2026-09-14 Rebirth page: first real content page"
+below (read that first — this entry assumes the page, `renderRebirthPage()`,
+and `data/manual/rebirth-data.json` already exist). The player filled in all
+8 rebirths' real data in that file over this session (cost, item/crystal/
+stat/potion rewards) — every icon described below exists to make that data
+render as icons instead of bare text, one reward type at a time as the
+player supplied source images.
+
+**Every icon here started as a real in-game screenshot the player supplied
+via a local file path** (`C:\Users\...\Documents\Tycoon Sim\Icons\*.png` or
+similar, sometimes `Downloads\`) **with a baked-in count/amount badge from
+whatever context it was screenshotted in** — none of these are generated
+art. The recurring job was: crop/reconstruct the badge away, then add the
+site's OWN overlapping badge (a real DOM `<span>`, not baked into the image)
+showing the actual count/amount from `rebirth-data.json`, positioned
+bottom-left of the icon. See the new "Standing gotchas" entry above for the
+one real mistake made repeatedly while doing this — **read it before editing
+any more of these icons**, and see "Not yet done" at the bottom of this
+entry for the follow-up check the player asked for that hasn't happened yet.
+
+**Item reward icons** (`formatItemRewards()`) need no editing at all — they
+reuse the existing `icons/items/{Name}.png` convention (same path shape as
+`mpa-chopping-block.js`'s `itemIconHtml()`), Base variant, since every item
+already has a clean icon from earlier sessions' work.
+
+**Potion reward icons** (`formatPotionRewards()`, `POTION_ICON_FILES` in
+`wiki-tool.js`) live under the same `icons/items/` folder but needed real
+editing — 6 of the potion files (`Tier3 Luck/Shiny Luck/Roll Speed
+Potion.png`, `tier4 Shiny Luck Potion.png`, `Tier5 Luck/Mythic Luck
+Potion.png`) had a baked-in `xN` badge removed (mirrored the icon's own
+clean opposite corner, feathered). 3 more in the same tier set already had
+no badge and were untouched. **`icons/items/tier1 Roll Slot Potion.png` is
+actually the Unbox Slot Potion icon** — misnamed on disk when originally
+saved (confirmed by the player), not renamed (matches the existing
+`index-icon.png`/`enchanter-bg.png` mismatch convention already in this
+file), just mapped under `'tier1unboxslotpotion'` in `POTION_ICON_FILES`.
+Filenames under `icons/items/` mix `"Tier3"`/`"tier4"`-style casing/spacing
+inconsistently (pre-existing) — `POTION_ICON_FILES` is an explicit
+normalized-key lookup table for exactly this reason, not a generic path
+guess; add an entry there whenever a new potion name appears in
+`rebirth-data.json`.
+
+**Crystal Reward and Cost icons** (`icons/wiki/crystal-icon.png`,
+`icons/wiki/cash-icon.png`) went through two rounds: first reconstructed
+from the player's screenshots (their badges spanned almost the full width
+with no clean corner to mirror from, unlike potions, so fixed by stretching
+a thin strip from just above the badge), then **the player supplied
+actual clean, badge-free source icons directly** (`Downloads\small
+cash.png`, `Downloads\small crystal.png`, real resolution 47x38/44x41) which
+now fully replace the reconstructed versions at the same file paths — no
+code change needed for the swap. **These two are the only reward icons in
+this whole entry that are real, player-supplied clean assets rather than an
+AI reconstruction** — don't lump them in with the "needs re-review" set
+below. Both render larger (`.wiki-reward-icon--lg`/`.wiki-reward-badge--lg`)
+than the inline item/potion icons since each is the only content in its
+column, and both carry a rarity-tier background: Crystal Reward uses Epic
+(`#9b59f2`), Cost/cash uses Uncommon (`#4caf6b`) — same `color-mix()`-over-
+`var(--surface)` treatment and exact color values as
+`luck-crate-generator.js`'s `RARITY_COLORS`/`.luck-item-cell`, reused rather
+than invented. The Crystal Reward column header was also renamed from
+"Crystals" to "Crystal Reward" per the player's ask.
+
+**Stat Rewards icons** (`formatStatRewards()`, `STAT_ICON_FILES` in
+`wiki-tool.js`, replacing the now-deleted plain-text `formatList()`) —
+Luck (`icons/wiki/luck-icon.png`), Plot Size (`icons/wiki/plot-size-
+icon.png`), and Unbox Slot (`icons/wiki/unbox-slot-icon.png`) are all AI
+reconstructions from the player's screenshots, same badge-removal job as the
+potions. These are the three that went through the smearing bugs described
+in the new "Standing gotchas" entry above (stem lost on Luck, back crates
+blurred on Unbox Slot, 3D edge disconnected on Plot Size) — all three are
+now fixed and were re-verified in-browser and sent to the player as files
+directly, but see "Not yet done" below.
+
+**Not yet done — the player's own ask, not inferred**: re-check the 6 edited
+potion icons (plus the misnamed-but-mapped Unbox Slot Potion icon) against
+their original un-edited screenshots for the same kind of smearing/artifact
+that was just found and fixed on Luck/Plot Size/Unbox Slot. The potion
+icons were fixed earlier in this same session using the wide-band
+stretch/mirror technique later found to be flawed (see "Standing gotchas"
+above) and have not been re-audited with the corrected tight-bbox approach.
+Do this comparison — crop each original's badge region directly, same as
+the fixed technique — before treating any of the potion icons as finished.
 
 ## 2026-09-14 Rebirth page: first real content page + new data/manual/ folder
 
