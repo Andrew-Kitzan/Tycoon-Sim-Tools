@@ -676,11 +676,11 @@
       <p>The Enchanter upgrades an item into a better variant — <strong>no
       crystal cost, just time</strong>. Common through Epic items only ever
       have Base and Shiny forms, so there's just one upgrade:
-      <strong>Base &rarr; Shiny</strong>.
-      <strong>P2W Legendary items only exist in Shiny form</strong> to begin
-      with, so they have nothing to enchant into. Every other Legendary
-      (non-P2W) item and every Secret item can reach Shiny Mythic, but
-      it's not a strict straight line — <strong>a Base item can be
+      <strong>Base &rarr; Shiny</strong>. <strong>P2W items only ever have
+      Base and Shiny forms too, even at Legendary rarity</strong> — they do
+      not start off Shiny, and they can't reach Mythic or Shiny Mythic.
+      Every non-P2W Legendary item and every Secret item can reach Shiny
+      Mythic, but it's not a strict straight line — <strong>a Base item can be
       enchanted directly into either Shiny or Mythic</strong> (the player's
       choice), and <strong>whichever one it becomes can then be enchanted
       again into Shiny Mythic</strong>.</p>
