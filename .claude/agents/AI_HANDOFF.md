@@ -96,6 +96,28 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-09-15 (final session of the day, Bling Dropper icon + Drillbit & Co.
+link) — two small P2W fixes. (1) Bling Dropper's `gives` entry in
+`data/manual/p2w-dev-products-data.json` was lowercase (`"bling dropper"`),
+which didn't match the real, capitalized `icons/items/Bling Dropper.png`
+filename — `formatCodeRewards()`'s generic-guess fallback is
+**case-sensitive**, so this silently dropped the icon with no console error
+(the `onerror="this.remove()"` guard just quietly removes the broken
+`<img>`). If a P2W/Codes reward icon goes missing again, check the `gives`
+string's exact capitalization against the real filename in
+`icons/items/` first — this is the second time it's been a casing mismatch
+(see the MVP fix earlier this session). (2) Added a small `formatNotes()`
+helper (right after `escapeHtml`/`formatNumber` near the top of
+`wiki-tool.js`) that turns any literal "Drillbit & Co." substring in a P2W
+notes cell into a real link (`<a class="wiki-notes-link" target="_blank"
+rel="noopener noreferrer">`) pointing at the game's actual Roblox page,
+`https://www.roblox.com/games/119296091834097/Drillbit-and-Co`. Used in
+`renderP2wPage()`'s notes column in place of a plain `escapeHtml()` call.
+`.wiki-notes-link` (new CSS, next to `.wiki-chat-tag`/`.wiki-rarity-pill`)
+is a small bordered pill matching the wiki's existing inline-tag styling —
+reuse that class (and `formatNotes()`) if any other page ever needs to
+linkify a real-world URL mention inside plain notes/body text again.
+
 2026-09-15 (later session still, brewer data fix + fetch caching hardening)
 — see the "Update (2026-09-15)" paragraph appended to the browser-caching
 "Standing gotcha" above. Fixed a real data typo (Uncommon potion duration
