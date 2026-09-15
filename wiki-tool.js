@@ -36,6 +36,18 @@
     return typeof value === 'number' ? value.toLocaleString() : escapeHtml(value ?? '—');
   }
 
+  // Turns any "Drillbit & Co." mention in a notes string into a link to the
+  // game's real Roblox page — used by the P2W notes column, where several
+  // entries reference owning gamepasses "in Drillbit & Co."
+  const DRILLBIT_CO_URL = 'https://www.roblox.com/games/119296091834097/Drillbit-and-Co';
+  function formatNotes(notes) {
+    if (!notes) return '—';
+    return escapeHtml(notes).replace(
+      /Drillbit &amp; Co\./g,
+      `<a class="wiki-notes-link" href="${DRILLBIT_CO_URL}" target="_blank" rel="noopener noreferrer">Drillbit &amp; Co.</a>`
+    );
+  }
+
   // Item reward icons reuse the site-wide icons/items/{Name}.png convention
   // (same path shape as mpa-chopping-block.js's itemIconHtml — Base variant,
   // no suffix, since rebirth rewards aren't listed with a variant). No
@@ -654,7 +666,7 @@
         <td>${entry.robuxCost == null ? '—' : `R$${formatNumber(entry.robuxCost)}`}</td>
         <td><span class="wiki-status-badge ${entry.obtainable ? 'is-active' : 'is-expired'}">${entry.obtainable ? 'Obtainable' : 'Unobtainable'}</span></td>
         <td>${formatCodeRewards(entry.gives)}</td>
-        <td>${entry.notes ? escapeHtml(entry.notes) : '—'}</td>
+        <td>${formatNotes(entry.notes)}</td>
       </tr>`).join('');
     return `
       <p>Real-money purchases — one-time dev products and permanent game

@@ -1070,6 +1070,8 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-status-badge.is-pending { background: color-mix(in srgb, #f0a93a 22%, var(--surface)); border: 1px solid #f0a93a; color: #ffd08f; }
 .wiki-rarity-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 800; background: color-mix(in srgb, var(--rarity-color) 22%, var(--surface)); border: 1px solid var(--rarity-color); color: var(--rarity-color); }
 .wiki-chat-tag { font-weight: 800; color: #e0483f; }
+.wiki-notes-link { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: .78rem; font-weight: 800; background: rgba(255,255,255,.04); border: 1px solid var(--line); color: var(--accent); text-decoration: none; }
+.wiki-notes-link:hover, .wiki-notes-link:focus-visible { border-color: var(--accent); outline: none; }
 
 @media (max-width: 860px) {
   .wiki-updates { grid-template-columns: 1fr; }
