@@ -1020,6 +1020,9 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-data-table th, .wiki-data-table td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
 .wiki-data-table th { background: rgba(255,255,255,.04); color: var(--accent); font-weight: 800; }
 .wiki-data-table tbody tr:nth-child(even) { background: rgba(255,255,255,.02); }
+.wiki-reward-list { display: flex; flex-direction: column; gap: 6px; }
+.wiki-reward-chip { display: flex; align-items: center; gap: 8px; }
+.wiki-reward-icon { width: 26px; height: 26px; object-fit: contain; border: 1px solid var(--line); border-radius: 6px; background: rgba(255,255,255,.04); flex-shrink: 0; }
 
 @media (max-width: 860px) {
   .wiki-updates { grid-template-columns: 1fr; }

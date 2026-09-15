@@ -40,6 +40,23 @@
     return Array.isArray(list) && list.length ? list.map(escapeHtml).join(', ') : '—';
   }
 
+  // Item reward icons reuse the site-wide icons/items/{Name}.png convention
+  // (same path shape as mpa-chopping-block.js's itemIconHtml — Base variant,
+  // no suffix, since rebirth rewards aren't listed with a variant). No
+  // currency/stat icons exist yet (player's call, not started), so only item
+  // rewards get one — crystal/stat/potion cells stay plain text for now.
+  // onerror hides a broken/missing icon instead of showing a broken-image
+  // box, so a not-yet-added icon degrades to a plain chip, not visual noise.
+  function formatItemRewards(list) {
+    if (!Array.isArray(list) || !list.length) return '—';
+    const chips = list.map((name) => {
+      const safeName = escapeHtml(name);
+      const iconSrc = `icons/items/${encodeURIComponent(name)}.png`;
+      return `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
+    }).join('');
+    return `<span class="wiki-reward-list">${chips}</span>`;
+  }
+
   // Same suffix scale used elsewhere on the site for big cash/crystal numbers
   // (app.js's abbreviatedRate, abbrev-calculator.js's DISPLAY_UNITS,
   // capgrader-generator.js's money parser) — keep this in sync with those if
@@ -87,7 +104,7 @@
       <tr>
         <td>${formatNumber(row.rebirth)}</td>
         <td>${cost == null ? '—' : '$' + formatCompact(cost)}</td>
-        <td>${formatList(row.itemRewards)}</td>
+        <td>${formatItemRewards(row.itemRewards)}</td>
         <td>${crystals == null ? '—' : formatCompact(crystals)}</td>
         <td>${formatList(row.statRewards)}</td>
         <td>${formatList(row.potionRewards)}</td>
