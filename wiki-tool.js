@@ -320,9 +320,9 @@
         <td>${formatCodeRewards(entry.rewards)}</td>
       </tr>`).join('');
     return `
-      <p>Enter these in the game's Codes menu for free rewards. Codes can be
-      deactivated at any time — if one stops working, it's most likely
-      expired rather than mistyped.</p>
+      <p>Enter these for free rewards — you can input codes at the bottom of
+      the Premium Shop window. Codes can be deactivated at any time — if one
+      stops working, it's most likely expired rather than mistyped.</p>
       <table class="wiki-data-table">
         <thead>
           <tr>
