@@ -176,7 +176,7 @@
             <th>Rebirth</th>
             <th>Cost</th>
             <th>Item Reward(s)</th>
-            <th>Crystals</th>
+            <th>Crystal Reward</th>
             <th>Stat Rewards</th>
             <th>Potion Rewards</th>
           </tr>
