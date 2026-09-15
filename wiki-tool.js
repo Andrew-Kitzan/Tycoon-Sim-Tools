@@ -899,6 +899,22 @@
     }
     finalizePanel(a.container, a.formatFn, dataA, bestI, a.pageKey, a.buttonId);
     finalizePanel(b.container, b.formatFn, dataB, bestJ, b.pageKey, b.buttonId);
+
+    // Closest-fit entry counts still leave up to ~one entry's worth of
+    // height difference (content only comes in whole-entry increments) —
+    // force both panel boxes to the exact same height so their bottom
+    // borders line up pixel-perfect, same as their top edges already do by
+    // sitting in the same grid row. Clear any stale inline height first so
+    // this doesn't compound on repeated resize-triggered re-balances.
+    const panelA = a.container.closest('.wiki-update-panel');
+    const panelB = b.container.closest('.wiki-update-panel');
+    if (panelA && panelB) {
+      panelA.style.height = '';
+      panelB.style.height = '';
+      const tallest = Math.max(panelA.getBoundingClientRect().height, panelB.getBoundingClientRect().height);
+      panelA.style.height = `${tallest}px`;
+      panelB.style.height = `${tallest}px`;
+    }
   }
 
   function wireBalancedUpdatePanels(configA, configB) {
