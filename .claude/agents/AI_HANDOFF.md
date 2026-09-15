@@ -67,19 +67,23 @@ it generously "to be safe," since the padding is exactly what causes this.
 
 ## Last worked on
 
+2026-09-14 (later session, icon replacement) — see "2026-09-14 All
+AI-reconstructed reward icons replaced with real ChatGPT-cleaned originals"
+below. **Resolves the "Outstanding, not yet done" note this same file had
+right after the icon-reconstruction work** (re-checking the potion icons for
+the same smearing bugs found in Luck/Plot Size/Unbox Slot) — moot now, since
+every reconstructed icon (all potions + Luck/Plot Size/Unbox Slot) was
+replaced wholesale with real, higher-resolution, badge-free versions the
+player had ChatGPT produce directly from the original screenshots. No AI
+pixel-reconstruction remains in any Rebirth-page reward icon as of this
+entry.
+
 2026-09-14 (later session, icons) — see "2026-09-14 Rebirth page reward
-icons: potions, crystal/cash/luck/plot-size/unbox-slot" below. **Outstanding,
-not yet done**: the player asked for a fresh side-by-side check of every
-icon this session edited (the 6 potion icons + the misnamed Unbox Slot
-Potion icon, plus Luck/Plot Size/Unbox Slot) against their original
-un-edited source images, specifically looking for anything not yet as clean
-as it should be — three separate cleanliness bugs (see the new "Standing
-gotchas" entry above) were already found and fixed in the Luck/Plot
-Size/Unbox Slot icons this session via player feedback, and the potion set
-was fixed earlier in the session using the same flawed wide-patch technique
-but has NOT been re-audited with the corrected tight-bbox approach yet — it
-may have the same kind of smearing sitting undetected. Next session should
-do this comparison before anything else if the player hasn't already.
+icons: potions, crystal/cash/luck/plot-size/unbox-slot" below for how these
+icons were first built (still relevant background/context, e.g. the
+`POTION_ICON_FILES`/`STAT_ICON_FILES` lookup-table pattern and the
+crystal/cash rarity-color treatment) — just note its own "outstanding" flag
+is resolved by the entry above.
 
 2026-09-14 (later session) — see "2026-09-14 Rebirth page: first real
 content page + new data/manual/ folder" below. Started actually writing wiki
@@ -130,6 +134,79 @@ the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-14 All AI-reconstructed reward icons replaced with real ChatGPT-cleaned originals
+
+Directly follows "2026-09-14 Rebirth page reward icons" below — read that
+first for the `POTION_ICON_FILES`/`STAT_ICON_FILES` lookup pattern and the
+crystal/cash rarity-color treatment, both still current. This entry only
+replaces the *image files themselves*, not any code.
+
+**What happened**: the player had ChatGPT clean the baked-in count badge off
+the original source screenshots directly (rather than the hand-written
+mirror/stretch pixel patches built earlier this session) and handed over 24
+files (`Downloads\01.png`-`24.png`, all 1254x1254 — much higher-res than the
+110x109 originals). None were labeled, so each had to be matched to its real
+target file by visually comparing shape/liquid-color/background-tile-color
+against the actual unedited original in `icons/items/`/`icons/wiki/` before
+copying over — **do not assume filename order corresponds to any particular
+tier ordering**, matching was done purely by visual signature. The full
+mapping (all 24, for reference if this ever needs auditing again):
+
+| # | File replaced | Tier family visual signature |
+|---|---|---|
+| 01 | `icons/items/tier1 Mythic Potion.png` | Tier1 = diagonal-tilted vial, light blue-grey bg |
+| 02 | `icons/items/Tier1 Luck Potion.png` | ” |
+| 03 | `icons/items/Tier1 Roll Speed Potion.png` | ” |
+| 04 | `icons/items/Tier1 Shiny Luck Potion.png` | ” |
+| 05 | `icons/items/tier1 Roll Slot Potion.png` (= Unbox Slot Potion) | ornate red/gold bat-wing vase, plain/white bg |
+| 06 | `icons/items/tier2 Luck Potion.png` | Tier2 = upright bulb bottle, green bg |
+| 07 | `icons/items/tier2 Mythic Luck Potion.png` | ” |
+| 08 | `icons/items/tier2 Roll Speed Potion.png` | ” |
+| 09 | `icons/items/tier2 Shiny Luck Potion.png` | ” |
+| 10 | `icons/items/Tier3 Luck Potion.png` | Tier3 = upright pinched-waist bottle, blue bg |
+| 11 | `icons/items/Tier3 Mythic Luck Potion.png` | ” |
+| 12 | `icons/items/Tier3 Roll Speed Potion.png` | ” |
+| 13 | `icons/items/Tier3 Shiny Luck Potion.png` | ” |
+| 14 | `icons/items/tier4 Mythic Luck Potion.png` | Tier4 = silver scalloped-cap dispenser, purple bg |
+| 15 | `icons/items/tier4 Shiny Luck Potion.png` | ” |
+| 16 | `icons/items/Tier5 Luck Potion.png` | Tier5 = bottle w/ winged-anchor metal cap, orange/tan bg |
+| 17 | `icons/items/Tier5 Mythic Luck Potion.png` | ” |
+| 18 | `icons/items/tier6 Luck Potion.png` | Tier6 = ornate ram-horn/wing gold vase, pink/red bg |
+| 19 | `icons/items/tier6 Mythic Luck Potion.png` | ” |
+| 20 | `icons/items/tier6 Roll Speed Potion.png` | ” |
+| 21 | `icons/items/tier6 Shiny Luck Potion.png` | ” |
+| 22 | `icons/wiki/luck-icon.png` | 4-leaf clover (Stat Rewards) |
+| 23 | `icons/wiki/plot-size-icon.png` | isometric checkerboard tile (Stat Rewards) |
+| 24 | `icons/wiki/unbox-slot-icon.png` | 3-crate pile (Stat Rewards) |
+
+**Why exactly 24 and not 25** (6 tiers × 4 variants + 1 Unbox Slot Potion =
+25 total potion-family files, +3 stat icons = 28 candidates): `tier4 Luck
+Potion.png`, `tier4 Roll Speed Potion.png`, `Tier5 Shiny Luck Potion.png`,
+and `Tier5 Roll Speed Potion.png` never had a baked-in badge in the first
+place (confirmed by direct inspection this session), so all 4 were correctly
+excluded from the batch and left untouched — 21 potion files (table rows
+01-21) + 3 stat icons (22-24) = 24, matching exactly what the player
+supplied. `git status` after the copy confirmed 24 files changed, which is
+the real check if this number ever needs re-verifying — don't re-derive it
+from tier arithmetic alone, that's what produced the wrong "3 excluded"
+figure in an earlier draft of this same paragraph.
+
+**No code changes were needed** — every replaced file kept its exact
+original path/casing, so `POTION_ICON_FILES`/`STAT_ICON_FILES` in
+`wiki-tool.js` and `icons/wiki/crystal-icon.png`/`cash-icon.png` (untouched,
+already real clean assets from an earlier round this session) needed no
+updates. Verified in-browser: all 65 `.wiki-reward-icon` instances across
+the Rebirth table report `complete && naturalWidth > 0` (no broken/missing
+images), `npm test` green, no console errors.
+
+**Lesson for any future "regenerate/clean up this batch of game icons"
+ask**: if the source images can't be labeled by the external tool, expect to
+spend real time matching each one back to its real file by content, not by
+assuming a convenient order — this project's actual bottle art genuinely
+differs by tier (6 distinct shape families + 1 one-off), so shape/color/
+background-tile-color was a reliable enough signature here, but that won't
+generalize to every icon set.
 
 ## 2026-09-14 Rebirth page reward icons: potions, crystal/cash/luck/plot-size/unbox-slot
 
