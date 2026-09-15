@@ -67,6 +67,29 @@ it generously "to be safe," since the padding is exactly what causes this.
 
 ## Last worked on
 
+2026-09-14 (later session, Conveyor/Decoration pages + decoration icons) —
+see "2026-09-14 Conveyor and Decoration wiki pages" below. Two more wiki
+pages built end-to-end (data + render + icons), plus a new `conveyors`
+section in `item-geometry-worksheet.json`. **In progress, not finished**:
+the player is now sending conveyor piece icons one at a time (same pattern
+as every icon batch this file already describes) — this was happening as
+this entry was being written, so check git log / `icons/conveyor/` (if it
+exists yet) for how far that actually got before assuming it's incomplete.
+Decoration icons ARE fully done — all 17 entries in `decoration-data.json`
+have a real icon as of this entry.
+
+2026-09-14 (later session, Codes page) — see "2026-09-14 Codes page:
+data/manual/codes-data.json + full potion tier icon mapping" below. New
+`data/manual/codes-data.json` sourced from the real source spreadsheet
+(`data/Tycoon Sim Database.xlsx`'s "Other Info" sheet), and a full Codes
+page built on top, following the Rebirth page's established pattern.
+
+2026-09-14 (later session, icon sizing) — all reward icons across the wiki
+(item/potion/stat/crystal/cost) were made a uniform 44px
+(`.wiki-reward-icon`) — previously item/potion/stat icons were smaller
+(26px, then 36px) than crystal/cost's separate `--lg` variant. That `--lg`
+class no longer exists; if you see a reference to it anywhere it's stale.
+
 2026-09-14 (later session, icon replacement) — see "2026-09-14 All
 AI-reconstructed reward icons replaced with real ChatGPT-cleaned originals"
 below. **Resolves the "Outstanding, not yet done" note this same file had
@@ -134,6 +157,138 @@ the same capgrader within one chain" below. A real capability gap, not a
 small tweak — the search previously collapsed every capgrader to one "best"
 owned variant for the whole chain, which made some real legal chains
 (reported and verified by a player) structurally impossible to find.
+
+## 2026-09-14 Conveyor and Decoration wiki pages
+
+Two more wiki pages built end-to-end, same session as the Codes page below
+(read that entry first for the general page-building pattern — fetch a
+`data/manual/*.json` file once and cache it, render a `.wiki-data-table`,
+icons degrade to plain text via `onerror` when missing).
+
+**`item-geometry-worksheet.json` gained a new top-level `conveyors`
+section** (11 entries: the 6 real belt pieces, Conveyor Wall, and the 4
+teleporter sender/receiver pieces, which share the exact same
+width/length/speed shape in the engine) — this was a deliberate ask from the
+player even though conveyors already have complete, real, already-correct
+geometry hardcoded in `engine/coordinate-map.mjs`'s `conveyorDefinitions`
+(not a guess needing verification, unlike literally everything else in that
+worksheet). The player's reasoning: wanted "a physical space" to record and
+sanity-check it, not because the engine has a gap. Each entry is
+`{name, type: 'conveyor', size: {current, confirmed}, speed: {current,
+confirmed}, flags}` — `flags` carries `centers`/`wall`/`teleporterColor`+
+`teleporterRole` where relevant, `null` otherwise. Both `current` and
+`confirmed` are pre-filled with the live engine values (not left blank the
+way droppers/upgraders/furnaces usually are), since there was nothing to
+guess.
+
+**The Conveyor wiki page reads directly from that same worksheet file
+instead of its own data file** — the player explicitly said not to
+duplicate the same width/length/speed numbers in two places, so
+`renderConveyorPage()` in `wiki-tool.js` fetches
+`data/manual/item-geometry-worksheet.json` and pulls `.conveyors` straight
+out of it. The page's own `conveyorNotes()` function adds plain-language
+notes on top (e.g. "Centers ore as it crosses.", "Solid wall — blocks
+routing, does not move ore.", "Sends ore out via the red teleporter.")
+without touching that worksheet's own note fields, which are written for
+engine-verification, not players. **If a conveyor's size/speed is ever
+corrected in the worksheet, the wiki page updates automatically — there is
+no second copy to keep in sync.**
+
+**Decoration page** is the opposite pattern — genuinely new data, since
+decorations were never synced into the item database at all
+(`scripts/sync-database.mjs`'s `sheetDefinitions` doesn't include the
+spreadsheet's `DecoPots` sheet). `data/manual/decoration-data.json` was
+transcribed from that sheet by hand: 17 items, each
+`{name, size, rarity, odds, obtain}`. The sheet's own "Potions" sub-section
+(further down the same tab, just Luck Potion multiplier/duration info) was
+deliberately left out — that's Brewer/Merchant content, not decoration, and
+including it would have muddied this file's scope. One transcription note:
+the sheet spelled "Torch Light" as "Tourch Light" and had "Fire pit"
+lowercase — corrected both to proper casing/spelling when copying in, same
+as the established convention of fixing obvious source typos (see the
+`icons/items/` backfill entry further down this file for precedent). The
+sheet's "Crates" entry had its odds stored as a bare `1.24` instead of the
+`"1/N"` string format every other odds cell used — kept verbatim rather than
+guessing it should read "1/1.24", flagged to the player as a possible source
+typo, not resolved.
+
+**Decoration icons: all 17 done, one at a time from the player's own
+screenshots** (`icons/decoration/{Name}.png` — a new folder, separate from
+`icons/items/` since decorations aren't real database items). Two are worth
+remembering if this ever needs auditing:
+- **Torch Light**'s source file was literally named `Tourch Light.png`
+  (matching the spreadsheet's typo) but was saved here as `Torch Light.png`
+  to match the corrected name used in `decoration-data.json` — the icon
+  path has to match the *data* name, not the source screenshot's filename.
+- **Crates, Fireworks, Dance Floor, THE EPIK DUCK, and Submitter Statue**
+  came from `C:\Users\andre\.codex\generated_images\...` rather than a
+  `Documents\Tycoon Sim\Icons\` screenshot path like every other icon in
+  this project — confirmed directly with the player these are AI-cleaned
+  versions of the real in-game assets (same treatment as the potion/stat
+  icons earlier in this file), not fabricated/placeholder art. Don't be
+  alarmed by the `.codex` path alone; it was a deliberate, confirmed choice
+  each time it came up, not a mistake.
+
+**Not yet done**: conveyor piece icons — the player said they'd start
+sending these right after this handoff entry was written, so check
+`icons/conveyor/` (may not exist yet) and recent git log before assuming
+none exist. The Conveyor page currently shows text-only rows (its render
+function has no icon column at all yet, unlike Decoration/Rebirth/Codes) —
+adding icon support there will need a small code change, not just dropping
+files in a folder, since `renderConveyorPage()` doesn't currently look for
+one.
+
+## 2026-09-14 Codes page: data/manual/codes-data.json + full potion tier icon mapping
+
+Follows the same page-building pattern as Rebirth (see that entry further
+down for the original template this copies: fetch-and-cache a
+`data/manual/*.json` file, render a `.wiki-data-table`, icon+badge chips
+that degrade to plain text via `onerror` when nothing matches).
+
+**The codes are real, not invented** — found in
+`data/Tycoon Sim Database.xlsx`'s "Other Info" sheet (opened via
+`engine/xlsx-reader.mjs`'s `openXlsx()`/`readSheet()`, the same reader
+`scripts/sync-database.mjs` uses), a "Codes" table with Codes/Reward/State
+columns, 10 rows. `data/manual/codes-data.json` transcribes it as
+`{code, active, rewards}` per entry — `active` comes straight from the
+sheet's own State column (`ACTIVE`/`EXPIRED`), currently only `derp` is
+`false`. The sheet's reward text was vague in places ("1 tier 4 luck &
+mythic luck potion", "luck , 10k crystals") — first transcribed as
+literally as possible and flagged the ambiguity to the player rather than
+guessing, then the player went back and corrected/clarified every entry
+directly in the file themselves (exact tiers, dropped an ambiguous "Luck"
+entry from `safety`, fixed `Space`'s "Moonstone" to the real item name
+"Moonstone Dropper" so its icon resolves). **If codes-data.json is ever
+regenerated from the spreadsheet again, re-apply those same
+player-confirmed corrections rather than re-transcribing the sheet's own
+vague wording verbatim.**
+
+**`formatCodeRewards()` in `wiki-tool.js` handles three reward shapes in one
+function**, tried in order: a potion match (`"Nx Tier N ... Potion"` via the
+existing `POTION_ICON_FILES` lookup, icon+badge chip, same as Rebirth), a
+crystal-amount match (`"NK Crystals"` style via a new regex +
+`parseAbbreviated()`, rendered with `icons/wiki/crystal-icon.png` + the same
+Epic rarity tint Rebirth's Crystal Reward column uses), then a generic
+`icons/items/{entry}.png` guess for real items (Cupcake-inator, Intern
+Dropper, Moonstone Dropper) that falls through to plain text via `onerror`
+for anything that matches none of those (nothing currently, but this is the
+same graceful-degrade pattern used everywhere else on this page).
+
+**`POTION_ICON_FILES` was expanded from Tier3-5-only to all 6 tiers** — it
+only covered the tiers `rebirth-data.json` happened to use before, but
+`codes-data.json` references Tier 1 and Tier 6 too, and every tier's real
+icon already exists on disk (from the earlier full icon-replacement batch),
+so this was just filling in the missing map entries, no new icons needed.
+**Any future page that references potions by name should check this map
+already covers the tier it needs before assuming an icon is missing.**
+
+**Status pills**: `.wiki-status-badge.is-active`/`.is-expired` (green/red,
+`color-mix()`-over-`var(--surface)` same as the rarity-tint pattern
+elsewhere) — a new small CSS component, reusable if any future page needs a
+binary status indicator.
+
+**Page copy**: mentions codes are entered "at the bottom of the Premium Shop
+window" — a real, player-confirmed detail, not guessed.
 
 ## 2026-09-14 All AI-reconstructed reward icons replaced with real ChatGPT-cleaned originals
 
