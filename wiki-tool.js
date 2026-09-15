@@ -843,8 +843,12 @@
   }
 
   // Wires one update panel: fetches its data, renders the preview (with a
-  // "View All" button past previewCount entries) into containerId, and
-  // points that button at openPage(pageKey).
+  // "View All" button, into containerId, and points that button at
+  // openPage(pageKey). The button always shows whenever there's at least
+  // one entry, even if the preview already fits every entry that exists
+  // right now — it'll be needed again the moment one more entry is added,
+  // and a button that sometimes disappears is more surprising than one
+  // that's just always there.
   function wireUpdatesPanel(containerId, dataUrl, formatFn, pageKey, buttonId, previewCount) {
     const container = document.querySelector(containerId);
     if (!container) return;
@@ -856,9 +860,7 @@
           return;
         }
         const preview = updates.slice(0, previewCount);
-        const viewAllButton = updates.length > previewCount
-          ? `<button type="button" class="wiki-view-all-updates" id="${buttonId}">View All Updates &rarr;</button>`
-          : '';
+        const viewAllButton = `<button type="button" class="wiki-view-all-updates" id="${buttonId}">View All Updates &rarr;</button>`;
         container.innerHTML = formatFn(preview) + viewAllButton;
         document.querySelector(`#${buttonId}`)?.addEventListener('click', () => openPage(pageKey));
       })
