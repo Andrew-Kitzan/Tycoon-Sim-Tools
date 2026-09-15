@@ -5,7 +5,7 @@
     "gives": [
       "Cat Upgrader"
     ],
-    "notes": null
+    "notes": "Unlocks a strong upgrader!"
   },
   {
     "name": "Dog Upgrader",
@@ -13,7 +13,7 @@
     "gives": [
       "Dog Upgrader"
     ],
-    "notes": null
+    "notes": "Unlocks a strong upgrader!"
   },
   {
     "name": "Classic Bundle",
@@ -23,7 +23,7 @@
       "Dog Upgrader",
       "Sword Heights"
     ],
-    "notes": null
+    "notes": "Unlocks the Cat and Dog upgraders too!"
   },
   {
     "name": "Bombardier Dropper",
@@ -31,7 +31,7 @@
     "gives": [
       "Bombardier Dropper"
     ],
-    "notes": null
+    "notes": "Unlocks a strong dropper!"
   },
   {
     "name": "Hoarded Treasure",
@@ -39,7 +39,7 @@
     "gives": [
       "Hoarded Treasure"
     ],
-    "notes": null
+    "notes": "Unlocks a strong upgrader!"
   },
   {
     "name": "Space Pirates Bundle",
@@ -49,7 +49,7 @@
       "Hoarded Treasure",
       "Space Pirates"
     ],
-    "notes": null
+    "notes": "Unlocks the Bombardier and treasure too!"
   },
   {
     "name": "Horsey",
@@ -57,7 +57,7 @@
     "gives": [
       "Ore Rocker"
     ],
-    "notes": null
+    "notes": "Unlocks a strong upgrader!"
   },
   {
     "name": "Palace",
@@ -65,7 +65,7 @@
     "gives": [
       "Whimsical Palace"
     ],
-    "notes": null
+    "notes": "Unlocks a strong upgrader!"
   },
   {
     "name": "Fidget Pack",
@@ -75,7 +75,7 @@
       "Portable Spinner",
       "Whimsical Palace"
     ],
-    "notes": null
+    "notes": "Unlocks the Horsey and Palace too!"
   },
   {
     "name": "Carrot",
@@ -83,7 +83,7 @@
     "gives": [
       "Carrot Mutator"
     ],
-    "notes": null
+    "notes": "Unlocks a strong upgrader!"
   },
   {
     "name": "Beanstalk",
@@ -91,7 +91,7 @@
     "gives": [
       "Lush Beanstock"
     ],
-    "notes": null
+    "notes": "Unlocks a strong upgrader!"
   },
   {
     "name": "Clover Pack",
@@ -101,7 +101,7 @@
       "Clover Garden",
       "Lush Beanstock"
     ],
-    "notes": null
+    "notes": "Unlocks the Beanstock and Carrot too!"
   },
   {
     "name": "50K Crystal Pack",
@@ -157,7 +157,7 @@
       "1.5x crystal multi",
       "+8 walkspeed"
     ],
-    "notes": null
+    "notes": "Exlusive upgrader and other boosts!"
   },
   {
     "name": "2x Crystals",
@@ -165,7 +165,7 @@
     "gives": [
       "2x crystals"
     ],
-    "notes": null
+    "notes": "Earn double crystals on everything!"
   },
   {
     "name": "2x Luck",
@@ -173,7 +173,7 @@
     "gives": [
       "2x Luck"
     ],
-    "notes": null
+    "notes": "Multiplies your luck by 2x!"
   },
   {
     "name": "Triple Unbox",
@@ -181,7 +181,7 @@
     "gives": [
       "+2 unbox slots"
     ],
-    "notes": null
+    "notes": "Unbox +2 boxes at once!(stacks!)"
   },
   {
     "name": "Fast Unbox",
@@ -189,7 +189,7 @@
     "gives": [
       "0.5x unbox speed"
     ],
-    "notes": null
+    "notes": "Unbox permenantly 2x faster!(stacks)"
   },
   {
     "name": "Bling Dropper",
@@ -197,7 +197,7 @@
     "gives": [
       "bling dropper"
     ],
-    "notes": null
+    "notes": "Own half the gamepasses in Drillbit & Co."
   },
   {
     "name": "Derp Blaster",
@@ -205,6 +205,6 @@
     "gives": [
       "Derp Blaster"
     ],
-    "notes": null
+    "notes": "Own All the gamepasses in Drillbit & Co."
   }
 ]

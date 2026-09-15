@@ -561,6 +561,49 @@
       </table>`;
   }
 
+  // P2W (dev products + game passes) data lives in
+  // data/manual/p2w-dev-products-data.json — same plain-hand-edited-JSON
+  // convention as every other data/manual/ file.
+  let p2wDataPromise = null;
+  function loadP2wData() {
+    if (!p2wDataPromise) {
+      p2wDataPromise = fetch('data/manual/p2w-dev-products-data.json')
+        .then((res) => res.json())
+        .catch(() => []);
+    }
+    return p2wDataPromise;
+  }
+
+  async function renderP2wPage() {
+    const products = await loadP2wData();
+    const rows = products.map((entry) => `
+      <tr>
+        <td>${escapeHtml(entry.name)}</td>
+        <td>${entry.robuxCost == null ? '—' : `R$${formatNumber(entry.robuxCost)}`}</td>
+        <td>${formatCodeRewards(entry.gives)}</td>
+        <td>${entry.notes ? escapeHtml(entry.notes) : '—'}</td>
+      </tr>`).join('');
+    return `
+      <p>Real-money purchases — one-time dev products and permanent game
+      passes, bought straight from the Premium Shop.</p>
+      <p><strong>Robux prices shown are the base price.</strong> Roblox uses
+      regional pricing, so what you actually pay can be lower depending on
+      where you live — and <strong>Roblox Premium members pay less on top
+      of that</strong>. Don't be surprised if your price differs from what's
+      listed here.</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Cost</th>
+            <th>Gives</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
   const PAGES = {
     index: {
       title: 'Index',
@@ -612,7 +655,7 @@
     },
     p2w: {
       title: 'P2W',
-      body: '<p>Pay-to-win items and purchases. Not written yet.</p>',
+      body: renderP2wPage,
     },
   };
 
