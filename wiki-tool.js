@@ -204,6 +204,36 @@
     return unit ? num * unit[1] : null;
   }
 
+  // Turns a human-written duration string ("1 Min 30 Sec", "5 Min", "45
+  // Sec") into total seconds, and back — used by the Enchanter page's
+  // speed-adjusted time recalculation.
+  function parseDurationToSeconds(text) {
+    if (!text) return null;
+    const str = String(text);
+    let total = 0;
+    let matched = false;
+    const hourMatch = str.match(/([0-9]*\.?[0-9]+)\s*Hour/i);
+    const minMatch = str.match(/([0-9]*\.?[0-9]+)\s*Min/i);
+    const secMatch = str.match(/([0-9]*\.?[0-9]+)\s*Sec/i);
+    if (hourMatch) { total += Number(hourMatch[1]) * 3600; matched = true; }
+    if (minMatch) { total += Number(minMatch[1]) * 60; matched = true; }
+    if (secMatch) { total += Number(secMatch[1]); matched = true; }
+    return matched ? total : null;
+  }
+
+  function formatSecondsAsDuration(totalSeconds) {
+    if (totalSeconds == null || !Number.isFinite(totalSeconds)) return '—';
+    const rounded = Math.max(0, Math.round(totalSeconds));
+    const hours = Math.floor(rounded / 3600);
+    const mins = Math.floor((rounded % 3600) / 60);
+    const secs = rounded % 60;
+    const parts = [];
+    if (hours) parts.push(`${hours} Hour${hours === 1 ? '' : 's'}`);
+    if (mins) parts.push(`${mins} Min`);
+    if (secs || parts.length === 0) parts.push(`${secs} Sec`);
+    return parts.join(' ');
+  }
+
   // Same overlapping-badge treatment as the potion icons: icons/wiki/crystal-icon.png
   // and icons/wiki/cash-icon.png are real edited assets (both source
   // screenshots had a baked-in count badge spanning almost the full width —
@@ -664,12 +694,16 @@
     const pathRows = paths.map((entry) => {
       const fromMulti = entry.fromMultiplier ? escapeHtml(entry.fromMultiplier) : '—';
       const toMulti = entry.toMultiplier ? escapeHtml(entry.toMultiplier) : '—';
+      const baseSeconds = parseDurationToSeconds(entry.time);
+      const timeCell = baseSeconds == null
+        ? '<td class="wiki-enchant-time">—</td>'
+        : `<td class="wiki-enchant-time" data-base-seconds="${baseSeconds}">${escapeHtml(entry.time)}</td>`;
       return `
       <tr>
         <td>${formatRarity(entry.rarity)}</td>
         <td>${escapeHtml(entry.from)} &rarr; ${escapeHtml(entry.to)}</td>
         <td>${fromMulti} &rarr; ${toMulti}</td>
-        <td>${entry.time ? escapeHtml(entry.time) : '—'}</td>
+        ${timeCell}
       </tr>`;
     }).join('');
     return `
@@ -693,6 +727,11 @@
       <strong>${escapeHtml(mechanics.masteryBonusPerLevel ?? '+0.5x')}</strong>
       onto your online enchant speed — mastery levels do
       <strong>not</strong> affect offline speed at all.</p>
+      <div class="wiki-enchant-speed-control">
+        <label for="wiki-enchant-speed-input">Your enchant speed</label>
+        <input type="number" id="wiki-enchant-speed-input" min="0.1" step="0.1" value="1">
+        <span class="wiki-enchant-speed-hint">e.g. 1.5, 3, 12 — times below update to match</span>
+      </div>
       <table class="wiki-data-table">
         <thead>
           <tr>
@@ -704,6 +743,24 @@
         </thead>
         <tbody>${pathRows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
       </table>`;
+  }
+
+  // Recalculates every .wiki-enchant-time cell's displayed duration based on
+  // the speed the player types into #wiki-enchant-speed-input, using each
+  // cell's data-base-seconds (the real 1x time) set when the page rendered.
+  function wireEnchanterSpeedInput() {
+    const input = document.querySelector('#wiki-enchant-speed-input');
+    if (!input) return;
+    function recalc() {
+      const speed = Number(input.value);
+      const effectiveSpeed = Number.isFinite(speed) && speed > 0 ? speed : 1;
+      document.querySelectorAll('.wiki-enchant-time[data-base-seconds]').forEach((cell) => {
+        const baseSeconds = Number(cell.dataset.baseSeconds);
+        cell.textContent = formatSecondsAsDuration(baseSeconds / effectiveSpeed);
+      });
+    }
+    input.addEventListener('input', recalc);
+    recalc();
   }
 
   // P2W (dev products + game passes) data lives in
@@ -805,6 +862,7 @@
     enchanter: {
       title: 'Enchanter',
       body: renderEnchanterPage,
+      after: wireEnchanterSpeedInput,
     },
     brewer: {
       title: 'Brewer',
@@ -825,7 +883,9 @@
       Promise.resolve(page.body()).then((html) => {
         // Guard against a slow fetch resolving after the player has already
         // navigated away to a different page.
-        if (pageTitle.textContent === page.title) pageBody.innerHTML = html;
+        if (pageTitle.textContent !== page.title) return;
+        pageBody.innerHTML = html;
+        if (typeof page.after === 'function') page.after();
       });
     } else {
       pageBody.innerHTML = page.body;
