@@ -57,6 +57,55 @@
     return `<span class="wiki-reward-list">${chips}</span>`;
   }
 
+  // Potion icons live under the same icons/items/{Name}.png convention, but
+  // their real on-disk filenames mix "Tier3"/"tier4"-style casing and
+  // spacing inconsistently (a pre-existing quirk of that folder, not
+  // introduced here) — a generic encodeURIComponent(name) guess like the one
+  // formatItemRewards() uses would miss half of them. This maps a normalized
+  // "tier N word word potion" key to the exact real filename for every
+  // potion that currently appears in rebirth-data.json. Add an entry here
+  // whenever a new potion name shows up in that file.
+  const POTION_ICON_FILES = {
+    'tier3luckpotion': 'Tier3 Luck Potion.png',
+    'tier3shinyluckpotion': 'Tier3 Shiny Luck Potion.png',
+    'tier3rollspeedpotion': 'Tier3 Roll Speed Potion.png',
+    'tier4luckpotion': 'tier4 Luck Potion.png',
+    'tier4shinyluckpotion': 'tier4 Shiny Luck Potion.png',
+    'tier4rollspeedpotion': 'tier4 Roll Speed Potion.png',
+    'tier5luckpotion': 'Tier5 Luck Potion.png',
+    'tier5shinyluckpotion': 'Tier5 Shiny Luck Potion.png',
+    'tier5mythicluckpotion': 'Tier5 Mythic Luck Potion.png',
+  };
+  function normalizePotionKey(name) {
+    return name.toLowerCase().replace(/\s+/g, '');
+  }
+
+  // Potion reward strings are "5x Tier 3 Luck Potion" — split the count off
+  // so it can render as its own overlapping badge (bottom-left of the icon,
+  // e.g. "+5") instead of baked into the image or left as plain text like
+  // the source game screenshots had it. A name with no icon entry above (or
+  // no leading count) still renders as plain text, same graceful-degrade as
+  // formatItemRewards().
+  function formatPotionRewards(list) {
+    if (!Array.isArray(list) || !list.length) return '—';
+    const chips = list.map((entry) => {
+      const match = String(entry).match(/^(\d+)x\s+(.*)$/i);
+      if (!match) return `<span class="wiki-reward-chip">${escapeHtml(entry)}</span>`;
+      const [, countText, name] = match;
+      const iconFile = POTION_ICON_FILES[normalizePotionKey(name)];
+      if (!iconFile) return `<span class="wiki-reward-chip">${escapeHtml(entry)}</span>`;
+      const iconSrc = `icons/items/${encodeURIComponent(iconFile)}`;
+      return `<span class="wiki-reward-chip">
+        <span class="wiki-reward-icon-wrap">
+          <img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.parentElement.remove()">
+          <span class="wiki-reward-badge">+${escapeHtml(countText)}</span>
+        </span>
+        ${escapeHtml(name)}
+      </span>`;
+    }).join('');
+    return `<span class="wiki-reward-list">${chips}</span>`;
+  }
+
   // Same suffix scale used elsewhere on the site for big cash/crystal numbers
   // (app.js's abbreviatedRate, abbrev-calculator.js's DISPLAY_UNITS,
   // capgrader-generator.js's money parser) — keep this in sync with those if
@@ -107,7 +156,7 @@
         <td>${formatItemRewards(row.itemRewards)}</td>
         <td>${crystals == null ? '—' : formatCompact(crystals)}</td>
         <td>${formatList(row.statRewards)}</td>
-        <td>${formatList(row.potionRewards)}</td>
+        <td>${formatPotionRewards(row.potionRewards)}</td>
       </tr>`;
     }).join('');
     return `
