@@ -679,6 +679,12 @@
   }
 
   const PAGES = {
+    // Not one of the 13 nav-grid tiles — only reachable via the "View All
+    // Updates" button on the home page once the panel preview truncates.
+    updates: {
+      title: 'Update Log',
+      body: renderUpdatesLogPage,
+    },
     index: {
       title: 'Index',
       body: '<p>Every Dropper, Upgrader, and Furnace in the game, organized by index tier — plus what each tier rewards. Not written yet.</p>',
@@ -770,6 +776,22 @@
   // wraps up; group everything from one day into a single entry rather
   // than one per commit. Runs immediately (not lazily like the PAGES
   // renderers) since this panel is visible on the home page by default.
+  //
+  // The panel only ever shows the WIKI_UPDATES_PREVIEW_COUNT most recent
+  // entries — once there are more than that, a "View All Updates" button
+  // appears and opens the full #wiki-updates-log page (below) instead of
+  // letting the home page grow without bound. If Game Updates ever gets a
+  // real data source too, give it this exact same preview+full-page
+  // pattern rather than inventing a new one.
+  const WIKI_UPDATES_PREVIEW_COUNT = 4;
+  function formatUpdateEntries(updates) {
+    return updates.map((entry) => `
+      <div class="wiki-update-entry">
+        <div class="wiki-update-date">${escapeHtml(entry.date)}</div>
+        <p class="wiki-update-summary">${escapeHtml(entry.summary)}</p>
+      </div>`).join('');
+  }
+
   const updatesContainer = document.querySelector('#wiki-tools-updates');
   if (updatesContainer) {
     fetch('data/manual/wiki-updates-data.json')
@@ -779,14 +801,25 @@
           updatesContainer.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
           return;
         }
-        updatesContainer.innerHTML = updates.map((entry) => `
-          <div class="wiki-update-entry">
-            <div class="wiki-update-date">${escapeHtml(entry.date)}</div>
-            <p class="wiki-update-summary">${escapeHtml(entry.summary)}</p>
-          </div>`).join('');
+        const preview = updates.slice(0, WIKI_UPDATES_PREVIEW_COUNT);
+        const viewAllButton = updates.length > WIKI_UPDATES_PREVIEW_COUNT
+          ? '<button type="button" class="wiki-view-all-updates" id="wiki-view-all-updates">View All Updates &rarr;</button>'
+          : '';
+        updatesContainer.innerHTML = formatUpdateEntries(preview) + viewAllButton;
+        document.querySelector('#wiki-view-all-updates')?.addEventListener('click', () => openPage('updates'));
       })
       .catch(() => {
         updatesContainer.innerHTML = '<p class="wiki-update-placeholder">Coming soon.</p>';
       });
+  }
+
+  async function renderUpdatesLogPage() {
+    const updates = await fetch('data/manual/wiki-updates-data.json').then((res) => res.json()).catch(() => []);
+    if (!Array.isArray(updates) || !updates.length) {
+      return '<p>Not filled in yet.</p>';
+    }
+    return `
+      <p>The full history of updates to this wiki and its tools.</p>
+      ${formatUpdateEntries(updates)}`;
   }
 })();
