@@ -1022,20 +1022,18 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-data-table tbody tr:nth-child(even) { background: rgba(255,255,255,.02); }
 .wiki-reward-list { display: flex; flex-direction: column; gap: 6px; }
 .wiki-reward-chip { display: flex; align-items: center; gap: 8px; }
-.wiki-reward-icon { width: 36px; height: 36px; object-fit: contain; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.04); flex-shrink: 0; }
+.wiki-reward-icon { width: 44px; height: 44px; object-fit: contain; border: 1px solid var(--line); border-radius: 9px; background: rgba(255,255,255,.04); flex-shrink: 0; }
 .wiki-reward-icon-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
 .wiki-reward-badge {
-  position: absolute; left: -7px; bottom: -7px; padding: 1px 5px; border-radius: 6px;
+  position: absolute; left: -8px; bottom: -8px; padding: 2px 6px; border-radius: 6px;
   background: rgba(8,14,18,.92); border: 1px solid var(--line); color: var(--accent);
-  font-size: .68rem; font-weight: 800; line-height: 1.3; white-space: nowrap;
+  font-size: .78rem; font-weight: 800; line-height: 1.3; white-space: nowrap;
 }
-.wiki-reward-icon--lg { width: 44px; height: 44px; border-radius: 9px; }
 /* Same rarity color scale as luck-crate-generator.js's RARITY_COLORS /
    .luck-item-cell (Epic #9b59f2, Uncommon #4caf6b) — reused here as a
    static per-icon background rather than a dynamic per-item one. */
 .wiki-reward-icon--epic { border-color: #9b59f2; background: color-mix(in srgb, #9b59f2 22%, var(--surface)); }
 .wiki-reward-icon--uncommon { border-color: #4caf6b; background: color-mix(in srgb, #4caf6b 22%, var(--surface)); }
-.wiki-reward-badge--lg { left: -8px; bottom: -8px; padding: 2px 6px; font-size: .78rem; }
 
 @media (max-width: 860px) {
   .wiki-updates { grid-template-columns: 1fr; }

@@ -181,16 +181,14 @@
   // badge band was filled by stretching a thin strip from just above it
   // rather than mirroring, which avoided a duplicated-shape artifact). The
   // amount itself renders as our own badge, bottom-left of the icon.
-  // Crystal Reward is the only thing in its column, so its icon/badge run
-  // larger (.wiki-reward-icon--lg) than the inline item/potion icons.
   function formatCrystalReward(value) {
     if (value == null) return '—';
     const amount = parseAbbreviated(value);
     if (amount == null) return escapeHtml(value);
     return `<span class="wiki-reward-chip">
       <span class="wiki-reward-icon-wrap">
-        <img class="wiki-reward-icon wiki-reward-icon--lg wiki-reward-icon--epic" src="icons/wiki/crystal-icon.png" alt="" onerror="this.parentElement.remove()">
-        <span class="wiki-reward-badge wiki-reward-badge--lg">+${formatCompact(amount)}</span>
+        <img class="wiki-reward-icon wiki-reward-icon--epic" src="icons/wiki/crystal-icon.png" alt="" onerror="this.parentElement.remove()">
+        <span class="wiki-reward-badge">+${formatCompact(amount)}</span>
       </span>
     </span>`;
   }
@@ -199,8 +197,8 @@
     if (amount == null) return '—';
     return `<span class="wiki-reward-chip">
       <span class="wiki-reward-icon-wrap">
-        <img class="wiki-reward-icon wiki-reward-icon--lg wiki-reward-icon--uncommon" src="icons/wiki/cash-icon.png" alt="" onerror="this.parentElement.remove()">
-        <span class="wiki-reward-badge wiki-reward-badge--lg">$${formatCompact(amount)}</span>
+        <img class="wiki-reward-icon wiki-reward-icon--uncommon" src="icons/wiki/cash-icon.png" alt="" onerror="this.parentElement.remove()">
+        <span class="wiki-reward-badge">$${formatCompact(amount)}</span>
       </span>
     </span>`;
   }
