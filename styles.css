@@ -1008,6 +1008,8 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-nav-tile-enchanter { --tile-accent: #2fd6a0; --tile-accent-hover: #8fffe0; background-image: url('icons/wiki/enchanter-portal-bg.png'); }
 .wiki-nav-tile-merchant { --tile-accent: #b81f1f; --tile-accent-hover: #ff7a7a; background-image: url('icons/wiki/merchant-bg.png'); }
 .wiki-nav-tile-brewer { --tile-accent: #a03fd6; --tile-accent-hover: #e0a6ff; background-image: url('icons/wiki/brewer-bg.png'); }
+.wiki-nav-tile-crystals-farming { --tile-accent: #d6339e; --tile-accent-hover: #ff8fd6; background-image: url('icons/wiki/crystals-farming-bg.png'); }
+.wiki-nav-tile-base-progression { --tile-accent: #3f7fd6; --tile-accent-hover: #8fc0ff; background-image: url('icons/wiki/base-progression-bg.png'); }
 .wiki-nav-tile-index { --tile-accent: #c9541f; --tile-accent-hover: #ffb066; background-image: url('icons/wiki/index-bg.png'); }
 
 .wiki-updates { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 18px; margin-top: 14px; }
