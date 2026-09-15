@@ -150,20 +150,32 @@
   }
 
   // Same overlapping-badge treatment as the potion icons: icons/wiki/crystal-icon.png
-  // is a real edited asset (the player's screenshot had a baked-in "1.5M"
-  // count badge spanning almost the full width — no clean corner to mirror
-  // from like the potion bottles had, so the badge band was filled by
-  // stretching a thin strip from just above it rather than mirroring,
-  // which avoided a duplicated-shape artifact). The count itself renders as
-  // our own "+N" badge, bottom-left, same as potions.
+  // and icons/wiki/cash-icon.png are real edited assets (both source
+  // screenshots had a baked-in count badge spanning almost the full width —
+  // no clean corner to mirror from like the potion bottles had, so the
+  // badge band was filled by stretching a thin strip from just above it
+  // rather than mirroring, which avoided a duplicated-shape artifact). The
+  // amount itself renders as our own badge, bottom-left of the icon.
+  // Crystal Reward is the only thing in its column, so its icon/badge run
+  // larger (.wiki-reward-icon--lg) than the inline item/potion icons.
   function formatCrystalReward(value) {
     if (value == null) return '—';
     const amount = parseAbbreviated(value);
     if (amount == null) return escapeHtml(value);
     return `<span class="wiki-reward-chip">
       <span class="wiki-reward-icon-wrap">
-        <img class="wiki-reward-icon" src="icons/wiki/crystal-icon.png" alt="" onerror="this.parentElement.remove()">
-        <span class="wiki-reward-badge">+${formatCompact(amount)}</span>
+        <img class="wiki-reward-icon wiki-reward-icon--lg" src="icons/wiki/crystal-icon.png" alt="" onerror="this.parentElement.remove()">
+        <span class="wiki-reward-badge wiki-reward-badge--lg">+${formatCompact(amount)}</span>
+      </span>
+    </span>`;
+  }
+
+  function formatCostReward(amount) {
+    if (amount == null) return '—';
+    return `<span class="wiki-reward-chip">
+      <span class="wiki-reward-icon-wrap">
+        <img class="wiki-reward-icon" src="icons/wiki/cash-icon.png" alt="" onerror="this.parentElement.remove()">
+        <span class="wiki-reward-badge">$${formatCompact(amount)}</span>
       </span>
     </span>`;
   }
@@ -175,7 +187,7 @@
       return `
       <tr>
         <td>${formatNumber(row.rebirth)}</td>
-        <td>${cost == null ? '—' : '$' + formatCompact(cost)}</td>
+        <td>${formatCostReward(cost)}</td>
         <td>${formatItemRewards(row.itemRewards)}</td>
         <td>${formatCrystalReward(row.crystalReward)}</td>
         <td>${formatList(row.statRewards)}</td>
