@@ -66,5 +66,119 @@
       "New codes: auxinite, intern, sorryfordelay",
       "New Enchanting, Unbox Slot, and Luck mastery upgrades"
     ]
+  },
+  {
+    "version": "v1.1.2",
+    "title": "Events! Alien Invasion pt 2",
+    "highlights": [
+      "New recurring event every 30 minutes, giving every player a free boost",
+      "Limited event: Alien Invasion — drops up to 4 unique items around the map",
+      "New Centering Conveyor model",
+      "Enchanting is now 1.5x faster while you're in-game",
+      "P2W/Achievement/Rebirth items removed from the Index unless you own them"
+    ]
+  },
+  {
+    "version": "v1.1.1",
+    "title": "Small balance changes",
+    "highlights": [
+      "3 new Index Tiers",
+      "Owning a Shiny Mythic now retroactively fills lower Index entries for that item",
+      "Ore Shrinker now shrinks ore by 15% (up from 2.5%)",
+      "Alien Crate price reduced to 1Sp (from 50Sp)",
+      "Chartreuse Collider capped to only upgrade ore up to 250Qn"
+    ]
+  },
+  {
+    "version": "v1.1.0",
+    "title": "Alien Update!!",
+    "highlights": [
+      "2 new Crates (12 new items) and 3 new Limited Items",
+      "New Rebirth",
+      "Teleporters added, locked behind Rebirth 5",
+      "Enchanter added — enchant any item to make it better",
+      "Crystal Comets — extra crystals fall from the sky at night",
+      "Day/night cycle added"
+    ]
+  },
+  {
+    "version": "v1.0.8",
+    "title": "Fixes",
+    "highlights": [
+      "Advanced Tooltips now shows when admin abuse is starting",
+      "Settings number fields now actually let you type a number"
+    ]
+  },
+  {
+    "version": "v1.0.7",
+    "title": "Admin abuse fixes",
+    "highlights": [
+      "Unaffordable crates now queue instead of blocking further unboxing",
+      "Base ore now clears when loading a layout, clearing base, or buying a plot upgrade",
+      "No longer auto-unboxes on join if you'd stopped unboxing before leaving",
+      "New icons for Ivory Solarizer and shiny Dyson Module"
+    ]
+  },
+  {
+    "version": "v1.0.6",
+    "title": "Balance + bug fixes",
+    "highlights": [
+      "Cookie Upgrader, Sugar Churner, and Gumball Enchanter buffed",
+      "Chartreuse Collider now works after the Ore Wash instead of before",
+      "Fixed gamepass gifting incorrectly blocking players from receiving gifts",
+      "Netrozite Mine achievement backfilled for players who already earned it"
+    ]
+  },
+  {
+    "version": "v1.0.5",
+    "title": "Quick balance change",
+    "highlights": [
+      "Forbidden Gate now costs 500K Crystals, reward reduced to 100qd (from 500qd)",
+      "Periastron Crate price reduced to 25qd (from 500qd)",
+      "Satellite Enhancer upgraded to 5M / 1.35x (up from 1M / 1.2x)",
+      "4th Rebirth price reduced to 10Qd (from 25Qn)"
+    ]
+  },
+  {
+    "version": "v1.0.4",
+    "title": "New content + base layouts!",
+    "highlights": [
+      "New Crates: Space Crate (5 items) and Candy Crate (6 items), plus a new hidden Secret",
+      "New Rebirth (Life 4)",
+      "Base Layouts — save and share your base layout with friends",
+      "New Advanced Stats setting",
+      "Furnace Loot Secret chance increased from 1/1M to 1/100K"
+    ]
+  },
+  {
+    "version": "v1.0.3",
+    "title": "Admin abuse prep",
+    "highlights": [
+      "Second Dragon's Breath now only destroys ore 30% of the time",
+      "Potions in inventory now sort by tier",
+      "Crystal pop-ups now correctly render the amount you're actually getting (multipliers included)",
+      "Unbox Speed gamepass now actually applies its 2x speed"
+    ]
+  },
+  {
+    "version": "v1.0.2",
+    "title": "MVP buff, gifting gamepasses, bug fixes",
+    "highlights": [
+      "You can now gift gamepasses and products to other players",
+      "New MVP perks: [MVP] chat tag, 1.5x crystal multiplier (stacks with 2x Crystals for 3x total), +8 walkspeed",
+      "Chat notifications for rebirths, rare unboxes, and premium shop purchases",
+      "Crystal multiplier now correctly applies to Furnace Loot"
+    ]
+  },
+  {
+    "version": "v1.0.1",
+    "title": "New crate and furnace loot!",
+    "highlights": [
+      "Furnace Loot added — earn potions and crystals for free by processing ore",
+      "New Crate discoverable somewhere on the map",
+      "New Unbox Slot Potion (+1 unbox slot for 3 minutes) and new code: MOREUNBOXES",
+      "Money cap increased to 50Qn",
+      "You can now purchase Crystals directly, unlocking the Crystalline Dropper at the top tier"
+    ]
   }
 ]
