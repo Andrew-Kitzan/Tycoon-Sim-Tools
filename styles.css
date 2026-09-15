@@ -1017,7 +1017,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-page-body p { margin: 0 0 12px; }
 .wiki-page-body p:last-child { margin-bottom: 0; }
 .wiki-data-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: .88rem; }
-.wiki-data-table th, .wiki-data-table td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+.wiki-data-table th, .wiki-data-table td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: middle; }
 .wiki-data-table th { background: rgba(255,255,255,.04); color: var(--accent); font-weight: 800; }
 .wiki-data-table tbody tr:nth-child(even) { background: rgba(255,255,255,.02); }
 .wiki-reward-list { display: flex; flex-direction: column; gap: 6px; }
