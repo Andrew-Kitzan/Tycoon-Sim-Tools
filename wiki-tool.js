@@ -93,7 +93,10 @@
     'tier1unboxslotpotion': 'tier1 Roll Slot Potion.png',
   };
   function normalizePotionKey(name) {
-    return name.toLowerCase().replace(/\s+/g, '');
+    // Trailing "potions" (plural, e.g. P2W's "5x tier 6 luck potions") maps
+    // to the same entry as singular "potion" — every POTION_ICON_FILES key
+    // ends in "potion" singular.
+    return name.toLowerCase().replace(/\s+/g, '').replace(/potions$/, 'potion');
   }
 
   // Potion reward strings are "5x Tier 3 Luck Potion" — split the count off
@@ -303,6 +306,14 @@
             <span class="wiki-reward-badge">+${formatCompact(crystalAmount)}</span>
           </span>
         </span>`;
+      }
+      // A leading "[Tag]" (a chat-tag reward, e.g. "[MVP] chat tag") renders
+      // the bracketed part in the tag's own color, matching how it actually
+      // looks in-game chat, instead of plain text.
+      const tagMatch = String(entry).match(/^(\[[^\]]+\])\s*(.*)$/);
+      if (tagMatch) {
+        const [, tag, rest] = tagMatch;
+        return `<span class="wiki-reward-chip"><span class="wiki-chat-tag">${escapeHtml(tag)}</span>${rest ? ' ' + escapeHtml(rest) : ''}</span>`;
       }
       const safeName = escapeHtml(entry);
       const iconSrc = `icons/items/${encodeURIComponent(entry)}.png`;
@@ -580,7 +591,7 @@
       <tr>
         <td>${escapeHtml(entry.name)}</td>
         <td>${entry.robuxCost == null ? '—' : `R$${formatNumber(entry.robuxCost)}`}</td>
-        <td><span class="wiki-status-badge ${entry.obtainable ? 'is-active' : 'is-expired'}">${entry.obtainable ? 'Yes' : 'No'}</span></td>
+        <td><span class="wiki-status-badge ${entry.obtainable ? 'is-active' : 'is-expired'}">${entry.obtainable ? 'Obtainable' : 'Unobtainable'}</span></td>
         <td>${formatCodeRewards(entry.gives)}</td>
         <td>${entry.notes ? escapeHtml(entry.notes) : '—'}</td>
       </tr>`).join('');

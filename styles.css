@@ -1024,7 +1024,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-data-table th, .wiki-data-table td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: middle; }
 .wiki-data-table th { background: rgba(255,255,255,.04); color: var(--accent); font-weight: 800; }
 .wiki-data-table tbody tr:nth-child(even) { background: rgba(255,255,255,.02); }
-.wiki-reward-list { display: flex; flex-direction: column; gap: 6px; }
+.wiki-reward-list { display: flex; flex-direction: column; gap: 14px; }
 .wiki-reward-chip { display: flex; align-items: center; gap: 8px; }
 .wiki-reward-icon { width: 44px; height: 44px; object-fit: contain; border: 1px solid var(--line); border-radius: 9px; background: rgba(255,255,255,.04); flex-shrink: 0; }
 .wiki-reward-icon-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
@@ -1043,6 +1043,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-status-badge.is-active { background: color-mix(in srgb, #4caf6b 22%, var(--surface)); border: 1px solid #4caf6b; color: #8fe0ab; }
 .wiki-status-badge.is-expired { background: color-mix(in srgb, #e0483f 22%, var(--surface)); border: 1px solid #e0483f; color: #ff9d94; }
 .wiki-rarity-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 800; background: color-mix(in srgb, var(--rarity-color) 22%, var(--surface)); border: 1px solid var(--rarity-color); color: var(--rarity-color); }
+.wiki-chat-tag { display: inline-block; padding: 1px 6px; border-radius: 5px; font-size: .8rem; font-weight: 800; background: #e0483f; color: #fff; }
 
 @media (max-width: 860px) {
   .wiki-updates { grid-template-columns: 1fr; }
