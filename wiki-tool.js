@@ -366,6 +366,16 @@
     return notes.length ? notes.map(escapeHtml).join(' ') : '—';
   }
 
+  // Conveyor icons live in their own icons/conveyor/{Name}.png folder (not
+  // icons/items/, same reasoning as icons/decoration/ — conveyors aren't
+  // real database items either). Same onerror-degrade-to-plain-text pattern
+  // as every other icon on this page for pieces that don't have one yet.
+  function formatConveyorName(name) {
+    const safeName = escapeHtml(name);
+    const iconSrc = `icons/conveyor/${encodeURIComponent(name)}.png`;
+    return `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
+  }
+
   async function renderConveyorPage() {
     const worksheet = await loadGeometryWorksheet();
     const conveyors = worksheet?.conveyors ? Object.values(worksheet.conveyors) : [];
@@ -374,7 +384,7 @@
       const speed = entry.speed?.confirmed;
       return `
       <tr>
-        <td>${escapeHtml(entry.name)}</td>
+        <td>${formatConveyorName(entry.name)}</td>
         <td>${size ? `${size.width}x${size.length}` : '—'}</td>
         <td>${speed == null ? '—' : formatNumber(speed)}</td>
         <td>${conveyorNotes(entry.flags)}</td>
