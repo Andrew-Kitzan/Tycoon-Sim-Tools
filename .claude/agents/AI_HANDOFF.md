@@ -419,7 +419,10 @@ helpers in `wiki-tool.js`:
   `formatUpdateEntries()`/`formatGameUpdateEntries()` the preview uses, so
   the preview and full page can never drift out of sync with each other.
 
-**"Wiki & Tools Updates"** (`data/manual/wiki-updates-data.json`,
+**"Wiki & Tools Updates"** (`data/wiki-updates-data.json` — moved out of
+`data/manual/` on 2026-09-15 since, unlike everything else there, the
+player never hand-edits this one; it's maintained by whoever's doing the
+wiki work each session,
 `{date, summary}`) is a changelog of THIS companion site/tools — unchanged
 in shape from when it was first built (see the entry further down), just
 given the preview/full-page treatment here. Keep adding one entry per real
@@ -427,7 +430,8 @@ work session, newest first, summarizing a whole day's commits into one
 paragraph rather than one entry per commit (established convention, still
 holds).
 
-**"Game Updates"** (`data/manual/game-updates-data.json`,
+**"Game Updates"** (`data/game-updates-data.json` — also moved out of
+`data/manual/` on 2026-09-15, same reason as Wiki & Tools Updates above,
 `{version, date, title, status?, highlights: [...]}`) is brand new — a
 changelog of the ACTUAL GAME's patches, which had no in-wiki data source at
 all before this. Sourced from the dev's own public patch-notes repo,

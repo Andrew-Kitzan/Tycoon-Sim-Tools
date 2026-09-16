@@ -1095,9 +1095,10 @@
   // release/work session — don't split one release into several.
   //
   // "Wiki & Tools Updates" — a changelog of THIS companion site/tools, not
-  // the actual game. data/manual/wiki-updates-data.json, {date, summary}
-  // entries, same plain-hand-edited-JSON convention as every other
-  // data/manual/ file.
+  // the actual game. data/wiki-updates-data.json, {date, summary} entries.
+  // Lives in data/ rather than data/manual/ — unlike the manual/ files,
+  // this one isn't meant for the player to hand-edit, it's maintained by
+  // whoever's doing the wiki/tools work each session.
   function formatUpdateEntries(updates) {
     return updates.map((entry) => `
       <div class="wiki-update-entry">
@@ -1107,7 +1108,7 @@
   }
 
   async function renderUpdatesLogPage() {
-    const updates = await fetch('data/manual/wiki-updates-data.json', { cache: 'no-store' }).then((res) => res.json()).catch(() => []);
+    const updates = await fetch('data/wiki-updates-data.json', { cache: 'no-store' }).then((res) => res.json()).catch(() => []);
     if (!Array.isArray(updates) || !updates.length) {
       return '<p>Not filled in yet.</p>';
     }
@@ -1119,7 +1120,9 @@
   // "Game Updates" — a changelog of the ACTUAL GAME's patches, sourced from
   // the dev's own public patch-notes repo
   // (github.com/foshesss/drillbit-patchnotes) since the game has no
-  // in-wiki data source of its own. data/manual/game-updates-data.json,
+  // in-wiki data source of its own. data/game-updates-data.json (lives in
+  // data/ rather than data/manual/ for the same reason as
+  // wiki-updates-data.json — not something the player hand-edits),
   // {version, title, highlights: [...]} entries — ordered by real release
   // order, which is NOT always the same as version-number order (v2.0.10
   // actually shipped after v2.1, confirmed by the player — don't "fix" that
@@ -1137,7 +1140,7 @@
   }
 
   async function renderGameUpdatesLogPage() {
-    const updates = await fetch('data/manual/game-updates-data.json', { cache: 'no-store' }).then((res) => res.json()).catch(() => []);
+    const updates = await fetch('data/game-updates-data.json', { cache: 'no-store' }).then((res) => res.json()).catch(() => []);
     if (!Array.isArray(updates) || !updates.length) {
       return '<p>Not filled in yet.</p>';
     }
@@ -1259,7 +1262,7 @@
   }
 
   wireBalancedUpdatePanels(
-    { containerId: '#wiki-tools-updates', dataUrl: 'data/manual/wiki-updates-data.json', formatFn: formatUpdateEntries, pageKey: 'updates', buttonId: 'wiki-view-all-updates' },
-    { containerId: '#game-updates', dataUrl: 'data/manual/game-updates-data.json', formatFn: formatGameUpdateEntries, pageKey: 'game-updates', buttonId: 'game-view-all-updates' },
+    { containerId: '#wiki-tools-updates', dataUrl: 'data/wiki-updates-data.json', formatFn: formatUpdateEntries, pageKey: 'updates', buttonId: 'wiki-view-all-updates' },
+    { containerId: '#game-updates', dataUrl: 'data/game-updates-data.json', formatFn: formatGameUpdateEntries, pageKey: 'game-updates', buttonId: 'game-view-all-updates' },
   );
 })();
