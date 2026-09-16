@@ -1115,9 +1115,14 @@
         ${escapeHtml(label)}
       </span>`;
     }
+    // Not a "+N Label" delta — an absolute value the stat gets SET to at
+    // this level (e.g. Unbox Speed's "1s", "0.8s"), so it gets the same
+    // icon+badge chip but with the raw value as the badge and no label.
     return `<span class="wiki-reward-chip">
-      <img class="wiki-reward-icon" src="icons/wiki/${iconFile}" alt="" onerror="this.remove()">
-      ${escapeHtml(effectText)}
+      <span class="wiki-reward-icon-wrap">
+        <img class="wiki-reward-icon" src="icons/wiki/${iconFile}" alt="" onerror="this.parentElement.remove()">
+        <span class="wiki-reward-badge">${escapeHtml(effectText)}</span>
+      </span>
     </span>`;
   }
 

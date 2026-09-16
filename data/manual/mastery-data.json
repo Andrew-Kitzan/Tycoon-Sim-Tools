@@ -3,12 +3,12 @@
     "name": "Unbox Speed",
     "description": "Unbox crates faster!",
     "levels": [
-      { "currency": "Cash", "cost": "FREE", "effect": "Unbox Speed = 1s" },
-      { "currency": "Cash", "cost": "1k", "effect": "Unbox Speed = 0.8s" },
-      { "currency": "Cash", "cost": "67k", "effect": "Unbox Speed = 0.57s" },
-      { "currency": "Cash", "cost": "3M", "effect": "Unbox Speed = 0.5s" },
-      { "currency": "Cash", "cost": "420M", "effect": "Unbox Speed = 0.44s" },
-      { "currency": "Cash", "cost": "25B", "effect": "Unbox Speed = 0.4s" }
+      { "currency": "Cash", "cost": "FREE", "effect": "1s" },
+      { "currency": "Cash", "cost": "1k", "effect": "0.8s" },
+      { "currency": "Cash", "cost": "67k", "effect": "0.57s" },
+      { "currency": "Cash", "cost": "3M", "effect": "0.5s" },
+      { "currency": "Cash", "cost": "420M", "effect": "0.44s" },
+      { "currency": "Cash", "cost": "25B", "effect": "0.4s" }
     ]
   },
 
