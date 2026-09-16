@@ -1103,7 +1103,10 @@
     // "Shiny/Mythic Luck" covers two separate stats at once, so it gets
     // both icons side by side instead of the single-icon lookup below.
     if (name.trim().toLowerCase() === 'shiny/mythic luck') {
-      return `${masteryChip('shiny-luck-icon.png', null, null)}${masteryChip('mythic-luck-icon.png', null, null)} ${escapeHtml(name)}`;
+      return `<span class="wiki-mastery-dual-icon">
+        <img class="wiki-reward-icon" src="icons/wiki/shiny-luck-icon.png" alt="" onerror="this.remove()">
+        <img class="wiki-reward-icon" src="icons/wiki/mythic-luck-icon.png" alt="" onerror="this.remove()">
+      </span> ${escapeHtml(name)}`;
     }
     const iconFile = MASTERY_ICON_FILES[name.trim().toLowerCase()];
     if (!iconFile) return escapeHtml(name);
@@ -1126,14 +1129,12 @@
       const splitMatch = effectText.match(/Shiny Luck\s*=\s*([^,]+),\s*Mythic Luck\s*=\s*(.+)/i);
       if (splitMatch) {
         const [, shinyVal, mythicVal] = splitMatch;
-        return masteryChip('shiny-luck-icon.png', shinyVal.trim(), 'Shiny Luck')
-          + masteryChip('mythic-luck-icon.png', mythicVal.trim(), 'Mythic Luck');
+        return `<span class="wiki-reward-list">${masteryChip('shiny-luck-icon.png', shinyVal.trim(), 'Shiny Luck')}${masteryChip('mythic-luck-icon.png', mythicVal.trim(), 'Mythic Luck')}</span>`;
       }
       const comboMatch = effectText.match(/Shiny\s*&\s*Mythic Luck\s*=\s*(.+)/i);
       if (comboMatch) {
         const value = comboMatch[1].trim();
-        return masteryChip('shiny-luck-icon.png', value, 'Shiny Luck')
-          + masteryChip('mythic-luck-icon.png', value, 'Mythic Luck');
+        return `<span class="wiki-reward-list">${masteryChip('shiny-luck-icon.png', value, 'Shiny Luck')}${masteryChip('mythic-luck-icon.png', value, 'Mythic Luck')}</span>`;
       }
       return escapeHtml(effectText);
     }
