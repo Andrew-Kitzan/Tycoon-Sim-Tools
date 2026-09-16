@@ -1058,6 +1058,89 @@
       </table>`;
   }
 
+  // Mastery data lives in data/manual/mastery-data.json — same
+  // plain-hand-edited-JSON convention as every other data/manual/ file.
+  // Shape: an array of { name, description, levels: [{ currency, cost,
+  // effect }] } — same overall pattern as Achievements, but a mastery
+  // level is BOUGHT (currency + cost) rather than earned by meeting a
+  // requirement, and what you get is a scaling stat `effect` rather than
+  // a one-off item/potion/crystal reward list. A mastery that's already
+  // fully documented on its own dedicated page (Furnace Loot, Enchanter)
+  // skips `levels` entirely and instead sets `seeAlsoPage` (a PAGES key)
+  // + `seeAlsoLabel`, rendered as a link to that page instead of a
+  // duplicated table.
+  let masteryDataPromise = null;
+  function loadMasteryData() {
+    if (!masteryDataPromise) {
+      masteryDataPromise = fetch('data/manual/mastery-data.json', { cache: 'no-store' })
+        .then((res) => res.json())
+        .catch(() => []);
+    }
+    return masteryDataPromise;
+  }
+
+  async function renderMasteryPage() {
+    const masteries = await loadMasteryData();
+    const sorted = [...masteries].sort((a, b) => a.name.localeCompare(b.name));
+    const rows = sorted.flatMap((mastery) => {
+      if (mastery.seeAlsoPage) {
+        return [`
+      <tr>
+        <td>${escapeHtml(mastery.name)}</td>
+        <td>${mastery.description ? escapeHtml(mastery.description) : '—'}</td>
+        <td colspan="3"><button type="button" class="wiki-notes-link" data-wiki-page-link="${escapeHtml(mastery.seeAlsoPage)}">${mastery.seeAlsoLabel ? escapeHtml(mastery.seeAlsoLabel) : 'See its own page for details'}</button></td>
+      </tr>`];
+      }
+      const levels = mastery.levels?.length ? mastery.levels : [{ currency: null, cost: null, effect: null }];
+      return levels.map((level, i) => {
+        const currency = String(level.currency ?? '').trim().toLowerCase();
+        const isFree = typeof level.cost === 'string' && /^free$/i.test(level.cost.trim());
+        const costCell = isFree ? 'Free'
+          : currency.startsWith('crystal') ? formatCrystalCost(level.cost)
+          : currency === 'cash' ? formatCashCost(level.cost)
+          : currency === 'robux' ? formatRobuxCost(level.cost == null ? null : formatNumber(level.cost))
+          : '—';
+        return `
+      <tr>
+        ${i === 0 ? `<td rowspan="${levels.length}">${escapeHtml(mastery.name)}</td>` : ''}
+        ${i === 0 ? `<td rowspan="${levels.length}">${mastery.description ? escapeHtml(mastery.description) : '—'}</td>` : ''}
+        <td>Level ${i + 1}</td>
+        <td>${costCell}</td>
+        <td>${level.effect ? escapeHtml(level.effect) : '—'}</td>
+      </tr>`;
+      });
+    }).join('');
+    return `
+      <p>Every mastery in the game, sorted alphabetically. Masteries are
+      bought level by level — each level costs more than the last and
+      gives a bigger version of the same effect. A couple of masteries
+      (Furnace Loot, Enchant Speed) already have their own dedicated wiki
+      page with the full mechanic explained, so they're just linked from
+      here instead of repeating that table.</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Mastery</th>
+            <th>Description</th>
+            <th>Level</th>
+            <th>Cost</th>
+            <th>Effect</th>
+          </tr>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="5">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
+  // Wires up any [data-wiki-page-link] buttons rendered on the Mastery
+  // page (the Furnace Loot / Enchant Speed "see its own page" links) to
+  // navigate via openPage() — same delegation pattern would work for any
+  // future page that needs an internal cross-link like this.
+  function wireMasteryPageLinks() {
+    document.querySelectorAll('[data-wiki-page-link]').forEach((el) => {
+      el.addEventListener('click', () => openPage(el.dataset.wikiPageLink));
+    });
+  }
+
   const PAGES = {
     // Not one of the 13 nav-grid tiles — only reachable via the "View All
     // Updates" button on the home page once the panel preview truncates.
@@ -1087,7 +1170,8 @@
     },
     mastery: {
       title: 'Mastery',
-      body: '<p>The mastery system and its rewards. Not written yet.</p>',
+      body: renderMasteryPage,
+      after: wireMasteryPageLinks,
     },
     events: {
       title: 'Events',
