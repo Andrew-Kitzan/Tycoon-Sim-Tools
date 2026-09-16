@@ -27,7 +27,7 @@
     "levels": [
       {
         "requirement": "Attend 1 admin abuse",
-        "rewards": ["king dropper","100k crystals"]
+        "rewards": ["King Dropper","100k crystals"]
       }
     ]
   },
@@ -78,15 +78,15 @@
 
   {
     "name": "Box Breaker",
-    "description": null,
+    "description": "Open as many crates as you can!",
     "levels": [
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
+      { "requirement": "10 crates opened", "rewards": ["50 crystals"] },
+      { "requirement": "100 crates opened", "rewards": ["1x tier 1 roll speed potion"] },
+      { "requirement": "1K crates opened", "rewards": ["1x Tier 2 Luck Potion"] },
+      { "requirement": "10k crates opened", "rewards": ["2K Crystals", "1x tier 3 roll speed potion"] },
+      { "requirement": "100k crates opened", "rewards": ["2x tier 4 Luck Potions"] },
+      { "requirement": "500k crates opened", "rewards": ["10k Crystals", "X tier X Shiny Luck Potion"] },
+      { "requirement": "1M crates opened", "rewards": ["2x tier 5 Mythic Luck Potion", "25K Crystals"] },
       { "requirement": "1.5M crates opened", "rewards": ["Aether Gate", "150K Crystals"] }
     ]
   },
@@ -95,15 +95,15 @@
     "name": "Mythic Hunter",
     "description": "Unbox mythic items and chase the rarest rolls.",
     "levels": [
-      { "requirement": null, "rewards": ["1x tier 2 Mythic Potion"] },
-      { "requirement": null, "rewards": ["X tier 4 Mythic Potion", "2.5k Cystals"] },
-      { "requirement": "100 mythics", "rewards": ["3x tier 5 Mythic Luck Potion", "25K Crystals"] }
+      { "requirement": "1 mythic owned", "rewards": ["1x tier 2 Mythic Luck Potion"] },
+      { "requirement": "5 mythics owned", "rewards": ["1x tier 4 Mythic Luck Potion", "2.5k Crystals"] },
+      { "requirement": "100 mythics owned", "rewards": ["3x tier 5 Mythic Luck Potion", "25K Crystals"] }
     ]
   },
 
   {
     "name": "Rebirth",
-    "description": "Rebirth to prestige and earn permanent rewards.",
+    "description": "Earn enough cash to start a new life at the Rebirth Machine.",
     "levels": [
       { "requirement": "Reach Rebirth 1", "rewards": ["Plasma Upgrader", "500 Crystals", "+2 Plot Size", "+1 Luck", "5x Tier 3 Luck Potion", "5x Tier 3 Shiny Luck Potion", "5x Tier 3 Roll Speed Potion"] },
       { "requirement": "Reach Rebirth 2", "rewards": ["Fire Crystal Dropper", "2.5K Crystals", "+4 Plot Size", "+1 Luck", "5x Tier 3 Luck Potion", "5x Tier 3 Roll Speed Potion"] },
@@ -118,84 +118,84 @@
 
   {
     "name": "Ore Processor",
-    "description": null,
+    "description": "Process more ore to unlock each factory milestone.",
     "levels": [
+      { "requirement": "100 processed ore", "rewards": ["100 Crystals"] },
+      { "requirement": "1k processed ore", "rewards": ["1x tier 1 luck potion", "500 Crystals"] },
+      { "requirement": "10k processed ore", "rewards": ["Basic Furnace", "5k Crystals"] },
+      { "requirement": "250k processed ore", "rewards": ["1x tier 3 roll speed potion", "10K Crystals"] },
+      { "requirement": "10M processed ore", "rewards": ["1x tier 4 luck potion"] },
+      { "requirement": "10M processed ore", "rewards": ["1x tier 4 Shiny Luck Potion", "50k Crystals"] },
       { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] }
+      { "requirement": "25M processed ore", "rewards": ["Netrozite Dropper", "3x tier 5 Luck Potions", "3x tier 5 Shiny Luck Potions"] }
     ]
   },
 
   {
     "name": "Witch Doctor",
-    "description": null,
+    "description": "Use the Enchanter and Successfully enchant items!",
     "levels": [
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] }
+      { "requirement": "1 enchant", "rewards": ["500 Crystals"] },
+      { "requirement": "5 enchants", "rewards": ["2.5K Crystals"] },
+      { "requirement": "10 enchants", "rewards": ["5k Crystals"] },
+      { "requirement": "25 enchants", "rewards": ["10k Crystals"] },
+      { "requirement": "50 enchants", "rewards": ["25K Crystals"] },
+      { "requirement": "100 enchants", "rewards": ["50k Crystals"] },
+      { "requirement": "250 enchants", "rewards": ["100k Crystals"] },
+      { "requirement": "500 enchants", "rewards": ["250k Crystals"] },
+      { "requirement": "1K Enchants", "rewards": ["500k Crystals"] }
     ]
   },
 
   {
     "name": "Impressive Ore",
-    "description": null,
+    "description": "Raise an ore's value incredibly high before it reaches a furnace.",
     "levels": [
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] }
+      { "requirement": "100K ore value", "rewards": ["250 Crystals"] },
+      { "requirement": "1M ore value", "rewards": ["1x Tier 2 Luck Potion"] },
+      { "requirement": "1B ore value", "rewards": ["1x tier 3 Luck Potion", "2.5k Crystals"] },
+      { "requirement": "1T ore value", "rewards": ["1x Tier 5 Luck Potion", "10k Crystals"] }
     ]
   },
 
   {
     "name": "Dedicated",
-    "description": null,
+    "description": "Spend time building, upgrading, and perfecting your factory.",
     "levels": [
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] }
+      { "requirement": "5 min of playtime", "rewards": ["250 Crystals"] },
+      { "requirement": "15 min of playtime", "rewards": ["1x tier 2 roll speed potion"] },
+      { "requirement": "1 hour of playtime", "rewards": ["1x tier 2 roll speed potion"] },
+      { "requirement": "3 hours of playtime", "rewards": ["1x tier 3 Luck Potion", "1k Crystals"] },
+      { "requirement": "12 hours of playtime", "rewards": ["1x tier 4 luck potion"] },
+      { "requirement": "1 day of playtime", "rewards": ["1x tier 4 Shiny Luck Potion", "5k Crystals"] },
+      { "requirement": "2 days of playtime", "rewards": ["1x tier 4 Mythic Luck Potion"] },
+      { "requirement": "3 days of playtime", "rewards": ["1x Tier 5 Luck Potion", "15k Crystals"] },
+      { "requirement": "7 days of playtime", "rewards": ["2x Tier 5 Luck Potion", "15k Crystals"] }
     ]
   },
 
   {
     "name": "Shiny Hunter",
-    "description": null,
+    "description": "Unbox shiny items and fill your collection with sparkle.",
     "levels": [
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] }
+      { "requirement": "1 shiny owned", "rewards": ["1x Tier 2 Shiny Luck Potion"] },
+      { "requirement": "5 shinies owned", "rewards": ["1x tier 4 Shiny Luck Potion", "2.5k Crystals"] },
+      { "requirement": "25 shinies owned", "rewards": ["1x tier 4 Shiny Luck Potion", "5k Crystals"] },
+      { "requirement": "100 shinies owned", "rewards": ["1x tier 4 Shiny Luck Potion", "125k Crystals"] }
     ]
   },
 
   {
     "name": "Regular",
-    "description": null,
+    "description": "Log in across multiple days and keep the factory moving.",
     "levels": [
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] }
+      { "requirement": "2 daily log ins", "rewards": ["100 Crystals"] },
+      { "requirement": "3 daily log ins" , "rewards": ["1x tier 1 roll speed potion"] },      
+      { "requirement": "7 daily log ins", "rewards": ["1k Crystals"] },
+      { "requirement": "14 daily log ins", "rewards": ["1x tier 3 Shiny Luck Potion", "Clockwork"] },
+      { "requirement": "30 daily log ins", "rewards": ["2x tier 4 Luck Potions", "5k Crystals"] },
+      { "requirement": "90 daily log ins", "rewards": ["2x tier 4 Mythic Luck Potion"] },
+      { "requirement": "365 daily log ins", "rewards": ["5x Tier 5 Shiny Luck Potion", "50k Crystals"] }
     ]
   }
 ]

@@ -1,7 +1,7 @@
 [
   {
     "date": "2026-09-15",
-    "summary": "Built out the P2W, Enchanter, and Furnace Loot pages, plus the home page's update-log panels you're reading right now (with a full Game Updates history sourced from the dev's real patch notes). Also a round of smaller fixes and polish: broken/missing icons, stale data caching, and clearer section headings across a few pages."
+    "summary": "Built out the P2W, Enchanter, Furnace Loot, and Achievements pages, plus the home page's update-log panels you're reading right now (with a full Game Updates history sourced from the dev's real patch notes). Added Crystals Farming and Base Design tiles too. Also a round of smaller fixes and polish: broken/missing icons, stale data caching, a real favicon, and clearer section headings across a few pages."
   },
   {
     "date": "2026-09-14",

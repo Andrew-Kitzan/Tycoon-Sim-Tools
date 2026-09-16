@@ -351,6 +351,20 @@
           Crystals
         </span>`;
       }
+      // Cash amounts (e.g. "100qd cash" — an achievement reward, distinct
+      // from Crystals) get the same icon+badge treatment as Crystals, using
+      // the cash icon instead.
+      const cashMatch = String(entry).match(/^([0-9][0-9.]*[a-zA-Z]*)\s*[Cc]ash$/);
+      const cashAmount = cashMatch && parseAbbreviated(cashMatch[1]);
+      if (cashMatch && cashAmount != null) {
+        return `<span class="wiki-reward-chip">
+          <span class="wiki-reward-icon-wrap">
+            <img class="wiki-reward-icon wiki-reward-icon--uncommon" src="icons/wiki/cash-icon.png" alt="" onerror="this.parentElement.remove()">
+            <span class="wiki-reward-badge">$${formatCompact(cashAmount)}</span>
+          </span>
+          Cash
+        </span>`;
+      }
       // Roll speed multipliers (e.g. "0.5x unbox speed") get the same
       // icon+badge treatment as crystals/potions instead of plain text.
       const rollSpeedMatch = String(entry).match(/^([0-9.]+x)\s+(?:unbox|roll)\s+speed$/i);
@@ -975,7 +989,7 @@
       <tr>
         ${i === 0 ? `<td rowspan="${levels.length}">${escapeHtml(achievement.name)}</td>` : ''}
         ${i === 0 ? `<td rowspan="${levels.length}">${achievement.description ? escapeHtml(achievement.description) : '—'}</td>` : ''}
-        <td>${levels.length > 1 ? `Level ${i + 1}` : '—'}</td>
+        <td>Level ${i + 1}</td>
         <td>${level.requirement ? escapeHtml(level.requirement) : '—'}</td>
         <td>${formatCodeRewards(level.rewards)}</td>
       </tr>`);

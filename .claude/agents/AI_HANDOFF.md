@@ -120,6 +120,78 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-09-15 (later session still — Achievements page, nav tiles, favicon,
+git workflow correction) — several distinct pieces of work:
+
+**Git workflow correction, twice in one session.** The player first
+clarified "one big commit before pushing, not one per edit," which was
+followed too loosely — still produced 13 separate commits pushed
+together. The player then
+corrected it again, more precisely: **do not run `git commit` at all until
+they say to push.** Leave finished work sitting uncommitted in the working
+tree across as many turns as needed; only stage everything, write ONE
+commit, and push, all in the same action, the moment they say "push it."
+The 13 already-pushed-together commits from earlier this session were
+deliberately left as-is (player's choice, not squashed) — this is a
+going-forward rule, not a mandate to rewrite existing history.
+
+**Achievements page** (`data/manual/achievements-data.json`,
+`renderAchievementsPage()`) — schema is `[{ name, description, levels:
+[{ requirement, rewards }] }]`. `description` is fixed per achievement
+across every level (shown in its own rowspan'd column); most achievements
+have one entry in `levels`, multi-tier ones have several. Sorted
+alphabetically by `name` at render time — the JSON file itself doesn't
+need to be kept in order. All 16 real achievement names/level-counts came
+from the player (7 single-tier, 9 multi-tier with real level counts
+2026-09-15 same day). The player has been filling in real data directly
+in the JSON themselves since — **before trusting any of it blindly, run a
+quick automated pass like the one used here** (`node -e` checking every
+reward string against `icons/items/` for exact-filename matches, and
+flagging anything that looks like a potion but doesn't match the `Nx `
+shape) since hand-typed data reliably contains casing typos
+(`"king dropper"` vs real `King Dropper.png`) and misspellings
+(`"Cystals"`) that fail silently — the `onerror` icon-removal fallback
+means a broken reward icon never throws a visible error, it just quietly
+vanishes. Also added a generic `+N StatName` case to `formatCodeRewards()`
+(reusing the Rebirth page's own `STAT_ICON_FILES` lookup) so Plot
+Size/Luck/Unbox Slot rewards get real icons anywhere `formatCodeRewards`
+is used, not just on Rebirth's own dedicated column — and a `Cash` case
+(distinct from `Crystals`) for amounts like `"100qd cash"`, since
+Achievements' Forbidden Gate is the first reward on the site that's cash,
+not crystals. The Rebirth achievement's 8 levels deliberately mirror the
+Rebirth page's own per-rebirth item/crystal/stat/potion rewards exactly —
+confirmed by the player that this achievement is what actually grants
+those rewards, not the act of rebirthing itself.
+
+**Two new nav tiles**: Crystals Farming and Base Design (originally "Base
+Design/Progression", shortened on request). Both went through a couple of
+background-art swaps — Crystals Farming ended up with what was
+originally P2W's placeholder background (`icons/wiki/crystals-farming-bg.png`,
+copied from the old shared `enchanter-bg.png`) once P2W got its own real
+background (`icons/wiki/p2w-bg.png`), and Base Design's background was
+swapped again later in the session when the player supplied an updated
+version of the same source file. If either tile's background looks wrong
+again, re-check with the player before assuming it's stale — several of
+these were legitimately real, deliberate swaps in short succession, not
+caching.
+
+**`data/wiki-updates-data.json` and `data/game-updates-data.json` moved
+out of `data/manual/`** — both now live directly in `data/`, since unlike
+every other file in `data/manual/`, the player never hand-edits these two;
+they're maintained by whoever does the wiki work each session. Every fetch
+path and comment referencing the old `data/manual/` location was updated
+in the same pass — check `grep -rn "manual/wiki-updates\|manual/game-updates"`
+turns up nothing if you're unsure this migration is complete.
+
+**Real favicon added** (`favicon.ico` at the site root, linked via
+`<link rel="icon" href="favicon.ico?v=1">` in `index.html`). The `?v=1`
+query string was necessary — browsers cache the *absence* of a favicon
+per-origin unusually aggressively, more so than normal resource caching,
+and a plain hard-refresh/Incognito test didn't pick up the newly-added
+file until the link's URL itself changed. If the favicon ever needs
+replacing again, bump the query string (`?v=2`, etc.) rather than relying
+on a normal cache-bust.
+
 2026-09-15 (new session, Enchanter + Furnace Loot pages) — built two more
 wiki pages, both from scratch based on real mechanic info the player
 described plus a real furnace-loot script the player pasted in as
