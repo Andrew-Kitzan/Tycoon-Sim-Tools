@@ -914,7 +914,7 @@
       full enchant time, and it isn't a smooth scale — it drops in steps
       once the remaining time falls to each benchmark below (so an item
       with, say, 40 hours left still costs the 42-hour price until it
-      drops under 42 hours).</p>
+      drops under 36 hours).</p>
       <table class="wiki-data-table">
         <thead>
           <tr>

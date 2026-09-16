@@ -120,6 +120,18 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-09-16 (later still — skip-pricing example fix) — the Enchanter
+"Skipping the Wait" intro text had a logic error in its own example: it
+said an item with 40 hours left "costs the 42-hour price until it drops
+under 42 hours" — but 40 is already under 42, so that price already
+applies; it holds until the item reaches the NEXT LOWER benchmark (36
+hours), not the one it already passed. Fixed to say "until it drops under
+36 hours." Caught by the player reading their own page. If any other
+skip-pricing wording gets touched again, remember: the benchmark table is
+a step function where crossing a threshold immediately drops you to that
+tier's price, and the price holds until the *next* (lower) threshold —
+easy to describe backwards if you're not careful, as this fix shows.
+
 2026-09-16 (later same session — real Robux icon) — the Enchanter skip
 table and P2W's cost column both used to render Robux prices as plain
 "R$..." text. Player supplied a real Robux icon (the official green
