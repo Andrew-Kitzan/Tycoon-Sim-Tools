@@ -34,11 +34,11 @@
 
   {
     "name": "A New Journey",
-    "description": null,
+    "description": "Complete the tutorial.",
     "levels": [
       {
-        "requirement": null,
-        "rewards": []
+        "requirement": "Complete the tutorial.",
+        "rewards": ["Silver Dropper", "3x Tier 2 Roll Speed Potion"]
       }
     ]
   },
