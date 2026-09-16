@@ -934,6 +934,55 @@
       </table>`;
   }
 
+  // Achievements data lives in data/manual/achievements-data.json — same
+  // plain-hand-edited-JSON convention as every other data/manual/ file.
+  // Shape: an array of { name, levels: [{ requirement, rewards }] } —
+  // most achievements will have just one entry in `levels`, but some have
+  // several (each with its own requirement and reward), so `levels` is
+  // always an array even for single-tier achievements.
+  let achievementsDataPromise = null;
+  function loadAchievementsData() {
+    if (!achievementsDataPromise) {
+      achievementsDataPromise = fetch('data/manual/achievements-data.json', { cache: 'no-store' })
+        .then((res) => res.json())
+        .catch(() => []);
+    }
+    return achievementsDataPromise;
+  }
+
+  async function renderAchievementsPage() {
+    const achievements = await loadAchievementsData();
+    const sorted = [...achievements].sort((a, b) => a.name.localeCompare(b.name));
+    const rows = sorted.flatMap((achievement) => {
+      const levels = achievement.levels?.length ? achievement.levels : [{ requirement: null, rewards: [] }];
+      return levels.map((level, i) => `
+      <tr>
+        ${i === 0 ? `<td rowspan="${levels.length}">${escapeHtml(achievement.name)}</td>` : ''}
+        <td>${levels.length > 1 ? `Level ${i + 1}` : '—'}</td>
+        <td>${level.requirement ? escapeHtml(level.requirement) : '—'}</td>
+        <td>${formatCodeRewards(level.rewards)}</td>
+      </tr>`);
+    }).join('');
+    return `
+      <p>Every achievement in the game, sorted alphabetically. Some
+      achievements only have one tier — meet the requirement once and
+      you're done. Others have multiple levels, each with its own
+      (usually harder) requirement and its own reward; you get every
+      level's reward the moment you meet that level's requirement,
+      regardless of how many levels the achievement has.</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Achievement</th>
+            <th>Level</th>
+            <th>Requirement</th>
+            <th>Reward</th>
+          </tr>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
   const PAGES = {
     // Not one of the 13 nav-grid tiles — only reachable via the "View All
     // Updates" button on the home page once the panel preview truncates.
@@ -959,7 +1008,7 @@
     },
     achievements: {
       title: 'Achievements',
-      body: '<p>Every achievement and how to earn it. Not written yet.</p>',
+      body: renderAchievementsPage,
     },
     mastery: {
       title: 'Mastery',
