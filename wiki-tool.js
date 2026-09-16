@@ -1079,6 +1079,23 @@
     return masteryDataPromise;
   }
 
+  // Mastery names that reuse an existing icon from elsewhere on the site
+  // (e.g. the same roll/unbox-speed and unbox-slot icons already used in
+  // P2W reward chips) instead of getting their own dedicated asset.
+  const MASTERY_ICON_FILES = {
+    'unbox speed': 'roll-speed-icon.png',
+    'unbox slot': 'unbox-slot-icon.png',
+    'plot size': 'plot-size-icon.png',
+  };
+  function formatMasteryName(name) {
+    const iconFile = MASTERY_ICON_FILES[name.trim().toLowerCase()];
+    if (!iconFile) return escapeHtml(name);
+    return `<span class="wiki-reward-chip">
+      <img class="wiki-reward-icon" src="icons/wiki/${iconFile}" alt="" onerror="this.remove()">
+      ${escapeHtml(name)}
+    </span>`;
+  }
+
   async function renderMasteryPage() {
     const masteries = await loadMasteryData();
     const sorted = [...masteries].sort((a, b) => a.name.localeCompare(b.name));
@@ -1086,7 +1103,7 @@
       if (mastery.seeAlsoPage) {
         return [`
       <tr>
-        <td>${escapeHtml(mastery.name)}</td>
+        <td>${formatMasteryName(mastery.name)}</td>
         <td>${mastery.description ? escapeHtml(mastery.description) : '—'}</td>
         <td colspan="3"><button type="button" class="wiki-notes-link" data-wiki-page-link="${escapeHtml(mastery.seeAlsoPage)}">${mastery.seeAlsoLabel ? escapeHtml(mastery.seeAlsoLabel) : 'See its own page for details'}</button></td>
       </tr>`];
@@ -1102,7 +1119,7 @@
           : '—';
         return `
       <tr>
-        ${i === 0 ? `<td rowspan="${levels.length}">${escapeHtml(mastery.name)}</td>` : ''}
+        ${i === 0 ? `<td rowspan="${levels.length}">${formatMasteryName(mastery.name)}</td>` : ''}
         ${i === 0 ? `<td rowspan="${levels.length}">${mastery.description ? escapeHtml(mastery.description) : '—'}</td>` : ''}
         <td>Level ${i + 1}</td>
         <td>${costCell}</td>
