@@ -120,6 +120,49 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-09-16 (later still — Mastery page built, NOT fully populated) — new
+`data/manual/mastery-data.json` + `renderMasteryPage()`. Schema: an array
+of `{ name, description, levels: [{ currency, cost, effect }] }`, same
+overall shape as Achievements but a mastery level is BOUGHT (currency +
+cost) rather than earned by meeting a requirement, and `effect` is a
+scaling stat bonus rather than a one-off reward list. File order matches
+exactly what the player listed (Unbox Speed, Plot Size, Unbox Luck,
+Shiny/Mythic Luck, Furnace Loot, Friend Luck, Enchant Speed, Unbox Slot,
+Offline Earnings) — **the player was explicit that this file is meant to
+be a complete database, so don't collapse a mastery into a "see the other
+page" link even when it's also documented elsewhere** (this happened
+once, for Furnace Loot/Enchant Speed, and was corrected — both now have
+their full level data duplicated here too, sourced from
+`furnace-loot-data.json`'s masteryTiers and `enchanter-data.json`'s
+mechanics respectively). Render sorts alphabetically for display; file
+order is just for the player's own readability when hand-editing.
+
+**⚠️ Not done yet — 4 of the 9 masteries are still blank placeholders:
+Unbox Luck (11 levels), Shiny/Mythic Luck (7), Friend Luck (6), and
+Offline Earnings (7).** Unbox Speed, Plot Size, Furnace Loot, Enchant
+Speed, and Unbox Slot are fully filled in with real cost/effect data. If
+starting a session and the player hasn't mentioned Mastery, it's worth
+proactively asking whether they have more mastery data ready, since this
+page was left mid-population when they had to step away.
+
+`MASTERY_ICON_FILES` (name → icon file, currently just `unbox speed` →
+`roll-speed-icon.png`, `unbox slot` → `unbox-slot-icon.png`, `plot size`
+→ `plot-size-icon.png`) reuses existing icons rather than needing new
+ones — add an entry here whenever another mastery's name matches an
+existing icon elsewhere on the site. `formatMasteryEffect()` renders two
+shapes: a `"+N Label"` delta (e.g. `"+1 Unbox Slot"`) becomes an
+icon+badge+label chip, while a non-delta absolute value (Unbox Speed's
+`"1s"`, `"0.8s"`, etc. — went through a real revision: originally stored
+as `"Unbox Speed = 1s"` and rendered as plain icon+text, the player asked
+to drop the `"Unbox Speed = "` prefix from the data AND still show the
+label — ended up as icon+badge+label same as the delta case, just with
+the raw value as the badge instead of a `+N`) gets the same icon+badge+
+label chip. Currency matching in the Cost column is case-insensitive and
+accepts `"Crystal"`/`"Crystals"` (the player used capitalized singular,
+different from every other manual data file's lowercase plural) — and a
+cost of the literal string `"FREE"` renders as plain "Free" text instead
+of a cost chip.
+
 2026-09-16 (later still — skip-pricing example fix) — the Enchanter
 "Skipping the Wait" intro text had a logic error in its own example: it
 said an item with 40 hours left "costs the 42-hour price until it drops
