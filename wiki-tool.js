@@ -958,6 +958,7 @@
       return levels.map((level, i) => `
       <tr>
         ${i === 0 ? `<td rowspan="${levels.length}">${escapeHtml(achievement.name)}</td>` : ''}
+        ${i === 0 ? `<td rowspan="${levels.length}">${achievement.description ? escapeHtml(achievement.description) : '—'}</td>` : ''}
         <td>${levels.length > 1 ? `Level ${i + 1}` : '—'}</td>
         <td>${level.requirement ? escapeHtml(level.requirement) : '—'}</td>
         <td>${formatCodeRewards(level.rewards)}</td>
@@ -969,17 +970,19 @@
       you're done. Others have multiple levels, each with its own
       (usually harder) requirement and its own reward; you get every
       level's reward the moment you meet that level's requirement,
-      regardless of how many levels the achievement has.</p>
+      regardless of how many levels the achievement has. Each
+      achievement's description stays the same across every level.</p>
       <table class="wiki-data-table">
         <thead>
           <tr>
             <th>Achievement</th>
+            <th>Description</th>
             <th>Level</th>
             <th>Requirement</th>
             <th>Reward</th>
           </tr>
         </thead>
-        <tbody>${rows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
+        <tbody>${rows || '<tr><td colspan="5">Not filled in yet.</td></tr>'}</tbody>
       </table>`;
   }
 

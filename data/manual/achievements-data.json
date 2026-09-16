@@ -1,1 +1,101 @@
-[]
+[
+  { "name": "Legendary Enchanter", "description": null, "levels": [
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Join the Legion!", "description": null, "levels": [
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "I was here..", "description": null, "levels": [
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "A New Journey", "description": null, "levels": [
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Perfect Roll", "description": null, "levels": [
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Secret Enchanter", "description": null, "levels": [
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Forbidden Gate", "description": null, "levels": [
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Box Breaker", "description": null, "levels": [
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Mythic Hunter", "description": null, "levels": [
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Rebirth", "description": null, "levels": [
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Ore Processor", "description": null, "levels": [
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Witch Doctor", "description": null, "levels": [
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Impressive Ore", "description": null, "levels": [
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Dedicated", "description": null, "levels": [
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Shiny Hunter", "description": null, "levels": [
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] }
+  ] },
+  { "name": "Regular", "description": null, "levels": [
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] },
+    { "requirement": null, "rewards": [] }
+  ] }
+]
