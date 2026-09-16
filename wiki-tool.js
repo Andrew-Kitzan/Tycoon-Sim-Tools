@@ -1003,7 +1003,7 @@
       body: '<p>The best ways to farm crystals. Not written yet.</p>',
     },
     'base-progression': {
-      title: 'Base Design/Progression',
+      title: 'Base Design',
       body: '<p>How to design and grow your base over time. Not written yet.</p>',
     },
   };
