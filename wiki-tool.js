@@ -1106,7 +1106,8 @@
       return `<span class="wiki-mastery-dual-icon">
         <img class="wiki-reward-icon" src="icons/wiki/shiny-luck-icon.png" alt="" onerror="this.remove()">
         <img class="wiki-reward-icon" src="icons/wiki/mythic-luck-icon.png" alt="" onerror="this.remove()">
-      </span> ${escapeHtml(name)}`;
+        ${escapeHtml(name)}
+      </span>`;
     }
     const iconFile = MASTERY_ICON_FILES[name.trim().toLowerCase()];
     if (!iconFile) return escapeHtml(name);
@@ -1169,7 +1170,7 @@
       return levels.map((level, i) => {
         const currency = String(level.currency ?? '').trim().toLowerCase();
         const isFree = typeof level.cost === 'string' && /^free$/i.test(level.cost.trim());
-        const costCell = isFree ? 'Free'
+        const costCell = isFree ? masteryChip('cash-icon.png', 'Free', null)
           : currency.startsWith('crystal') ? formatCrystalCost(level.cost)
           : currency === 'cash' ? formatCashCost(level.cost)
           : currency === 'robux' ? formatRobuxCost(level.cost == null ? null : formatNumber(level.cost))
@@ -1187,10 +1188,7 @@
     return `
       <p>Every mastery in the game, sorted alphabetically. Masteries are
       bought level by level — each level costs more than the last and
-      gives a bigger version of the same effect. A couple of masteries
-      (Furnace Loot, Enchant Speed) already have their own dedicated wiki
-      page with the full mechanic explained, so they're just linked from
-      here instead of repeating that table.</p>
+      gives a bigger version of the same effect.</p>
       <table class="wiki-data-table">
         <thead>
           <tr>

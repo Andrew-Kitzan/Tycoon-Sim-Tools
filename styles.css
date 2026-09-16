@@ -1060,7 +1060,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-data-table tbody tr:nth-child(even) { background: rgba(255,255,255,.02); }
 .wiki-reward-list { display: flex; flex-direction: column; gap: 14px; }
 .wiki-reward-chip { display: flex; align-items: center; gap: 8px; }
-.wiki-mastery-dual-icon { display: inline-flex; align-items: center; gap: 4px; vertical-align: middle; }
+.wiki-mastery-dual-icon { display: inline-flex; align-items: center; gap: 6px; }
 .wiki-reward-icon { width: 44px; height: 44px; object-fit: contain; border: 1px solid var(--line); border-radius: 9px; background: rgba(255,255,255,.04); flex-shrink: 0; }
 .wiki-reward-icon-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
 .wiki-reward-badge {
