@@ -105,14 +105,14 @@
     "name": "Rebirth",
     "description": "Rebirth to prestige and earn permanent rewards.",
     "levels": [
-      { "requirement": "Reach Rebirth 1", "rewards": [] },
-      { "requirement": "Reach Rebirth 2", "rewards": [] },
-      { "requirement": "Reach Rebirth 3", "rewards": [] },
-      { "requirement": "Reach Rebirth 4", "rewards": [] },
-      { "requirement": "Reach Rebirth 5", "rewards": [] },
-      { "requirement": "Reach Rebirth 6", "rewards": [] },
-      { "requirement": "Reach Rebirth 7", "rewards": [] },
-      { "requirement": "Reach Rebirth 8", "rewards": [] }
+      { "requirement": "Reach Rebirth 1", "rewards": ["Plasma Upgrader", "500 Crystals", "+2 Plot Size", "+1 Luck", "5x Tier 3 Luck Potion", "5x Tier 3 Shiny Luck Potion", "5x Tier 3 Roll Speed Potion"] },
+      { "requirement": "Reach Rebirth 2", "rewards": ["Fire Crystal Dropper", "2.5K Crystals", "+4 Plot Size", "+1 Luck", "5x Tier 3 Luck Potion", "5x Tier 3 Roll Speed Potion"] },
+      { "requirement": "Reach Rebirth 3", "rewards": ["Prismatic Upgrader", "10K Crystals", "+1 Unbox Slot", "+1 Luck", "5x Tier 4 Luck Potion", "5x Tier 4 Shiny Luck Potion", "5x Tier 4 Roll Speed Potion"] },
+      { "requirement": "Reach Rebirth 4", "rewards": ["Ore Wash", "500K Crystals", "+2 Plot Size", "+1 Luck", "5x Tier 5 Luck Potion", "5x Tier 5 Shiny Luck Potion", "5x Tier 5 Mythic Luck Potion"] },
+      { "requirement": "Reach Rebirth 5", "rewards": ["Kunzite Dropper", "Red Teleporter Reciever", "Red Teleporter Sender", "Blue Teleporter Reciever", "Blue Teleporter Sender", "500K Crystals", "+4 Plot Size", "+1 Luck", "10x Tier 5 Luck Potion", "10x Tier 5 Shiny Luck Potion", "10x Tier 5 Mythic Luck Potion"] },
+      { "requirement": "Reach Rebirth 6", "rewards": ["Electric Overdrive", "1.5M Crystals", "+3 Luck", "10x Tier 5 Luck Potion", "10x Tier 5 Shiny Luck Potion", "10x Tier 5 Mythic Luck Potion"] },
+      { "requirement": "Reach Rebirth 7", "rewards": ["Meltdown Dropper", "1.5M Crystals", "+3 Luck", "10x Tier 5 Luck Potion", "10x Tier 5 Shiny Luck Potion", "10x Tier 5 Mythic Luck Potion"] },
+      { "requirement": "Reach Rebirth 8", "rewards": ["Holophase Device", "1.5M Crystals", "+3 Luck", "10x Tier 5 Luck Potion", "10x Tier 5 Shiny Luck Potion", "10x Tier 5 Mythic Luck Potion", "1x Tier 1 Unbox Slot Potion"] }
     ]
   },
 

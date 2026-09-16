@@ -388,6 +388,22 @@
           Luck
         </span>`;
       }
+      // Flat stat bonuses (e.g. "+2 Plot Size", same shape the Rebirth page's
+      // own formatStatRewards() reads) reuse that same STAT_ICON_FILES
+      // lookup, so a plain reward list (like Achievements) gets the same
+      // icon treatment as the Rebirth page's dedicated Stat Rewards column.
+      const statMatch = String(entry).match(/^([+-]\d+)\s+(.*)$/);
+      const statIconFile = statMatch && STAT_ICON_FILES[statMatch[2].trim().toLowerCase()];
+      if (statMatch && statIconFile) {
+        const [, amountText, label] = statMatch;
+        return `<span class="wiki-reward-chip">
+          <span class="wiki-reward-icon-wrap">
+            <img class="wiki-reward-icon" src="icons/wiki/${statIconFile}" alt="" onerror="this.parentElement.remove()">
+            <span class="wiki-reward-badge">${escapeHtml(amountText)}</span>
+          </span>
+          ${escapeHtml(label)}
+        </span>`;
+      }
       // Walkspeed bonuses (e.g. "+8 walkspeed") get the same treatment.
       const walkspeedMatch = String(entry).match(/^\+?([0-9]+)\s+walkspeed$/i);
       if (walkspeedMatch) {
