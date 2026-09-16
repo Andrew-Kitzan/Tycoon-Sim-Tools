@@ -26,5 +26,23 @@
     { "rarity": "Secret", "from": "Base", "to": "Mythic", "time": "48 Hours" },
     { "rarity": "Secret", "from": "Shiny", "to": "Shiny Mythic", "time": "48 Hours" },
     { "rarity": "Secret", "from": "Mythic", "to": "Shiny Mythic", "time": "48 Hours" }
+  ],
+  "skipCosts": [
+    { "timeRemaining": "48 Hours", "crystalCost": "2.5M", "robuxCost": "3.19K" },
+    { "timeRemaining": "42 Hours", "crystalCost": "2.166M", "robuxCost": "2.79K" },
+    { "timeRemaining": "36 Hours", "crystalCost": "1.83M", "robuxCost": "2.39K" },
+    { "timeRemaining": "30 Hours", "crystalCost": "1.5M", "robuxCost": "1.99K" },
+    { "timeRemaining": "24 Hours", "crystalCost": "1.16M", "robuxCost": "1.59K" },
+    { "timeRemaining": "18 Hours", "crystalCost": "833.33K", "robuxCost": "1.19K" },
+    { "timeRemaining": "12 Hours", "crystalCost": "500K", "robuxCost": "625" },
+    { "timeRemaining": "6 Hours", "crystalCost": "233.33K", "robuxCost": "310" },
+    { "timeRemaining": "3 Hours", "crystalCost": "100K", "robuxCost": "150" },
+    { "timeRemaining": "2 Hours", "crystalCost": "64K", "robuxCost": "99" },
+    { "timeRemaining": "1 Hour", "crystalCost": "28K", "robuxCost": "49" },
+    { "timeRemaining": "45 Min", "crystalCost": "19K", "robuxCost": "49" },
+    { "timeRemaining": "30 Min", "crystalCost": "10K", "robuxCost": "49" },
+    { "timeRemaining": "15 Min", "crystalCost": "4.3K", "robuxCost": "25" },
+    { "timeRemaining": "5 Min", "crystalCost": "500", "robuxCost": "25" },
+    { "timeRemaining": "30 Sec", "crystalCost": "100", "robuxCost": "9" }
   ]
 }

@@ -85,7 +85,7 @@
       { "requirement": "1K crates opened", "rewards": ["1x Tier 2 Luck Potion"] },
       { "requirement": "10k crates opened", "rewards": ["2K Crystals", "1x tier 3 roll speed potion"] },
       { "requirement": "100k crates opened", "rewards": ["2x tier 4 Luck Potions"] },
-      { "requirement": "500k crates opened", "rewards": ["10k Crystals", "X tier X Shiny Luck Potion"] },
+      { "requirement": "500k crates opened", "rewards": ["10k Crystals", "2x tier 4 Shiny Luck Potion"] },
       { "requirement": "1M crates opened", "rewards": ["2x tier 5 Mythic Luck Potion", "25K Crystals"] },
       { "requirement": "1.5M crates opened", "rewards": ["Aether Gate", "150K Crystals"] }
     ]

@@ -1,5 +1,9 @@
 [
   {
+    "date": "2026-09-16",
+    "summary": "Rewrote the README to cover the whole site instead of just the Base Builder, and added a real skip-pricing section to the Enchanter page (spend Crystals or Robux to skip an item's remaining enchant time). Also a batch of Achievements data fixes as the real data gets filled in."
+  },
+  {
     "date": "2026-09-15",
     "summary": "Built out the P2W, Enchanter, Furnace Loot, and Achievements pages, plus the home page's update-log panels you're reading right now (with a full Game Updates history sourced from the dev's real patch notes). Added Crystals Farming and Base Design tiles too. Also a round of smaller fixes and polish: broken/missing icons, stale data caching, a real favicon, and clearer section headings across a few pages."
   },

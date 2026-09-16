@@ -120,6 +120,36 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-09-16 (README rewrite + Enchanter skip pricing) — two separate pieces
+of work, both straightforward, no real gotchas:
+
+**README.md rewritten** to describe the whole site (Wiki + all 5 tools),
+not just the Base Builder — it had never been updated since the repo was
+just the base planner. Live site link
+(`https://andrew-kitzan.github.io/Tycoon-Sim-Tools/`) now up top, a
+"What's on the site" section listing every Wiki category and tool, and the
+existing detailed Base Planner instructions preserved under their own
+`## Base Builder` heading (with every subsection under it demoted from
+`##` to `###` to keep the heading hierarchy correct). If more tools get
+added later, update the "What's on the site" tool list to match
+`index.html`'s `.tool-nav-item` entries — that's the source of truth for
+what's actually in the Tool Menu.
+
+**Enchanter "Skipping the Wait" section** — new `skipCosts` array in
+`data/manual/enchanter-data.json` (`{ timeRemaining, crystalCost,
+robuxCost }`), rendered as a new table below the existing upgrade-paths
+table, with a `.wiki-section-heading` splitting it out. The player
+supplied the real 16-tier benchmark table (48 Hours down to 30 Sec) — this
+is a **step function, not a smooth scale**: the skip price only drops once
+the remaining time falls under each benchmark, it doesn't interpolate
+between them (the intro text says this explicitly, worth keeping since
+it's a real, non-obvious mechanic). Player can spend either Crystals OR
+Robux for the same skip, never both — rendered as two separate columns.
+Reused the existing `formatCrystalCost()` helper for the Crystals column;
+the Robux column is plain `R$${formatCompact(...)}` text (same pattern
+P2W's cost column already used), no dedicated icon since there isn't a
+Robux icon asset on the site yet.
+
 2026-09-15 (later session still — Achievements page, nav tiles, favicon,
 git workflow correction) — several distinct pieces of work:
 

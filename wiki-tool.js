@@ -831,6 +831,13 @@
     const mechanics = data?.mechanics ?? {};
     const variantMultipliers = data?.variantMultipliers ?? {};
     const paths = data?.upgradePaths ?? [];
+    const skipCosts = data?.skipCosts ?? [];
+    const skipRows = skipCosts.map((entry) => `
+      <tr>
+        <td>${escapeHtml(entry.timeRemaining)}</td>
+        <td>${formatCrystalCost(entry.crystalCost)}</td>
+        <td>${entry.robuxCost == null ? '—' : `R$${formatCompact(parseAbbreviated(entry.robuxCost))}`}</td>
+      </tr>`).join('');
     const pathRows = paths.map((entry) => {
       const fromMulti = variantMultipliers[entry.from] ? escapeHtml(variantMultipliers[entry.from]) : '—';
       const toMulti = variantMultipliers[entry.to] ? escapeHtml(variantMultipliers[entry.to]) : '—';
@@ -882,6 +889,25 @@
           </tr>
         </thead>
         <tbody>${pathRows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
+      </table>
+      <h3 class="wiki-section-heading">Skipping the Wait</h3>
+      <p>Don't want to wait? The Enchanter lets you skip the remaining time
+      on an item that's currently enchanting, for a price — either
+      <strong>Crystals or Robux</strong>, your choice, not both. The skip
+      price is based on how much time is actually left, not the item's
+      full enchant time, and it isn't a smooth scale — it drops in steps
+      once the remaining time falls to each benchmark below (so an item
+      with, say, 40 hours left still costs the 42-hour price until it
+      drops under 42 hours).</p>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Time Remaining</th>
+            <th>Crystal Cost</th>
+            <th>Robux Cost</th>
+          </tr>
+        </thead>
+        <tbody>${skipRows || '<tr><td colspan="3">Not filled in yet.</td></tr>'}</tbody>
       </table>`;
   }
 
