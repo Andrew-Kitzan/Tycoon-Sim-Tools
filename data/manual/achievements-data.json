@@ -124,7 +124,7 @@
       { "requirement": "1k processed ore", "rewards": ["1x tier 1 luck potion", "500 Crystals"] },
       { "requirement": "10k processed ore", "rewards": ["Basic Furnace", "5k Crystals"] },
       { "requirement": "250k processed ore", "rewards": ["1x tier 3 roll speed potion", "10K Crystals"] },
-      { "requirement": "10M processed ore", "rewards": ["1x tier 4 luck potion"] },
+      { "requirement": "1M processed ore", "rewards": ["1x tier 4 luck potion"] },
       { "requirement": "10M processed ore", "rewards": ["1x tier 4 Shiny Luck Potion", "50k Crystals"] },
       { "requirement": null, "rewards": [] },
       { "requirement": "25M processed ore", "rewards": ["Netrozite Dropper", "3x tier 5 Luck Potions", "3x tier 5 Shiny Luck Potions"] }
