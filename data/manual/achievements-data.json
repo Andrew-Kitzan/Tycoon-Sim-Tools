@@ -1,33 +1,33 @@
 [
   {
     "name": "Legendary Enchanter",
-    "description": null,
+    "description": "Successfully enchant a Legendary item.",
     "levels": [
       {
-        "requirement": null,
-        "rewards": []
+        "requirement": "Enchant 1 legendary item",
+        "rewards": ["25K Crystals"]
       }
     ]
   },
 
   {
     "name": "Join the Legion!",
-    "description": null,
+    "description": "You like the game and joined Derp LLC, the Roblox group!",
     "levels": [
       {
-        "requirement": null,
-        "rewards": []
+        "requirement": "like/join the group",
+        "rewards": ["The Epik Duck", "+2 Luck"]
       }
     ]
   },
 
   {
     "name": "I was here..",
-    "description": null,
+    "description": "Show up to an admin abuse!",
     "levels": [
       {
-        "requirement": null,
-        "rewards": []
+        "requirement": "Attend 1 admin abuse",
+        "rewards": ["king dropper","100k crystals"]
       }
     ]
   },
@@ -45,33 +45,33 @@
 
   {
     "name": "Perfect Roll",
-    "description": null,
+    "description": "Unbox an item that is shiny and mythic at the same time.",
     "levels": [
       {
-        "requirement": null,
-        "rewards": []
+        "requirement": "1 perfect roll.",
+        "rewards": ["3x tier 5 Shiny Luck Potions", "3x tier 5 Mythic Luck Potion", "10K Crystals"]
       }
     ]
   },
 
   {
     "name": "Secret Enchanter",
-    "description": null,
+    "description": "Successfully Enchant a Secret Item.",
     "levels": [
       {
-        "requirement": null,
-        "rewards": []
+        "requirement": "Enchant 1 Secret item",
+        "rewards": ["100k crystals"]
       }
     ]
   },
 
   {
     "name": "Forbidden Gate",
-    "description": null,
+    "description": "Unlock the locked gate",
     "levels": [
       {
-        "requirement": null,
-        "rewards": []
+        "requirement": "Spend 500K Crystals to unlock the gate.",
+        "rewards": ["100qd cash"]
       }
     ]
   },
@@ -87,32 +87,32 @@
       { "requirement": null, "rewards": [] },
       { "requirement": null, "rewards": [] },
       { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] }
+      { "requirement": "1.5M crates opened", "rewards": ["Aether Gate", "150K Crystals"] }
     ]
   },
 
   {
     "name": "Mythic Hunter",
-    "description": null,
+    "description": "Unbox mythic items and chase the rarest rolls.",
     "levels": [
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] }
+      { "requirement": null, "rewards": ["1x tier 2 Mythic Potion"] },
+      { "requirement": null, "rewards": ["X tier 4 Mythic Potion", "2.5k Cystals"] },
+      { "requirement": "100 mythics", "rewards": ["3x tier 5 Mythic Luck Potion", "25K Crystals"] }
     ]
   },
 
   {
     "name": "Rebirth",
-    "description": null,
+    "description": "Rebirth to prestige and earn permanent rewards.",
     "levels": [
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] },
-      { "requirement": null, "rewards": [] }
+      { "requirement": "Reach Rebirth 1", "rewards": [] },
+      { "requirement": "Reach Rebirth 2", "rewards": [] },
+      { "requirement": "Reach Rebirth 3", "rewards": [] },
+      { "requirement": "Reach Rebirth 4", "rewards": [] },
+      { "requirement": "Reach Rebirth 5", "rewards": [] },
+      { "requirement": "Reach Rebirth 6", "rewards": [] },
+      { "requirement": "Reach Rebirth 7", "rewards": [] },
+      { "requirement": "Reach Rebirth 8", "rewards": [] }
     ]
   },
 
