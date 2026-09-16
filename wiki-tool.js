@@ -1087,7 +1087,24 @@
     'unbox slot': 'unbox-slot-icon.png',
     'plot size': 'plot-size-icon.png',
   };
+  // Generic icon+badge+label chip, reused by both formatMasteryName's
+  // multi-icon special case below and formatMasteryEffect.
+  function masteryChip(iconFile, badgeText, label) {
+    return `<span class="wiki-reward-chip">
+      <span class="wiki-reward-icon-wrap">
+        <img class="wiki-reward-icon" src="icons/wiki/${iconFile}" alt="" onerror="this.parentElement.remove()">
+        ${badgeText != null ? `<span class="wiki-reward-badge">${escapeHtml(badgeText)}</span>` : ''}
+      </span>
+      ${label ? escapeHtml(label) : ''}
+    </span>`;
+  }
+
   function formatMasteryName(name) {
+    // "Shiny/Mythic Luck" covers two separate stats at once, so it gets
+    // both icons side by side instead of the single-icon lookup below.
+    if (name.trim().toLowerCase() === 'shiny/mythic luck') {
+      return `${masteryChip('shiny-luck-icon.png', null, null)}${masteryChip('mythic-luck-icon.png', null, null)} ${escapeHtml(name)}`;
+    }
     const iconFile = MASTERY_ICON_FILES[name.trim().toLowerCase()];
     if (!iconFile) return escapeHtml(name);
     return `<span class="wiki-reward-chip">
@@ -1102,31 +1119,37 @@
   // "Unbox Speed = 1s") just gets the icon next to the full text.
   function formatMasteryEffect(masteryName, effectText) {
     if (!effectText) return '—';
+    // "Shiny/Mythic Luck" needs its own parsing since one level's text
+    // covers both stats at once ("Shiny & Mythic Luck = 1/4096") while
+    // later levels split them ("Shiny Luck = 1/40, Mythic Luck = 1/100").
+    if (masteryName.trim().toLowerCase() === 'shiny/mythic luck') {
+      const splitMatch = effectText.match(/Shiny Luck\s*=\s*([^,]+),\s*Mythic Luck\s*=\s*(.+)/i);
+      if (splitMatch) {
+        const [, shinyVal, mythicVal] = splitMatch;
+        return masteryChip('shiny-luck-icon.png', shinyVal.trim(), 'Shiny Luck')
+          + masteryChip('mythic-luck-icon.png', mythicVal.trim(), 'Mythic Luck');
+      }
+      const comboMatch = effectText.match(/Shiny\s*&\s*Mythic Luck\s*=\s*(.+)/i);
+      if (comboMatch) {
+        const value = comboMatch[1].trim();
+        return masteryChip('shiny-luck-icon.png', value, 'Shiny Luck')
+          + masteryChip('mythic-luck-icon.png', value, 'Mythic Luck');
+      }
+      return escapeHtml(effectText);
+    }
     const iconFile = MASTERY_ICON_FILES[masteryName.trim().toLowerCase()];
     if (!iconFile) return escapeHtml(effectText);
     const deltaMatch = effectText.match(/^([+-]\d+)\s+(.*)$/);
     if (deltaMatch) {
       const [, amount, label] = deltaMatch;
-      return `<span class="wiki-reward-chip">
-        <span class="wiki-reward-icon-wrap">
-          <img class="wiki-reward-icon" src="icons/wiki/${iconFile}" alt="" onerror="this.parentElement.remove()">
-          <span class="wiki-reward-badge">${escapeHtml(amount)}</span>
-        </span>
-        ${escapeHtml(label)}
-      </span>`;
+      return masteryChip(iconFile, amount, label);
     }
     // Not a "+N Label" delta — an absolute value the stat gets SET to at
     // this level (e.g. Unbox Speed's "1s", "0.8s"), so it gets the same
     // icon+badge chip with the raw value as the badge, and the mastery's
     // own name as the label (matching the delta case's icon+badge+label
     // layout above).
-    return `<span class="wiki-reward-chip">
-      <span class="wiki-reward-icon-wrap">
-        <img class="wiki-reward-icon" src="icons/wiki/${iconFile}" alt="" onerror="this.parentElement.remove()">
-        <span class="wiki-reward-badge">${escapeHtml(effectText)}</span>
-      </span>
-      ${escapeHtml(masteryName)}
-    </span>`;
+    return masteryChip(iconFile, effectText, masteryName);
   }
 
   async function renderMasteryPage() {
