@@ -120,6 +120,24 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-09-16 (later same session — real Robux icon) — the Enchanter skip
+table and P2W's cost column both used to render Robux prices as plain
+"R$..." text. Player supplied a real Robux icon (the official green
+hexagon logo — confirmed it's the real Roblox currency symbol, not
+fabricated art, same as every other icon on the site), saved as
+`icons/wiki/robux-icon.png` (left at its full 1254x1254 source resolution,
+same precedent as `luck-icon.png` — CSS scales `.wiki-reward-icon` down to
+44px regardless of native size, so these two large source-resolution wiki
+icons don't get resized like the smaller `icons/items/` ones do). Added a
+shared `formatRobuxCost(displayText)` helper — **it takes an
+already-formatted string, not a raw number**, because the two call sites
+want different precision: the Enchanter skip table keeps compact
+abbreviation (`R$3.19K`, matching how the player gave that data), while
+P2W keeps the exact full price (`R$499`) since real-money prices shouldn't
+get fuzzed by abbreviation. If a third place ever needs a Robux cost,
+decide which precision fits and pass the pre-formatted string the same way
+— don't make `formatRobuxCost` decide formatting itself.
+
 2026-09-16 (README rewrite + Enchanter skip pricing) — two separate pieces
 of work, both straightforward, no real gotchas:
 

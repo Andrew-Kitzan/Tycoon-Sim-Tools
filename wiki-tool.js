@@ -667,6 +667,22 @@
     </span>`;
   }
 
+  // Robux costs get the same icon+badge chip treatment as Crystals/Cash,
+  // but the caller passes in the already-formatted display text since
+  // different pages want different precision — the Enchanter skip table
+  // uses compact "3.19K"-style abbreviations (matching how the player gave
+  // the data), while P2W wants the exact price spelled out in full since
+  // real-money prices shouldn't get fuzzed by abbreviation.
+  function formatRobuxCost(displayText) {
+    if (displayText == null) return '—';
+    return `<span class="wiki-reward-chip">
+      <span class="wiki-reward-icon-wrap">
+        <img class="wiki-reward-icon" src="icons/wiki/robux-icon.png" alt="" onerror="this.parentElement.remove()">
+        <span class="wiki-reward-badge">R$${escapeHtml(displayText)}</span>
+      </span>
+    </span>`;
+  }
+
   // Furnace Loot data lives in data/manual/furnace-loot-data.json — same
   // plain-hand-edited-JSON convention as every other data/manual/ file.
   let furnaceLootDataPromise = null;
@@ -836,7 +852,7 @@
       <tr>
         <td>${escapeHtml(entry.timeRemaining)}</td>
         <td>${formatCrystalCost(entry.crystalCost)}</td>
-        <td>${entry.robuxCost == null ? '—' : `R$${formatCompact(parseAbbreviated(entry.robuxCost))}`}</td>
+        <td>${formatRobuxCost(entry.robuxCost == null ? null : formatCompact(parseAbbreviated(entry.robuxCost)))}</td>
       </tr>`).join('');
     const pathRows = paths.map((entry) => {
       const fromMulti = variantMultipliers[entry.from] ? escapeHtml(variantMultipliers[entry.from]) : '—';
@@ -963,7 +979,7 @@
     const rows = products.map((entry) => `
       <tr>
         <td>${escapeHtml(entry.name)}</td>
-        <td>${entry.robuxCost == null ? '—' : `R$${formatNumber(entry.robuxCost)}`}</td>
+        <td>${formatRobuxCost(entry.robuxCost == null ? null : formatNumber(entry.robuxCost))}</td>
         <td><span class="wiki-status-badge ${entry.obtainable ? 'is-active' : 'is-expired'}">${entry.obtainable ? 'Obtainable' : 'Unobtainable'}</span></td>
         <td>${formatCodeRewards(entry.gives)}</td>
         <td>${formatNotes(entry.notes)}</td>

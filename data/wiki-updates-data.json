@@ -1,7 +1,7 @@
 [
   {
     "date": "2026-09-16",
-    "summary": "Rewrote the README to cover the whole site instead of just the Base Builder, and added a real skip-pricing section to the Enchanter page (spend Crystals or Robux to skip an item's remaining enchant time). Also a batch of Achievements data fixes as the real data gets filled in."
+    "summary": "Rewrote the README to cover the whole site instead of just the Base Builder, and added a real skip-pricing section to the Enchanter page (spend Crystals or Robux to skip an item's remaining enchant time) — now with a real Robux icon too, reused on the P2W page's costs. Also a batch of Achievements data fixes as the real data gets filled in."
   },
   {
     "date": "2026-09-15",
