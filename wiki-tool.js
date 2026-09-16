@@ -1096,6 +1096,31 @@
     </span>`;
   }
 
+  // Same icon as the mastery's own name (formatMasteryName above), but for
+  // the per-level Effect cell — a "+N Label" effect (e.g. "+1 Unbox Slot")
+  // gets the icon+badge chip treatment, while a non-delta effect (e.g.
+  // "Unbox Speed = 1s") just gets the icon next to the full text.
+  function formatMasteryEffect(masteryName, effectText) {
+    if (!effectText) return '—';
+    const iconFile = MASTERY_ICON_FILES[masteryName.trim().toLowerCase()];
+    if (!iconFile) return escapeHtml(effectText);
+    const deltaMatch = effectText.match(/^([+-]\d+)\s+(.*)$/);
+    if (deltaMatch) {
+      const [, amount, label] = deltaMatch;
+      return `<span class="wiki-reward-chip">
+        <span class="wiki-reward-icon-wrap">
+          <img class="wiki-reward-icon" src="icons/wiki/${iconFile}" alt="" onerror="this.parentElement.remove()">
+          <span class="wiki-reward-badge">${escapeHtml(amount)}</span>
+        </span>
+        ${escapeHtml(label)}
+      </span>`;
+    }
+    return `<span class="wiki-reward-chip">
+      <img class="wiki-reward-icon" src="icons/wiki/${iconFile}" alt="" onerror="this.remove()">
+      ${escapeHtml(effectText)}
+    </span>`;
+  }
+
   async function renderMasteryPage() {
     const masteries = await loadMasteryData();
     const sorted = [...masteries].sort((a, b) => a.name.localeCompare(b.name));
@@ -1123,7 +1148,7 @@
         ${i === 0 ? `<td rowspan="${levels.length}">${mastery.description ? escapeHtml(mastery.description) : '—'}</td>` : ''}
         <td>Level ${i + 1}</td>
         <td>${costCell}</td>
-        <td>${level.effect ? escapeHtml(level.effect) : '—'}</td>
+        <td>${formatMasteryEffect(mastery.name, level.effect)}</td>
       </tr>`;
       });
     }).join('');
