@@ -46,15 +46,15 @@
 
   {
     "name": "Shiny/Mythic Luck",
-    "description": null,
+    "description": "Increase your luck from crates!",
     "levels": [
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null }
+      { "currency": "Cash", "cost": "1k", "effect": "Shiny & Mythic Luck = 1/4096" },
+      { "currency": "Cash", "cost": "10k", "effect": "Shiny & Mythic Luck = 1/2048" },
+      { "currency": "Cash", "cost": "4.2M", "effect": "Shiny & Mythic Luck = 1/1024" },
+      { "currency": "Cash", "cost": "23M", "effect": "Shiny & Mythic Luck = 1/512" },
+      { "currency": "Cash", "cost": "145B", "effect": "Shiny & Mythic Luck = 1/256" },
+      { "currency": "Cash", "cost": "500T", "effect": "Shiny Luck = 1/40, Mythic Luck = 100" },
+      { "currency": "Cash", "cost": "25Qd", "effect": "Shiny Luck = 1/20, Mythic Luck = 100" }
     ]
   },
 
@@ -85,7 +85,7 @@
 
   {
     "name": "Enchant Speed",
-    "description": "Increases how fast the Enchanter works while you're online.",
+    "description": "Enchant your items faster while online.",
     "levels": [
       {
         "currency": "Crystal",
