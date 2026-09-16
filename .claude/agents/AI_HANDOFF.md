@@ -120,6 +120,54 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-09-16 (later still — Shiny/Mythic Luck icons + polish) — the
+"Shiny/Mythic Luck" mastery needed real icons and went through several
+real layout fixes worth knowing about before touching
+`.wiki-mastery-dual-icon`/`formatMasteryName()`/`formatMasteryEffect()`
+again:
+
+- New `icons/wiki/shiny-luck-icon.png` (gold clover) and
+  `icons/wiki/mythic-luck-icon.png` (purple clover), both player-confirmed
+  real edited game assets. Since this one mastery covers two stats at
+  once, it's the only mastery with TWO icons instead of the normal
+  single-icon `MASTERY_ICON_FILES` lookup — handled as special-cased
+  string matches on `masteryName.toLowerCase() === 'shiny/mythic luck'` in
+  both functions, not a generic multi-icon system (no other mastery needs
+  this yet).
+- `formatMasteryEffect()`'s Shiny/Mythic branch parses TWO different
+  phrasings the player used across levels: early levels combine both
+  stats in one value (`"Shiny & Mythic Luck = 1/4096"`), later levels
+  split them (`"Shiny Luck = 1/40, Mythic Luck = 1/100"`) — both produce
+  two separate icon+badge+label chips, wrapped in `.wiki-reward-list` for
+  the gap between them (this was missed on the first pass — two
+  `.wiki-reward-chip` spans concatenated with no wrapping list container
+  have no gap between them at all, since `.wiki-reward-chip` itself is
+  `display:flex` which makes each one its own full-width block row).
+- The name column's two icons needed their own small
+  `.wiki-mastery-dual-icon` (`display:inline-flex`) instead of reusing
+  `.wiki-reward-chip` for the icon pair, for the same block-row reason —
+  wrapping each icon in a separate `.wiki-reward-chip` stacked them
+  vertically instead of side by side.
+- **Real subtlety, worth remembering for any future icon+text
+  flex row**: even with `align-items:center` on the flex container,
+  the text visually sat low relative to the icon. The icon and text's
+  bounding boxes were nearly identical top-offset (confirmed by direct
+  `getBoundingClientRect()` measurement), so the *box* WAS centered — the
+  browser's default `line-height` for the text just left extra space below
+  the actual glyph ink within that centered box, making the rendered
+  glyphs look bottom-heavy relative to the icon. Fixed with
+  `line-height: 44px` on `.wiki-mastery-dual-icon` (matching the icon's
+  own 44px height) so the text's line box has no slack to be off-center
+  within. If another icon+text row ever looks subtly low despite correct
+  flex centering, check this first before assuming the flex properties are
+  wrong.
+- Also removed a stale intro sentence on the Mastery page claiming Furnace
+  Loot/Enchant Speed are "just linked from here instead of repeating that
+  table" — no longer true since both got their full level data duplicated
+  into this page's own database earlier the same day. And a `"FREE"`
+  mastery cost now renders as a proper cash-icon "Free" chip instead of
+  plain text, matching every other cost cell.
+
 2026-09-16 (later still — Mastery page built, NOT fully populated) — new
 `data/manual/mastery-data.json` + `renderMasteryPage()`. Schema: an array
 of `{ name, description, levels: [{ currency, cost, effect }] }`, same
