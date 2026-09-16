@@ -1,10 +1,23 @@
-# Tycoon Sim 2 Base Planner
+# Tycoon Simulator Wiki & Tools
 
-This repository contains a browser-based grid for building, saving, loading, and simulating Tycoon Sim 2 bases.
+**Live site: https://andrew-kitzan.github.io/Tycoon-Sim-Tools/**
 
-> **Base generation is in beta and should not be used yet.** Use **Build mode** to create and test layouts manually.
+This repository is a browser-based companion website for the Roblox game **Tycoon Simulator** — a community wiki plus a set of standalone tools. It's no longer just the Base Planner; that's now one of several tools available from the same site.
 
-## Download and open the planner
+## What's on the site
+
+Open the site and use the **Tool Menu** (top-left) to switch between:
+
+- **Wiki** — the default landing page. Browse by category from the home page's navigation grid: Index, Rebirth, Achievements, Codes, Conveyor, Decoration, Enchanter, Brewer, P2W, Furnace Loot, Crystals Farming, Base Design, Events, Merchant, and Mastery. The home page also shows recent Wiki & Tools Updates and real Game Updates changelogs.
+- **Base Builder** — the grid-based base planner (see [Base Builder](#base-builder) below for full instructions).
+- **Capgrader Generator** — finds the best capgrader chain for your dropper(s).
+- **Luck Simulator** — shows what you can pull from any crate at your current luck.
+- **Calculator** — a scientific calculator that understands the game's own number abbreviations (K, M, B, T, and beyond).
+- **MPA / Chopping Block** — browse upgrader efficiency and get help trimming your setup.
+
+Most players should just use the live site above — no download or setup needed. The instructions below are only for running a local copy (e.g. to contribute changes).
+
+## Run a local copy
 
 Choose **one** of the setup methods below. You can download the repository as a ZIP, clone it with Git, or fork it and then clone your fork. You do not need to use every method.
 
@@ -18,16 +31,16 @@ Choose **one** of the setup methods below. You can download the repository as a 
 2. Select **Code → Download ZIP**.
 3. Extract the entire ZIP to a normal folder. Do not open `index.html` from inside the ZIP.
 4. Open the extracted folder.
-5. Double-click `index.html` to open the planner in your browser.
+5. Double-click `index.html` to open the site in your browser.
 
 ### Clone with Git
 
 ```powershell
 git clone <repository-url>
-cd "Tycoon Sim 2"
+cd Tycoon-Sim-Tools
 ```
 
-Then open `index.html` in your browser. The grid does not require an installation, build command, or web server.
+Then open `index.html` in your browser. The site does not require an installation, build command, or web server.
 
 ### Fork and clone
 
@@ -38,16 +51,20 @@ Then open `index.html` in your browser. The grid does not require an installatio
 
 ```powershell
 git clone <your-fork-url>
-cd "Tycoon Sim 2"
+cd Tycoon-Sim-Tools
 ```
 
 5. Open `index.html` in your browser.
 
-Forking by itself only creates a copy on GitHub. You must also clone your fork or download its ZIP before you can open the planner on your computer.
+Forking by itself only creates a copy on GitHub. You must also clone your fork or download its ZIP before you can open the site on your computer.
 
-Keep all repository files and folders together. The planner needs the JavaScript files and the `data` folder beside `index.html`.
+Keep all repository files and folders together. The site needs the JavaScript files, `icons` folder, and `data` folder beside `index.html`.
 
-## Access the grid
+## Base Builder
+
+> **Base generation is in beta and should not be used yet.** Use **Build mode** to create and test layouts manually.
+
+### Access the grid
 
 The planner opens in **Build mode**. The item library is on the left and the grid is on the right.
 
@@ -56,7 +73,7 @@ The planner opens in **Build mode**. The item library is on the left and the gri
 - **Clear grid:** Removes the current layout after confirmation.
 - Base size, zoom, and the current Build-mode layout are saved automatically in the browser and restored after a refresh.
 
-## Use the build menu
+### Use the build menu
 
 1. Choose **Droppers**, **Upgraders**, **Furnaces**, or **Conveyors**.
 2. Search for an item by name, or open **Filter & sort** to filter by tier or variant and change the sorting order.
@@ -71,7 +88,7 @@ To place many copies in a straight line, hold the left mouse button and drag. Pl
 
 Press `Esc` while placing an item to cancel placement.
 
-## Edit placed items
+### Edit placed items
 
 Hover over a placed item or conveyor to use these shortcuts:
 
@@ -93,7 +110,7 @@ While moving an item:
 
 Invalid placements are rejected when they overlap another placement or extend outside the selected plot size.
 
-## Select and edit a group
+### Select and edit a group
 
 When no build-menu item is selected, drag from an empty grid tile to draw a selection box. Every placement touched by the box becomes part of the group.
 
@@ -107,13 +124,13 @@ Selected placements receive a gold outline and a large direction arrow. The grou
 
 Group rotations and moves are only accepted when every selected placement remains valid.
 
-## Simulate a base
+### Simulate a base
 
 Select **Simulate base** after finishing a layout. The simulation calculates route completion, travel time, active ore, the ore limit, furnace throughput, ore destruction, survival, expected cash per minute, and remaining space. Hover over simulated items to see their route-specific before-and-after values and other relevant effects.
 
 Editing the grid invalidates the old simulation. Run **Simulate base** again after any change.
 
-## Save and share bases
+### Save and share bases
 
 The **Load Bases** and **Save Base** controls are beside the Base Planner title.
 
@@ -131,7 +148,7 @@ The planner keeps the loadout in its browser library and creates a shareable `*.
 
 To share a setup, send its `.tycoon-loadout.json` file to another player. They can copy it into their own `saved-loadouts` folder.
 
-## Load a saved base
+### Load a saved base
 
 1. Select **Load Bases** beside the Base Planner title. If a saved-loadouts folder is already connected, its contents are rescanned automatically so newly added or edited files show up without any extra steps.
 2. If no folder is connected yet, choose **Import saved-loadouts folder** or **Import JSON files**.
@@ -149,6 +166,6 @@ To share a setup, send its `.tycoon-loadout.json` file to another player. They c
 
 Always save the current base first if you may want to return to it.
 
-## Generation mode warning
+### Generation mode warning
 
 **Generation mode is currently in beta and should not be used yet.** Its automatic base-generation workflow is unfinished. Stay in **Build mode** for creating, editing, simulating, saving, and loading bases.
