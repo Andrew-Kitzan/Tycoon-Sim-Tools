@@ -78,6 +78,30 @@ correct on disk (`grep`/`cat` the file directly to be sure), suggest
 Incognito/Private mode as the next diagnostic step before assuming the code
 itself is wrong.
 
+**Update (2026-09-15, port 8000 conflict): before assuming a "still stale"
+report is caching, check whether the player's local server is actually
+serving this project at all.** On the player's machine, port 8000 is
+already occupied by an unrelated app they run separately — **Bitfocus
+Companion** (a streaming-deck/OBS control tool), which runs as its own
+`node.exe` process with its own web admin UI. The player had never
+actually started a wiki dev server; what they were looking at on
+`localhost:8000` the whole time was Companion's own page, coincidentally
+still showing an old cached snapshot in their browser, which looked like a
+stale wiki page. **Symptom that gives this away: `netstat -ano | grep
+LISTENING` shows something on the port, but `tasklist //FI "PID eq
+<pid>"` shows an image name that has nothing to do with Python/this
+project** (a giveaway here was `node.exe` when the player believed they'd
+run `python -m http.server`) — or simplest, just navigate the Browser pane
+tool straight to that `localhost:<port>` and read the page title/content,
+which immediately showed "Bitfocus Companion - Admin" instead of the wiki.
+**Have the player use a different port for their own local server (8080
+worked cleanly) instead of trying to free up 8000** — it's their own
+unrelated app's port, not something to fight over. Also: an agent
+mistakenly killed that Companion process via `taskkill` before this was
+understood, assuming it was the player's wiki test server — if a
+player-reported "local server" turns out to be an unrelated app, don't
+kill it; tell them to just use a free port instead.
+
 **Update (2026-09-15): the `data/manual/*.json` half of this is now fixed at
 the source, not just diagnosed.** A player hit the stale-cache symptom again
 on `brewer-data.json` (an edited potion duration kept showing the old text
