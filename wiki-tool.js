@@ -1058,6 +1058,89 @@
       </table>`;
   }
 
+  // Events data lives in data/manual/events-data.json — same
+  // plain-hand-edited-JSON convention as every other data/manual/ file.
+  // Shape: an array of { name, effect, weight }. Weight is the game's raw
+  // weighted-table weight; the Chance column is computed from it.
+  let eventsDataPromise = null;
+  function loadEventsData() {
+    if (!eventsDataPromise) {
+      eventsDataPromise = fetch('data/manual/events-data.json', { cache: 'no-store' })
+        .then((res) => res.json())
+        .catch(() => []);
+    }
+    return eventsDataPromise;
+  }
+
+  // The game never runs the same event twice in a row (it re-rolls a repeat),
+  // so an event's real long-run chance differs slightly from weight/total:
+  // after event i, the next one is drawn from the remaining events in
+  // proportion to their weights. This finds the long-run share of each event
+  // for that rule by iterating the transition until it settles.
+  function eventLongRunChances(weights) {
+    const total = weights.reduce((a, b) => a + b, 0);
+    const n = weights.length;
+    if (n < 2 || total <= 0) return weights.map((w) => (total > 0 ? w / total : 0));
+    let share = weights.map((w) => w / total);
+    for (let step = 0; step < 2000; step += 1) {
+      const next = new Array(n).fill(0);
+      for (let i = 0; i < n; i += 1) {
+        for (let j = 0; j < n; j += 1) {
+          if (i !== j) next[j] += (share[i] * weights[j]) / (total - weights[i]);
+        }
+      }
+      share = next;
+    }
+    return share;
+  }
+
+  async function renderEventsPage() {
+    const events = (await loadEventsData()).filter((e) => e && e.name);
+    const weights = events.map((e) => Number(e.weight) || 0);
+    const total = weights.reduce((a, b) => a + b, 0);
+    const longRun = eventLongRunChances(weights);
+    const rows = events.map((event, i) => `
+      <tr>
+        <td>${escapeHtml(event.name)}</td>
+        <td>${event.effect ? escapeHtml(event.effect) : '—'}</td>
+        <td>${weights[i] ? formatNumber(weights[i]) : '—'}</td>
+        <td>${total > 0 ? `${(longRun[i] * 100).toFixed(1)}%` : '—'}</td>
+      </tr>`).join('');
+    return `
+      <p>Events are short server-wide boosts that everyone in the game gets at
+      the same time. The schedule runs on the real clock and works in
+      <strong>15-minute slots</strong>: an event runs for one slot, then the
+      next slot is always empty, then another event, and so on. That's an
+      event starting at :00 and :30 of every hour, each lasting 15 minutes,
+      with nothing running in between.</p>
+      <h3 class="wiki-section-heading">How the next event is picked</h3>
+      <p>Each event slot picks its event by weighted random, so a
+      higher-weight event comes up more often. The pick is seeded from the
+      slot's time, so every server lands on the same event at the same
+      moment, and the in-game Event Schedule menu shows the same upcoming
+      events for everyone. <strong>The same event never happens twice in a
+      row</strong> — if the pick matches the event before it, the game
+      re-rolls. That means the rarer events come up a touch more often than
+      their weight alone suggests, which the Chance column below accounts
+      for.</p>
+      <h3 class="wiki-section-heading">Events</h3>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Effect</th>
+            <th>Weight</th>
+            <th>Chance</th>
+          </tr>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
+      </table>
+      <p>Chance is each event's long-run share of all events, including the
+      no-repeat rule. The Alien Invasion was a one-off limited event added in
+      a Post Launch Update. It was set to start at a fixed time instead of being
+      rolled, and it is no longer in the rotation.</p>`;
+  }
+
   // Mastery data lives in data/manual/mastery-data.json — same
   // plain-hand-edited-JSON convention as every other data/manual/ file.
   // Shape: an array of { name, description, levels: [{ currency, cost,
@@ -1086,6 +1169,8 @@
     'unbox speed': 'roll-speed-icon.png',
     'unbox slot': 'unbox-slot-icon.png',
     'plot size': 'plot-size-icon.png',
+    'unbox luck': 'luck-icon.png',
+    'friend luck': 'luck-icon.png',
   };
   // Generic icon+badge+label chip, reused by both formatMasteryName's
   // multi-icon special case below and formatMasteryEffect.
@@ -1247,7 +1332,7 @@
     },
     events: {
       title: 'Events',
-      body: '<p>Past and current limited-time events. Not written yet.</p>',
+      body: renderEventsPage,
     },
     'furnace-loot': {
       title: 'Furnace Loot',
@@ -1277,10 +1362,6 @@
     p2w: {
       title: 'P2W',
       body: renderP2wPage,
-    },
-    'crystals-farming': {
-      title: 'Crystals Farming',
-      body: '<p>The best ways to farm crystals. Not written yet.</p>',
     },
     'base-progression': {
       title: 'Base Design',

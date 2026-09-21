@@ -120,6 +120,48 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-09-21 (Events page, more Mastery data, Crystals Farming removed):
+
+**Events page** (`data/manual/events-data.json`, `renderEventsPage()`).
+Schema is `[{ name, effect, weight }]`, 7 events, total weight 625. The
+player pasted the game's event-scheduler Luau to explain it; what the page
+states, all confirmed by the player: the schedule runs on the real clock in
+**900-second (15 min) slots**; only EVEN ticks (`t // 900`) get an event,
+odd ticks are always "None", so events start at :00 and :30 of every hour
+and last 15 min. The pick is a weighted random seeded with the tick
+(`Random.new(eventTick)`), so every server agrees, and the same event
+never runs twice in a row (a repeat is re-rolled). The Chance column is
+NOT weight/total: because of the no-repeat rule it is the long-run share of
+a Markov chain (`eventLongRunChances()` iterates it), e.g. Super Luck is
+8.0% by weight but ~8.6% in practice. It is computed from the JSON, so
+editing weights updates it. The script also hardcodes tick `1783094400 //
+900` (2026-07-03 16:00 UTC) to `GAME_EVENTS[8]`, which the player confirmed
+was the Alien Invasion, a one-off added in a "Post Launch Update" (their
+wording) and no longer in rotation. Do not describe it as "launch day".
+
+**The player decided NOT to build an upcoming-events predictor.** It would
+need the source of `Utility.getRandomInWeightedTable`, the exact ordered
+`GAME_EVENTS` table (and whether the Alien Invasion still occupies index
+8), and verification of a Roblox `Random` (PCG) port against observed
+schedules; they don't have enough data. Don't offer it again unless they
+bring that data. One quirk noticed in the script: `getPreviousEvent`
+uses the server's `activeEvents` cache, so a freshly started server can
+compute the previous event without its own no-repeat re-roll and may
+occasionally disagree with a long-running one.
+
+**Mastery**: the player filled in Unbox Luck (11 levels) and Friend Luck
+(6 levels) with descriptions, costs and effects. Effects like `"+1"` and
+`"+0.5"` have no label, so `formatMasteryEffect()` renders them through
+its absolute-value branch: badge = the text, label = the mastery name.
+I added `unbox luck` and `friend luck` to `MASTERY_ICON_FILES`, both
+mapped to `luck-icon.png` (my choice, not requested; easy to change).
+Only Offline Earnings is still blank.
+
+**Crystals Farming tile removed** (player doesn't plan to build it): tile
+in `index.html`, its CSS rule, its `PAGES` entry, its background image
+`icons/wiki/crystals-farming-bg.png`, and its README mention. The
+2026-09-15 changelog entry still mentions it as history.
+
 2026-09-16 (later still — Shiny/Mythic Luck icons + polish) — the
 "Shiny/Mythic Luck" mastery needed real icons and went through several
 real layout fixes worth knowing about before touching

@@ -8,7 +8,7 @@ This repository is a browser-based companion website for the Roblox game **Tycoo
 
 Open the site and use the **Tool Menu** (top-left) to switch between:
 
-- **Wiki** — the default landing page. Browse by category from the home page's navigation grid: Index, Rebirth, Achievements, Codes, Conveyor, Decoration, Enchanter, Brewer, P2W, Furnace Loot, Crystals Farming, Base Design, Events, Merchant, and Mastery. The home page also shows recent Wiki & Tools Updates and real Game Updates changelogs.
+- **Wiki** — the default landing page. Browse by category from the home page's navigation grid: Index, Rebirth, Achievements, Codes, Conveyor, Decoration, Enchanter, Brewer, P2W, Furnace Loot, Base Design, Events, Merchant, and Mastery. The home page also shows recent Wiki & Tools Updates and real Game Updates changelogs.
 - **Base Builder** — the grid-based base planner (see [Base Builder](#base-builder) below for full instructions).
 - **Capgrader Generator** — finds the best capgrader chain for your dropper(s).
 - **Luck Simulator** — shows what you can pull from any crate at your current luck.

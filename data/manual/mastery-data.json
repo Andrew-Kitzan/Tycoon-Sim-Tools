@@ -28,19 +28,19 @@
 
   {
     "name": "Unbox Luck",
-    "description": null,
+    "description": "Increase your luck for crates",
     "levels": [
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null }
+      { "currency": "Cash", "cost": "500", "effect": "+1" },
+      { "currency": "Cash", "cost": "10k", "effect": "+1" },
+      { "currency": "Cash", "cost": "25k", "effect": "+1" },
+      { "currency": "Cash", "cost": "50k", "effect": "+1" },
+      { "currency": "Cash", "cost": "1M", "effect":  "+1" },
+      { "currency": "Cash", "cost": "100M", "effect": "+3" },
+      { "currency": "Cash", "cost": "75B", "effect": "+2" },
+      { "currency": "Cash", "cost": "50T", "effect": "+2" },
+      { "currency": "Cash", "cost": "1Qn", "effect": "+2" },
+      { "currency": "Cash", "cost": "1Sp", "effect": "+2" },
+      { "currency": "Cash", "cost": "1Oc", "effect": "+2" }
     ]
   },
 
@@ -72,14 +72,14 @@
 
   {
     "name": "Friend Luck",
-    "description": null,
+    "description": "Crates are luckier with friends!",
     "levels": [
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null }
+      { "currency": "Cash", "cost": "1k", "effect": "+0.5" },
+      { "currency": "Cash", "cost": "10M", "effect": "+0.5" },
+      { "currency": "Cash", "cost": "100M", "effect": "+0.75" },
+      { "currency": "Cash", "cost": "1B", "effect": "+0.75" },
+      { "currency": "Cash", "cost": "32B", "effect": "+1.25" },
+      { "currency": "Cash", "cost": "93T", "effect": "+1.25" }
     ]
   },
 

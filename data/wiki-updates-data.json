@@ -1,5 +1,9 @@
 [
   {
+    "date": "2026-09-21",
+    "summary": "Built the Events page (how the 15-minute event cycle works, every event's effect and weight, and its real chance of coming up), and filled in Unbox Luck and Friend Luck on the Mastery page. The Crystals Farming tile is gone since it isn't planned."
+  },
+  {
     "date": "2026-09-16",
     "summary": "Rewrote the README to cover the whole site instead of just the Base Builder, and added a real skip-pricing section to the Enchanter page (spend Crystals or Robux to skip an item's remaining enchant time) — now with a real Robux icon too, reused on the P2W page's costs. Built out the Mastery page too, with icons for the masteries that have one so far. Also a batch of Achievements data fixes as the real data gets filled in."
   },

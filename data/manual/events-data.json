@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Lucky",
+    "effect": "2x Unbox Luck",
+    "weight": 100
+  },
+  {
+    "name": "Super Luck",
+    "effect": "4x Unbox Luck",
+    "weight": 50
+  },
+  {
+    "name": "Fast Enchant",
+    "effect": "4x Enchant Speed",
+    "weight": 100
+  },
+  {
+    "name": "Crate Storm",
+    "effect": "rains crates that can be picked up for crystals",
+    "weight": 75
+  },
+  {
+    "name": "Cheap Crates",
+    "effect": "25% discount to crate prices",
+    "weight": 100
+  },
+  {
+    "name": "Valuable Ore",
+    "effect": "3x ore value",
+    "weight": 100
+  },
+  {
+    "name": "More Unboxes",
+    "effect": "+1 Unbox Slot",
+    "weight": 100
+  }
+]
