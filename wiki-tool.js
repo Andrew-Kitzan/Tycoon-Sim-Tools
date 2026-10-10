@@ -32,6 +32,21 @@
     ));
   }
 
+  // ---- Cross-page navigation markers -----------------------------------------
+  // anchorAttr marks a row/paragraph as a jump target ("decoration:crates")
+  // for links and search results. linkAttrs marks a chip as something that
+  // MIGHT link elsewhere — activateWikiLinks() checks each one after the
+  // page renders and only makes the ones it can resolve clickable (an item
+  // in the Index, a known decoration, a potion), so formatters don't need
+  // to know what exists.
+  function anchorAttr(kind, name) {
+    if (name == null || name === '') return '';
+    return ` data-wiki-anchor="${escapeHtml(`${kind}:${String(name).trim().toLowerCase()}`)}"`;
+  }
+  function linkAttrs(kind, ref, tier) {
+    return ` data-wiki-link="${kind}" data-wiki-ref="${escapeHtml(ref)}"${tier ? ` data-wiki-tier="${escapeHtml(tier)}"` : ''}`;
+  }
+
   function formatNumber(value) {
     return typeof value === 'number' ? value.toLocaleString() : escapeHtml(value ?? '—');
   }
@@ -60,7 +75,7 @@
     const chips = list.map((name) => {
       const safeName = escapeHtml(name);
       const iconSrc = `icons/items/${encodeURIComponent(name)}.png`;
-      return `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
+      return `<span class="wiki-reward-chip"${linkAttrs('item', name)}><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
     }).join('');
     return `<span class="wiki-reward-list">${chips}</span>`;
   }
@@ -108,7 +123,9 @@
     // Trailing "potions" (plural, e.g. P2W's "5x tier 6 luck potions") maps
     // to the same entry as singular "potion" — every POTION_ICON_FILES key
     // ends in "potion" singular.
-    return name.toLowerCase().replace(/\s+/g, '').replace(/potions$/, 'potion');
+    // "Unbox Luck Potion" (the Index tier rewards' wording) is the same
+    // potion as the plain "Luck Potion" every icon file is named after.
+    return name.toLowerCase().replace(/\s+/g, '').replace(/potions$/, 'potion').replace(/unboxluckpotion$/, 'luckpotion');
   }
 
   // Potion reward strings are "5x Tier 3 Luck Potion" — split the count off
@@ -126,7 +143,7 @@
       const iconFile = POTION_ICON_FILES[normalizePotionKey(name)];
       if (!iconFile) return `<span class="wiki-reward-chip">${escapeHtml(entry)}</span>`;
       const iconSrc = `icons/items/${encodeURIComponent(iconFile)}`;
-      return `<span class="wiki-reward-chip">
+      return `<span class="wiki-reward-chip"${linkAttrs('potion', name)}>
         <span class="wiki-reward-icon-wrap">
           <img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.parentElement.remove()">
           <span class="wiki-reward-badge">+${escapeHtml(countText)}</span>
@@ -268,7 +285,7 @@
     const tableRows = rows.map((row) => {
       const cost = row.cost == null ? null : parseAbbreviated(row.cost);
       return `
-      <tr>
+      <tr${anchorAttr('rebirth', row.rebirth)}>
         <td>${formatNumber(row.rebirth)}</td>
         <td>${formatCostReward(cost)}</td>
         <td>${formatItemRewards(row.itemRewards)}</td>
@@ -332,7 +349,7 @@
       if (potionMatch && potionIcon) {
         const [, countText, name] = potionMatch;
         const iconSrc = `icons/items/${encodeURIComponent(potionIcon)}`;
-        return `<span class="wiki-reward-chip">
+        return `<span class="wiki-reward-chip"${linkAttrs('potion', name)}>
           <span class="wiki-reward-icon-wrap">
             <img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.parentElement.remove()">
             <span class="wiki-reward-badge">+${escapeHtml(countText)}</span>
@@ -390,16 +407,17 @@
           Crystal Multi
         </span>`;
       }
-      // Luck multipliers (e.g. "2x Luck") reuse the Luck stat icon from the
-      // Rebirth page, with the multiplier as the badge.
-      const luckMultiMatch = String(entry).match(/^([0-9.]+x)\s+luck$/i);
+      // Luck multipliers (e.g. "2x Luck", or the Index tiers' "1.05x unbox
+      // luck") reuse the Luck stat icon from the Rebirth page, with the
+      // multiplier as the badge.
+      const luckMultiMatch = String(entry).match(/^([0-9.]+x)\s+(unbox\s+)?luck$/i);
       if (luckMultiMatch) {
         return `<span class="wiki-reward-chip">
           <span class="wiki-reward-icon-wrap">
             <img class="wiki-reward-icon" src="icons/wiki/luck-icon.png" alt="" onerror="this.parentElement.remove()">
             <span class="wiki-reward-badge">${escapeHtml(luckMultiMatch[1])}</span>
           </span>
-          Luck
+          ${luckMultiMatch[2] ? 'Unbox Luck' : 'Luck'}
         </span>`;
       }
       // Flat stat bonuses (e.g. "+2 Plot Size", same shape the Rebirth page's
@@ -451,7 +469,7 @@
       }
       const safeName = escapeHtml(entry);
       const iconSrc = `icons/items/${encodeURIComponent(entry)}.png`;
-      return `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
+      return `<span class="wiki-reward-chip"${linkAttrs('item', entry)}><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
     }).join('');
     return `<span class="wiki-reward-list">${chips}</span>`;
   }
@@ -459,7 +477,7 @@
   async function renderCodesPage() {
     const codes = await loadCodesData();
     const rows = codes.map((entry) => `
-      <tr>
+      <tr${anchorAttr('code', entry.code)}>
         <td class="wiki-code-text">${escapeHtml(entry.code)}</td>
         <td><span class="wiki-status-badge ${entry.active ? 'is-active' : 'is-expired'}">${entry.active ? 'Active' : 'Expired'}</span></td>
         <td>${formatCodeRewards(entry.rewards)}</td>
@@ -539,7 +557,7 @@
       const size = entry.size?.confirmed;
       const speed = entry.speed?.confirmed;
       return `
-      <tr>
+      <tr${anchorAttr('conveyor', entry.name)}>
         <td>${formatConveyorName(entry.name)}</td>
         <td>${size ? `${size.width}x${size.length}` : '—'}</td>
         <td>${speed == null ? '—' : formatNumber(speed)}</td>
@@ -603,13 +621,13 @@
   function formatDecorationName(name) {
     const safeName = escapeHtml(name);
     const iconSrc = `icons/decoration/${encodeURIComponent(name)}.png`;
-    return `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
+    return `<span class="wiki-reward-chip"${linkAttrs('decoration', name)}><img class="wiki-reward-icon" src="${iconSrc}" alt="" onerror="this.remove()">${safeName}</span>`;
   }
 
   async function renderDecorationPage() {
     const decorations = await loadDecorationData();
     const rows = decorations.map((entry) => `
-      <tr>
+      <tr${anchorAttr('decoration', entry.name)}>
         <td>${formatDecorationName(entry.name)}</td>
         <td>${entry.size ? escapeHtml(entry.size) : '—'}</td>
         <td>${formatRarity(entry.rarity)}</td>
@@ -722,10 +740,10 @@
     }).join('');
     const oddsRows = lootOdds.map((entry) => {
       const iconCell = entry.icon
-        ? `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="${escapeHtml(entry.icon)}" alt="" onerror="this.remove()">${escapeHtml(entry.reward)}</span>`
+        ? `<span class="wiki-reward-chip"${linkAttrs('item', entry.reward)}><img class="wiki-reward-icon" src="${escapeHtml(entry.icon)}" alt="" onerror="this.remove()">${escapeHtml(entry.reward)}</span>`
         : escapeHtml(entry.reward);
       return `
-      <tr>
+      <tr${anchorAttr('loot', entry.reward)}>
         <td>${iconCell}</td>
         <td>${escapeHtml(entry.odds)}</td>
         <td>${escapeHtml(entry.time50)}</td>
@@ -791,14 +809,14 @@
         <td>${formatCrystalCost(entry.cost)}</td>
       </tr>`).join('');
     const tierRows = tiers.map((entry) => `
-      <tr>
+      <tr${anchorAttr('potion-tier', entry.tier)}>
         <td>Tier ${escapeHtml(entry.tier)}</td>
         <td>${formatRarity(entry.rarity)}</td>
         <td>${entry.multiplier ? escapeHtml(entry.multiplier) : '—'}</td>
         <td>${entry.duration ? escapeHtml(entry.duration) : '—'}</td>
       </tr>`).join('');
     return `
-      <p>The Brewer upcrafts potions: 5 lower-tier potions of the same type
+      <p${anchorAttr('potion', 'unbox slot')}>The Brewer upcrafts potions: 5 lower-tier potions of the same type
       (Luck, Shiny Luck, Mythic Luck, or Roll Speed) combine into 1 potion of
       that same type, one rarity tier higher — for a crystal cost that goes
       up with each tier. <strong>Unbox Slot Potion is the only potion with
@@ -977,7 +995,7 @@
   async function renderP2wPage() {
     const products = await loadP2wData();
     const rows = products.map((entry) => `
-      <tr>
+      <tr${anchorAttr('p2w', entry.name)}>
         <td>${escapeHtml(entry.name)}</td>
         <td>${formatRobuxCost(entry.robuxCost == null ? null : formatNumber(entry.robuxCost))}</td>
         <td><span class="wiki-status-badge ${entry.obtainable ? 'is-active' : 'is-expired'}">${entry.obtainable ? 'Obtainable' : 'Unobtainable'}</span></td>
@@ -1028,7 +1046,7 @@
     const rows = sorted.flatMap((achievement) => {
       const levels = achievement.levels?.length ? achievement.levels : [{ requirement: null, rewards: [] }];
       return levels.map((level, i) => `
-      <tr>
+      <tr${i === 0 ? anchorAttr('achievement', achievement.name) : ''}>
         ${i === 0 ? `<td rowspan="${levels.length}">${escapeHtml(achievement.name)}</td>` : ''}
         ${i === 0 ? `<td rowspan="${levels.length}">${achievement.description ? escapeHtml(achievement.description) : '—'}</td>` : ''}
         <td>Level ${i + 1}</td>
@@ -1085,7 +1103,7 @@
       const key = `tier${tier}${normalizePotionKey(item.name)}`;
       const iconFile = POTION_ICON_FILES[key] ?? POTION_ICON_FILES[key.replace('mythicluckpotion', 'mythicpotion')];
       if (tier && iconFile) {
-        return `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="icons/items/${encodeURIComponent(iconFile)}" alt="" onerror="this.remove()">${escapeHtml(item.name)}</span>`;
+        return `<span class="wiki-reward-chip"${linkAttrs('potion', item.name, tier)}><img class="wiki-reward-icon" src="icons/items/${encodeURIComponent(iconFile)}" alt="" onerror="this.remove()">${escapeHtml(item.name)}</span>`;
       }
       return escapeHtml(item.name);
     }
@@ -1112,14 +1130,14 @@
       </tr>`;
     }).join('');
     const restock = mechanics.restockRobuxCost != null
-      ? ` for ${formatRobuxCost(formatNumber(mechanics.restockRobuxCost))}`
-      : '';
+      ? ` for <strong>${formatNumber(mechanics.restockRobuxCost)} Robux</strong>`
+      : ' with Robux';
     return `
       <p>The Traveling Merchant sells a rotating stock of potions, upgraders,
       droppers, furnaces and decorations. His stock is <strong>personal to you</strong>: every
       player gets their own stock, and it restocks every
       <strong>${escapeHtml(mechanics.restockInterval ?? '2 Hours')}</strong>.
-      You can also pay Robux to restock early${restock}.</p>
+      You can also restock early${restock}.</p>
       <h3 class="wiki-section-heading">How his stock is rolled</h3>
       <p>Each restock fills <strong>${escapeHtml(mechanics.slots ?? 6)}
       slots</strong>. Every slot rolls on its own, so you can get several
@@ -1186,7 +1204,7 @@
     const total = weights.reduce((a, b) => a + b, 0);
     const longRun = eventLongRunChances(weights);
     const rows = events.map((event, i) => `
-      <tr>
+      <tr${anchorAttr('event', event.name)}>
         <td>${escapeHtml(event.name)}</td>
         <td>${event.effect ? escapeHtml(event.effect) : '—'}</td>
         <td>${weights[i] ? formatNumber(weights[i]) : '—'}</td>
@@ -1331,7 +1349,7 @@
     const rows = sorted.flatMap((mastery) => {
       if (mastery.seeAlsoPage) {
         return [`
-      <tr>
+      <tr${anchorAttr('mastery', mastery.name)}>
         <td>${formatMasteryName(mastery.name)}</td>
         <td>${mastery.description ? escapeHtml(mastery.description) : '—'}</td>
         <td colspan="3"><button type="button" class="wiki-notes-link" data-wiki-page-link="${escapeHtml(mastery.seeAlsoPage)}">${mastery.seeAlsoLabel ? escapeHtml(mastery.seeAlsoLabel) : 'See its own page for details'}</button></td>
@@ -1347,7 +1365,7 @@
           : currency === 'robux' ? formatRobuxCost(level.cost == null ? null : formatNumber(level.cost))
           : '—';
         return `
-      <tr>
+      <tr${i === 0 ? anchorAttr('mastery', mastery.name) : ''}>
         ${i === 0 ? `<td rowspan="${levels.length}">${formatMasteryName(mastery.name)}</td>` : ''}
         ${i === 0 ? `<td rowspan="${levels.length}">${mastery.description ? escapeHtml(mastery.description) : '—'}</td>` : ''}
         <td>Level ${i + 1}</td>
@@ -1374,14 +1392,798 @@
       </table>`;
   }
 
-  // Wires up any [data-wiki-page-link] buttons rendered on the Mastery
-  // page (the Furnace Loot / Enchant Speed "see its own page" links) to
-  // navigate via openPage() — same delegation pattern would work for any
-  // future page that needs an internal cross-link like this.
-  function wireMasteryPageLinks() {
-    document.querySelectorAll('[data-wiki-page-link]').forEach((el) => {
+  // Wires up any [data-wiki-page-link] buttons in the current page body
+  // (Mastery's Furnace Loot / Enchant Speed links, an item page's "See the
+  // P2W page") to navigate via openPage().
+  function wirePageLinks() {
+    pageBody.querySelectorAll('[data-wiki-page-link]').forEach((el) => {
       el.addEventListener('click', () => openPage(el.dataset.wikiPageLink));
     });
+  }
+
+  // ---- Index page -------------------------------------------------------------
+  // Every Dropper, Upgrader, and Furnace as ONE card per item (not one per
+  // variant): hover a card for a variant picker, click it for the full
+  // details panel with a variant switcher. Item stats come from the
+  // already-loaded globalThis.TycoonDatabase (data/items.generated.js, the
+  // spreadsheet's Droppers/Upgraders/Furnaces sheets — its Capgrader/Crates/
+  // Rebirth/etc. copies of the same items are skipped as duplicates). Odds
+  // come from globalThis.CrateLuckData's sheetOdds — the Crates sheet's own
+  // new-luck-system Odds column at base luck, the same numbers the Luck
+  // Simulator reproduces at its default stats. The item sheets' own Odds
+  // column is the OLD luck system (the sheet's NOTICE says so) and is never
+  // used. data/manual/index-data.json holds the hand-edited extras: index
+  // tier rewards, items missing from the spreadsheet (Tornado Alley), crate
+  // name aliases, and the "Items That Lie" in-game labels.
+  let indexDataPromise = null;
+  function loadIndexData() {
+    if (!indexDataPromise) {
+      indexDataPromise = fetch('data/manual/index-data.json', { cache: 'no-store' })
+        .then((res) => res.json())
+        .catch(() => ({}));
+    }
+    return indexDataPromise;
+  }
+
+  const INDEX_VARIANTS = ['Base', 'Shiny', 'Mythic', 'Shiny Mythic'];
+  const INDEX_RARITIES = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Secret'];
+  const INDEX_TYPES = { dropper: 'Dropper', upgrader: 'Upgrader', furnace: 'Furnace' };
+  const INDEX_ITEM_SHEETS = new Set(['Droppers', 'Upgraders', 'Furnaces']);
+  // Some sheet "Extra Effects" cells hold a tag instead of an effect ("P2W",
+  // "Exlusive" — a recurring typo, normalized here), sometimes followed by
+  // a real effect ("P2W, Applies the Derp effect to ore").
+  const INDEX_TAGS = { p2w: 'P2W', exlusive: 'Exclusive', exclusive: 'Exclusive' };
+  const INDEX_FILTER_STORAGE_KEY = 'wiki-index-filters';
+  const INDEX_DEFAULT_FILTERS = {
+    search: '', type: '', rarity: '', statType: '', source: '', variant: '', uses: '', effectOnly: false, sort: 'name',
+  };
+
+  function isBlankIndexValue(value) {
+    return value == null || ['', 'n/a', '?'].includes(String(value).trim().toLowerCase());
+  }
+
+  function splitIndexEffect(text) {
+    let rest = String(text ?? '').trim();
+    const tags = [];
+    const match = rest.match(/^(p2w|exlusive|exclusive)\s*(?:,\s*|$)/i);
+    if (match) {
+      tags.push(INDEX_TAGS[match[1].toLowerCase()]);
+      rest = rest.slice(match[0].length).trim();
+    }
+    // A bare "Centered" line (Alien Helper, Fine Point, Prismatic) is the
+    // sheet's shorthand for "only upgrades ore that's centered on it".
+    rest = rest.replace(/^centered$/gim, 'Ore must be centered on the upgrader for it to work.');
+    return { tags, effect: isBlankIndexValue(rest) ? '' : rest };
+  }
+
+  function indexIconSrc(name, variant) {
+    const suffix = variant === 'Base' ? '' : ` ${variant}`;
+    return `icons/items/${encodeURIComponent(`${name}${suffix}`)}.png`;
+  }
+
+  function indexOddsText(v, fallback) {
+    if (!v.odds) return fallback;
+    return v.oddsNote ? `${v.odds} (assumed)` : v.odds;
+  }
+
+  // Non-crate items grouped for the Source filter. P2W comes from the P2W
+  // page's own data (any item a dev product/gamepass `gives`); the rest are
+  // read from the Base variant's Obtainment Method text (Shiny versions of
+  // these are usually "Enchanter Exclusive", which isn't how you first get
+  // the item).
+  const INDEX_SOURCE_GROUPS = [
+    ['merchant', 'Merchant', /traveling merchant/i],
+    ['achievement', 'Achievements', /achievement/i],
+    ['code', 'Codes', /\bcode\b/i],
+    ['rebirth', 'Rebirth', /\brebirth\b/i],
+    ['p2w', 'P2W', null],
+  ];
+  function indexSourceGroup(v, isP2w) {
+    if (v.crate) return v.crate;
+    if (isP2w) return 'p2w';
+    return INDEX_SOURCE_GROUPS.find(([, , pattern]) => pattern?.test(v.source ?? ''))?.[0] ?? null;
+  }
+
+  // Case-insensitive literal find/replace pairs from index-data.json
+  // `textFixes` — e.g. the sheet calls Neon an effect, but it's a material.
+  // build-crate-luck-data.mjs applies the same list for the Luck Simulator.
+  function applyTextFixes(text, fixes) {
+    let out = String(text ?? '');
+    for (const { find, replace } of fixes ?? []) {
+      out = out.replace(new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), replace);
+    }
+    return out;
+  }
+
+  // Effects and materials (index-data.json `oreModifiers`, from the sheet's
+  // "Other Info" page): each item variant gets the ones its effect text
+  // mentions, shown as tags with a hover/click explanation.
+  let oreModifierNotes = [];
+  function modifierTagsHtml(modifiers) {
+    if (!modifiers.length) return '';
+    const notesFor = (m) => oreModifierNotes.filter((note) => (
+      (/fire and frost/i.test(note) && /^(fire|frost)$/i.test(m.name))
+      || (/cosmetic/i.test(note) && /cosmetic/i.test(m.description))
+      || (/\bmaterials?\b/i.test(note) && m.type === 'Material')
+    ));
+    // Each effect/material has its own outline color (index-data.json
+    // `color`) so they're told apart at a glance; "rainbow" gets a
+    // gradient outline instead of one color.
+    const tagClass = (m) => `wiki-modifier-tag is-${m.type.toLowerCase()}${m.color === 'rainbow' ? ' is-rainbow' : ''}`;
+    const tagStyle = (m) => (/^#[0-9a-f]{3,8}$/i.test(m.color ?? '') ? ` style="--modifier-color: ${m.color}"` : '');
+    return `<div class="wiki-modifier-tags">${modifiers.map((m) => `
+      <button type="button" class="${tagClass(m)}"${tagStyle(m)} aria-expanded="false">
+        ${escapeHtml(m.name)} <span class="wiki-modifier-type">${escapeHtml(m.type)}</span>
+        <span class="wiki-modifier-tip" role="tooltip">
+          <strong>${escapeHtml(m.name)}</strong> <span class="wiki-modifier-type">${escapeHtml(m.type)}</span>
+          <span class="wiki-modifier-desc">${escapeHtml(m.description)}</span>
+          ${notesFor(m).map((note) => `<span class="wiki-modifier-note">${escapeHtml(note)}</span>`).join('')}
+        </span>
+      </button>`).join('')}</div>`;
+  }
+
+  // The item page's effect section heading follows its tags (player
+  // request): only materials → "Material(s)", only effects → "Effect(s)",
+  // both → "Effects/Materials". No tags (e.g. "Clones Ore") → "Effect".
+  function effectHeading(modifiers) {
+    const effects = modifiers.filter((m) => m.type !== 'Material').length;
+    const materials = modifiers.length - effects;
+    if (effects && materials) return 'Effects/Materials';
+    if (materials) return materials > 1 ? 'Materials' : 'Material';
+    return effects > 1 ? 'Effects' : 'Effect';
+  }
+
+  function buildIndexItems(manual, p2wProducts) {
+    const productsFor = (name) => (p2wProducts ?? [])
+      .filter((p) => (p.gives ?? []).some((g) => String(g).trim().toLowerCase() === name.toLowerCase()));
+    const records = (globalThis.TycoonDatabase?.records ?? []).filter((r) => INDEX_ITEM_SHEETS.has(r.sheet));
+    const crateData = globalThis.CrateLuckData ?? { crates: [], items: {} };
+    const crateCost = new Map(crateData.crates.map((c) => [c.name, c.cost]));
+    const aliases = manual.crateNameAliases ?? {};
+    // "Items That Lie": what the in-game UI rounds a value to. realValue is
+    // only given when the lie isn't the main stat itself (Dream Machine's
+    // per-effect bonus, Incremental Upgrader's later passes) — otherwise
+    // the real value is just the item's main stat.
+    const labels = new Map((manual.inGameLabels ?? []).map((e) => [`${e.name}::${e.variant}`.toLowerCase(), e]));
+    const extras = (manual.extraItems ?? []).map((r) => ({ ...r, isManual: true }));
+    const modifiers = (manual.oreModifiers?.list ?? []).map((m) => ({ ...m, pattern: new RegExp(m.match, 'i') }));
+    oreModifierNotes = manual.oreModifiers?.notes ?? [];
+    const items = new Map();
+    for (const rec of [...records, ...extras]) {
+      const name = String(rec.name ?? '').trim();
+      const variant = String(rec.variant ?? '').trim();
+      if (!name || !INDEX_TYPES[rec.type] || !INDEX_VARIANTS.includes(variant)) continue;
+      const key = `${rec.type}::${name.toLowerCase()}`;
+      let item = items.get(key);
+      if (!item) {
+        const rarity = String(rec.rarity ?? '').trim();
+        item = { key, name, type: rec.type, rarity: rarity ? rarity[0].toUpperCase() + rarity.slice(1).toLowerCase() : null, variants: {} };
+        items.set(key, item);
+      }
+      if (item.variants[variant]) continue;
+      const crateItem = crateData.items[aliases[name] ?? name];
+      const crate = crateItem ? (crateItem.anyCrate ? 'Any Crate' : crateItem.crates[0] ?? null) : null;
+      const { tags, effect: sheetEffect } = splitIndexEffect(rec.description || rec.effects);
+      // Player-supplied effects the sheet leaves as "N/A" (index-data.json
+      // `extraEffects`, by item name, applied to every variant).
+      const effect = applyTextFixes([sheetEffect, manual.extraEffects?.[name]].filter(Boolean).join('\n'), manual.textFixes);
+      item.variants[variant] = {
+        variant,
+        mainStat: typeof rec.mainStat === 'number' ? rec.mainStat : null,
+        mainStatType: isBlankIndexValue(rec.mainStatType) ? null : rec.mainStatType,
+        statUnknown: rec.isManual && typeof rec.mainStat !== 'number',
+        size: rec.size ? `${rec.size.width}x${rec.size.length}` : null,
+        dropSpeed: rec.dropSpeed ?? null,
+        oreSize: rec.oreSize ?? null,
+        conveyorSpeed: rec.conveyorSpeed ?? null,
+        range: isBlankIndexValue(rec.range) ? null : rec.range,
+        limitedUses: isBlankIndexValue(rec.limitedUses) ? null : String(rec.limitedUses),
+        // Fix the sheet's recurring "Rebrith"/"Exlusive" typos for display.
+        source: rec.source ? String(rec.source).replace(/\bRebrith\b/gi, 'Rebirth').replace(/\bExlusive\b/gi, 'Exclusive') : null,
+        crate,
+        crateCost: crate && crate !== 'Any Crate' ? crateCost.get(crate) ?? null : null,
+        odds: crateItem?.variants?.[variant]?.sheetOdds ?? null,
+        // Set by build-crate-luck-data.mjs for odds that are a guess, not a
+        // real sheet weight (currently only Tornado Alley).
+        oddsNote: crateItem?.oddsAssumed
+          ? (typeof crateItem.oddsAssumed === 'string' ? crateItem.oddsAssumed : 'Assumed odds — the real odds aren\'t known yet.')
+          : null,
+        effect,
+        // modifierExclusions: tags an item's text mentions but it doesn't
+        // actually interact with (Acid Plant's Neon note).
+        modifiers: modifiers.filter((m) => m.pattern.test(effect) && !(manual.modifierExclusions?.[name] ?? []).includes(m.name)),
+        tags,
+        inGameLabel: labels.get(`${name}::${variant}`.toLowerCase()) ?? null,
+      };
+    }
+    for (const item of items.values()) {
+      item.variantList = INDEX_VARIANTS.filter((v) => item.variants[v]);
+      const base = item.variants.Base ?? item.variants[item.variantList[0]];
+      item.base = base;
+      item.tags = [...new Set(item.variantList.flatMap((v) => item.variants[v].tags))];
+      item.hasEffect = item.variantList.some((v) => item.variants[v].effect);
+      item.statType = item.type === 'upgrader' ? base.mainStatType : null;
+      item.crate = base.crate;
+      item.modifiers = [...new Map(item.variantList.flatMap((v) => item.variants[v].modifiers).map((m) => [m.name, m])).values()];
+      item.p2wProducts = productsFor(item.name);
+      item.sourceGroup = indexSourceGroup(base, item.p2wProducts.length > 0);
+    }
+    return [...items.values()];
+  }
+
+  function formatIndexStatNumber(value) {
+    if (Math.abs(value) >= 1000) return formatCompact(value);
+    return String(Number(value.toFixed(4)));
+  }
+
+  // The headline stat for one variant: Ore Value for droppers, a flat
+  // "+N" for additive upgraders, an "Nx" multiplier for everything else.
+  function indexMainStat(item, v) {
+    const label = item.type === 'dropper' ? 'Ore Value'
+      : item.type === 'upgrader' && v.mainStatType === 'Additive' ? 'Adds'
+        : 'Multiplier';
+    if (v.mainStat == null) return { label, text: v.statUnknown ? '?' : 'See effect' };
+    const number = formatIndexStatNumber(v.mainStat);
+    if (item.type === 'dropper') return { label, text: number };
+    if (item.type === 'upgrader' && v.mainStatType === 'Additive') return { label, text: `+${number}` };
+    return { label, text: `${number}x` };
+  }
+
+  function indexSourceLabel(crate) {
+    return crate === 'Any Crate' ? 'Any Crate (limited time)' : `${crate} Crate`;
+  }
+
+  function readIndexFilters() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(INDEX_FILTER_STORAGE_KEY));
+      if (saved && typeof saved === 'object') return { ...INDEX_DEFAULT_FILTERS, ...saved };
+    } catch {
+      // Storage unavailable or corrupt — fall back to defaults.
+    }
+    return { ...INDEX_DEFAULT_FILTERS };
+  }
+
+  function saveIndexFilters(filters) {
+    try {
+      localStorage.setItem(INDEX_FILTER_STORAGE_KEY, JSON.stringify(filters));
+    } catch {
+      // Storage unavailable — filters just won't be remembered.
+    }
+  }
+
+  // Index tier rewards live in their own hand-edited file,
+  // data/manual/index-tier-data.json: [{ name, "Items Required",
+  // "chat tag", Rewards: [...] }] — the player's own key names, kept as-is.
+  let indexTierDataPromise = null;
+  function loadIndexTierData() {
+    if (!indexTierDataPromise) {
+      indexTierDataPromise = fetch('data/manual/index-tier-data.json', { cache: 'no-store' })
+        .then((res) => res.json())
+        .catch(() => []);
+    }
+    return indexTierDataPromise;
+  }
+
+  function renderIndexTiers(tiers) {
+    if (!Array.isArray(tiers) || !tiers.length) {
+      return '<p class="wiki-index-muted">Index tier rewards are coming soon.</p>';
+    }
+    const rows = tiers.map((tier) => {
+      const tag = tier['chat tag'];
+      return `
+      <tr${anchorAttr('tier', tier.name)}>
+        <td>${escapeHtml(tier.name ?? '—')}</td>
+        <td>${formatNumber(parseAbbreviated(tier['Items Required']) ?? tier['Items Required'] ?? '—')}</td>
+        <td>${tag ? `<span class="wiki-chat-tag wiki-index-tier-tag">[${escapeHtml(tag)}]</span>` : '—'}</td>
+        <td>${formatCodeRewards(tier.Rewards)}</td>
+      </tr>`;
+    }).join('');
+    return `
+      <p>Discover enough items and you rank up an index tier, earning a chat
+      tag plus rewards for each one.</p>
+      <table class="wiki-data-table">
+        <thead><tr><th>Tier</th><th>Items Required</th><th>Chat Tag</th><th>Rewards</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  let indexItems = [];
+  async function renderIndexPage() {
+    const [manual, p2wProducts, tiers] = await Promise.all([loadIndexData(), loadP2wData(), loadIndexTierData()]);
+    indexItems = buildIndexItems(manual, p2wProducts);
+    const crateNames = (globalThis.CrateLuckData?.crates ?? []).map((c) => c.name);
+    const option = (value, label) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`;
+    return `
+      <h3 class="wiki-section-heading">Index Tiers</h3>
+      ${renderIndexTiers(tiers)}
+      <h3 class="wiki-section-heading">Item Index</h3>
+      <p>Every Dropper, Upgrader, and Furnace in the game, one card per item.
+      Hover a card to pick a variant, or click it to open its page. Odds
+      are at base luck — use the Luck Simulator to see them at your own luck.</p>
+      <div class="wiki-index-toolbar">
+        <input class="wiki-index-search" type="search" data-index-filter="search" placeholder="Search items…" aria-label="Search items">
+        <select data-index-filter="type" aria-label="Type">${option('', 'All types')}${Object.entries(INDEX_TYPES).map(([v, l]) => option(v, `${l}s`)).join('')}</select>
+        <select data-index-filter="rarity" aria-label="Rarity">${option('', 'All rarities')}${INDEX_RARITIES.map((r) => option(r, r)).join('')}</select>
+        <select data-index-filter="statType" aria-label="Stat type">${option('', 'All stat types')}${option('Additive', 'Additive')}${option('Multiplicative', 'Multiplicative')}${option('Mixed', 'Mixed')}</select>
+        <select data-index-filter="source" aria-label="Source">${option('', 'All sources')}${crateNames.map((c) => option(c, `${c} Crate`)).join('')}${option('Any Crate', 'Any Crate (limited time)')}${INDEX_SOURCE_GROUPS.map(([value, label]) => option(value, label)).join('')}${option('none', 'Not from a crate')}</select>
+        <select data-index-filter="variant" aria-label="Variants">${option('', 'Any variants')}${option('Shiny', 'Has Shiny')}${option('Mythic', 'Has Mythic')}${option('Base only', 'Base only')}</select>
+        <select data-index-filter="uses" aria-label="Uses">${option('', 'Any uses')}${option('limited', 'Limited uses')}${option('unlimited', 'Unlimited uses')}</select>
+        <label class="wiki-index-check"><input type="checkbox" data-index-filter="effectOnly"> Has a special effect</label>
+        <select data-index-filter="sort" aria-label="Sort">${option('name', 'A–Z')}${option('name-desc', 'Z–A')}${option('rarity-asc', 'Rarity: Low to High')}${option('rarity-desc', 'Rarity: High to Low')}</select>
+        <button type="button" class="wiki-index-reset">Reset</button>
+        <span class="wiki-index-count" aria-live="polite"></span>
+      </div>
+      <div class="wiki-index-grid"></div>
+      <div class="wiki-index-popover" hidden></div>`;
+  }
+
+  function indexItemMatches(item, f) {
+    if (f.search && !item.name.toLowerCase().includes(f.search.trim().toLowerCase())) return false;
+    if (f.type && item.type !== f.type) return false;
+    if (f.rarity && item.rarity !== f.rarity) return false;
+    if (f.statType && item.statType !== f.statType) return false;
+    if (f.source === 'none' ? item.crate : f.source && item.sourceGroup !== f.source) return false;
+    if (f.variant === 'Base only' && item.variantList.length > 1) return false;
+    if ((f.variant === 'Shiny' || f.variant === 'Mythic') && !item.variants[f.variant]) return false;
+    if (f.uses) {
+      const uses = item.base.limitedUses;
+      if (!uses) return false;
+      if ((f.uses === 'unlimited') !== (uses.toLowerCase() === 'unlimited')) return false;
+    }
+    if (f.effectOnly && !item.hasEffect) return false;
+    return true;
+  }
+
+  function sortIndexItems(list, sort) {
+    const byName = (a, b) => a.name.localeCompare(b.name);
+    const rank = (item) => INDEX_RARITIES.indexOf(item.rarity);
+    const sorters = {
+      name: byName,
+      'name-desc': (a, b) => byName(b, a),
+      'rarity-asc': (a, b) => rank(a) - rank(b) || byName(a, b),
+      'rarity-desc': (a, b) => rank(b) - rank(a) || byName(a, b),
+    };
+    return [...list].sort(sorters[sort] ?? byName);
+  }
+
+  function indexVariantDots(item) {
+    return item.variantList.filter((v) => v !== 'Base')
+      .map((v) => `<span class="wiki-index-dot is-${v.toLowerCase().replace(' ', '-')}" title="${escapeHtml(v)}"></span>`).join('');
+  }
+
+  function indexCardHtml(item) {
+    const color = RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
+    return `
+      <button type="button" class="wiki-index-card" data-index-key="${escapeHtml(item.key)}" style="--rarity-color: ${color}">
+        <span class="wiki-index-dots">${indexVariantDots(item)}</span>
+        <img class="wiki-index-card-icon" src="${indexIconSrc(item.name, item.variantList[0])}" alt="" loading="lazy" onerror="this.classList.add('is-missing')">
+        <span class="wiki-index-card-name">${escapeHtml(item.name)}</span>
+      </button>`;
+  }
+
+  function indexVariantChips(item, active) {
+    return item.variantList.map((v) => `
+      <button type="button" class="wiki-index-variant-chip is-${v.toLowerCase().replace(' ', '-')}${v === active ? ' is-active' : ''}" data-index-variant="${escapeHtml(v)}">${escapeHtml(v)}</button>`).join('');
+  }
+
+  function indexPopoverPreview(item, variant) {
+    const v = item.variants[variant];
+    const stat = indexMainStat(item, v);
+    return `
+      <img class="wiki-index-popover-icon" src="${indexIconSrc(item.name, variant)}" alt="" onerror="this.classList.add('is-missing')">
+      <div class="wiki-index-popover-stats">
+        <div><span>${escapeHtml(stat.label)}</span> <strong>${escapeHtml(stat.text)}</strong></div>
+        ${v.odds ? `<div><span>Odds</span> <strong>${escapeHtml(indexOddsText(v))}</strong></div>` : ''}
+        ${v.effect ? `<p>${escapeHtml(v.effect)}</p>` : ''}
+      </div>`;
+  }
+
+  function indexPopoverHtml(item, variant) {
+    return `
+      <div class="wiki-index-popover-head">
+        <strong>${escapeHtml(item.name)}</strong>
+        ${formatRarity(item.rarity)}
+      </div>
+      <div class="wiki-index-variant-row">${indexVariantChips(item, variant)}</div>
+      <div class="wiki-index-popover-preview">${indexPopoverPreview(item, variant)}</div>
+      <p class="wiki-index-popover-hint">Click for full details</p>`;
+  }
+
+  function indexStatTile(label, value) {
+    return `<div class="wiki-index-stat"><span>${escapeHtml(label)}</span><strong>${value}</strong></div>`;
+  }
+
+  // P2W products that give this item (from the P2W page's own data), each
+  // with its Robux cost and notes — formatNotes() turns a "Drillbit & Co."
+  // mention into the same link button the P2W page shows.
+  function itemP2wHtml(item) {
+    if (!item.p2wProducts.length) return '';
+    const rows = item.p2wProducts.map((product) => `
+      <div class="wiki-item-p2w-row">
+        <strong>${escapeHtml(product.name)}</strong>
+        ${formatRobuxCost(product.robuxCost == null ? null : formatNumber(product.robuxCost))}
+        ${product.notes ? `<span class="wiki-item-p2w-notes">${formatNotes(product.notes)}</span>` : ''}
+      </div>`).join('');
+    return `
+      <div class="wiki-item-p2w">
+        ${rows}
+        <button type="button" class="wiki-notes-link" data-wiki-page-link="p2w">See the P2W page</button>
+      </div>`;
+  }
+
+  // The full item page (replaces the old Index side panel) — opened by
+  // clicking a card, or from anywhere via openItemPage().
+  function itemPageHtml(item, variant) {
+    const v = item.variants[variant];
+    const color = RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
+    const stat = indexMainStat(item, v);
+    const tiles = [indexStatTile(stat.label, escapeHtml(stat.text))];
+    if (v.mainStatType && item.type === 'upgrader') tiles.push(indexStatTile('Stat Type', escapeHtml(v.mainStatType)));
+    if (v.size) tiles.push(indexStatTile('Size', escapeHtml(v.size)));
+    if (v.dropSpeed != null) tiles.push(indexStatTile('Drop Speed', escapeHtml(v.dropSpeed)));
+    if (v.oreSize != null) tiles.push(indexStatTile('Ore Size', escapeHtml(v.oreSize)));
+    if (v.conveyorSpeed != null) tiles.push(indexStatTile('Conveyor Speed', escapeHtml(v.conveyorSpeed)));
+    if (v.range) tiles.push(indexStatTile('Range', escapeHtml(v.range)));
+    if (v.limitedUses) tiles.push(indexStatTile('Uses', escapeHtml(v.limitedUses === '1' ? '1 (Limited)' : v.limitedUses)));
+
+    const howToGet = [];
+    // A P2W item's source text usually just repeats the P2W block below —
+    // only keep it when it adds something ("Enchanter Exclusive").
+    const sourceRepeatsP2w = item.p2wProducts.length && !/enchant/i.test(v.source ?? '');
+    if (v.source && !sourceRepeatsP2w) howToGet.push(`<p>${escapeHtml(v.source)}</p>`);
+    if (v.crate || v.odds) {
+      const tilesGet = [];
+      if (v.crate) tilesGet.push(indexStatTile('Crate', escapeHtml(indexSourceLabel(v.crate))));
+      if (v.crateCost) tilesGet.push(indexStatTile('Crate Cost', escapeHtml(v.crateCost)));
+      tilesGet.push(indexStatTile('Odds (Base Luck)', escapeHtml(indexOddsText(v, 'Unknown'))));
+      howToGet.push(`<div class="wiki-index-stats">${tilesGet.join('')}</div>`);
+      if (v.oddsNote) howToGet.push(`<p class="wiki-index-lie">${escapeHtml(v.oddsNote)}</p>`);
+    }
+
+    const anyOdds = item.variantList.some((name) => item.variants[name].odds);
+    const compareRows = item.variantList.map((name) => {
+      const row = item.variants[name];
+      return `
+        <tr class="${name === variant ? 'is-active' : ''}" data-index-variant="${escapeHtml(name)}">
+          <td>${escapeHtml(name)}</td>
+          <td>${escapeHtml(indexMainStat(item, row).text)}</td>
+          ${anyOdds ? `<td>${escapeHtml(indexOddsText(row, '—'))}</td>` : ''}
+        </tr>`;
+    }).join('');
+
+    const p2w = itemP2wHtml(item);
+    return `
+      <div class="wiki-item-page">
+        <div class="wiki-item-hero">
+          <div class="wiki-index-detail-art" style="--rarity-color: ${color}">
+            <img src="${indexIconSrc(item.name, variant)}" alt="" onerror="this.classList.add('is-missing')">
+          </div>
+          <div class="wiki-item-summary">
+            <div class="wiki-index-detail-tags">
+              ${formatRarity(item.rarity)}
+              <span class="wiki-index-tag">${escapeHtml(INDEX_TYPES[item.type])}</span>
+              ${item.tags.map((t) => `<span class="wiki-index-tag">${escapeHtml(t)}</span>`).join('')}
+            </div>
+            <div class="wiki-index-variant-row" role="tablist" aria-label="Variant">${indexVariantChips(item, variant)}</div>
+            <div class="wiki-index-stats">${tiles.join('')}</div>
+            ${v.inGameLabel ? `<p class="wiki-index-lie"><strong>In-game shows:</strong> ${escapeHtml(v.inGameLabel.label)} — the real value is <strong>${escapeHtml(v.inGameLabel.realValue ?? `${formatIndexStatNumber(v.mainStat)}x`)}</strong> (the game rounds it)</p>` : ''}
+          </div>
+        </div>
+        ${v.effect ? `<h3 class="wiki-section-heading">${effectHeading(v.modifiers)}</h3>${modifierTagsHtml(v.modifiers)}<p class="wiki-index-effect">${escapeHtml(v.effect)}</p>` : ''}
+        <h3 class="wiki-section-heading">How to Get</h3>
+        ${howToGet.join('') || (p2w ? '' : '<p>—</p>')}
+        ${p2w}
+        ${item.variantList.length > 1 ? `
+          <h3 class="wiki-section-heading">All Variants</h3>
+          <table class="wiki-data-table wiki-index-compare">
+            <thead><tr><th>Variant</th><th>${escapeHtml(stat.label)}</th>${anyOdds ? '<th>Odds</th>' : ''}</tr></thead>
+            <tbody>${compareRows}</tbody>
+          </table>` : ''}
+      </div>`;
+  }
+
+  function wireIndexPage() {
+    const grid = pageBody.querySelector('.wiki-index-grid');
+    const popover = pageBody.querySelector('.wiki-index-popover');
+    const countEl = pageBody.querySelector('.wiki-index-count');
+    const controls = [...pageBody.querySelectorAll('[data-index-filter]')];
+    if (!grid) return;
+    const byKey = new Map(indexItems.map((item) => [item.key, item]));
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    let filters = readIndexFilters();
+    let popoverKey = null;
+    let hideTimer = null;
+
+    function syncControls() {
+      controls.forEach((el) => {
+        const name = el.dataset.indexFilter;
+        if (el.type === 'checkbox') el.checked = Boolean(filters[name]);
+        else el.value = filters[name] ?? '';
+        if (el.tagName === 'SELECT' && el.selectedIndex === -1) { el.selectedIndex = 0; filters[name] = el.value; }
+      });
+    }
+
+    function renderGrid() {
+      const list = sortIndexItems(indexItems.filter((item) => indexItemMatches(item, filters)), filters.sort);
+      grid.innerHTML = list.length ? list.map(indexCardHtml).join('') : '<p class="wiki-index-muted">No items match these filters.</p>';
+      countEl.textContent = `${list.length} of ${indexItems.length} items`;
+    }
+
+    function openDetail(key, variant) {
+      hidePopover();
+      openItemPage(key, variant);
+    }
+
+    function showPopover(card) {
+      clearTimeout(hideTimer);
+      const item = byKey.get(card.dataset.indexKey);
+      if (!item) return;
+      if (popoverKey !== item.key) {
+        popoverKey = item.key;
+        popover.innerHTML = indexPopoverHtml(item, item.variantList[0]);
+      }
+      popover.hidden = false;
+      const rect = card.getBoundingClientRect();
+      const width = popover.offsetWidth;
+      const height = popover.offsetHeight;
+      let left = rect.right + 8;
+      if (left + width > window.innerWidth - 8) left = rect.left - width - 8;
+      left = Math.max(8, left);
+      let top = rect.top;
+      if (top + height > window.innerHeight - 8) top = window.innerHeight - height - 8;
+      popover.style.left = `${left}px`;
+      // 62px keeps it below the site's fixed Tool Menu / Feedback buttons,
+      // which sit above the whole wiki layer (.wiki-body is its own stacking
+      // context, so no z-index here can beat them).
+      popover.style.top = `${Math.max(62, top)}px`;
+    }
+
+    function hidePopover() {
+      clearTimeout(hideTimer);
+      popover.hidden = true;
+      popoverKey = null;
+    }
+
+    function scheduleHide() {
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(hidePopover, 160);
+    }
+
+    controls.forEach((el) => {
+      el.addEventListener(el.type === 'search' ? 'input' : 'change', () => {
+        filters[el.dataset.indexFilter] = el.type === 'checkbox' ? el.checked : el.value;
+        saveIndexFilters(filters);
+        renderGrid();
+      });
+    });
+    pageBody.querySelector('.wiki-index-reset')?.addEventListener('click', () => {
+      filters = { ...INDEX_DEFAULT_FILTERS };
+      saveIndexFilters(filters);
+      syncControls();
+      renderGrid();
+    });
+
+    grid.addEventListener('click', (event) => {
+      const card = event.target.closest('.wiki-index-card');
+      if (card) openDetail(card.dataset.indexKey, 'Base');
+    });
+    if (canHover) {
+      grid.addEventListener('mouseover', (event) => {
+        const card = event.target.closest('.wiki-index-card');
+        if (card) showPopover(card);
+      });
+      grid.addEventListener('mouseout', (event) => {
+        const card = event.target.closest('.wiki-index-card');
+        if (card && !card.contains(event.relatedTarget)) scheduleHide();
+      });
+      popover.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+      popover.addEventListener('mouseleave', scheduleHide);
+      popover.addEventListener('mouseover', (event) => {
+        const chip = event.target.closest('[data-index-variant]');
+        const item = byKey.get(popoverKey);
+        if (!chip || !item) return;
+        popover.querySelectorAll('.wiki-index-variant-chip').forEach((el) => el.classList.toggle('is-active', el === chip));
+        popover.querySelector('.wiki-index-popover-preview').innerHTML = indexPopoverPreview(item, chip.dataset.indexVariant);
+      });
+      popover.addEventListener('click', (event) => {
+        const chip = event.target.closest('[data-index-variant]');
+        const active = popover.querySelector('.wiki-index-variant-chip.is-active');
+        if (popoverKey) openDetail(popoverKey, (chip ?? active)?.dataset.indexVariant ?? 'Base');
+      });
+    }
+
+    activeIndexPage = { hidePopover };
+
+    syncControls();
+    renderGrid();
+
+    // Coming back from an item page: highlight the card they opened (the
+    // navigation history restores the scroll position itself).
+    if (indexReturnKey) {
+      const card = grid.querySelector(`[data-index-key="${CSS.escape(indexReturnKey)}"]`);
+      indexReturnKey = null;
+      if (card) {
+        card.classList.add('is-selected');
+        card.focus({ preventScroll: true });
+      }
+    }
+  }
+
+  // Registered once (not per page open, which would stack a new listener
+  // every visit) and routed to whichever Index page instance is current.
+  let activeIndexPage = null;
+  let indexReturnKey = null;
+  // The hover popover is position:fixed, so any scroll would leave it
+  // floating over the wrong card — just hide it.
+  window.addEventListener('scroll', () => activeIndexPage?.hidePopover(), { passive: true });
+
+  // Builds the item list without rendering the Index page, so an item page
+  // can open straight from anywhere (another wiki page, a tool) even if the
+  // Index was never visited this session.
+  async function ensureIndexItems() {
+    if (indexItems.length) return indexItems;
+    const [manual, p2wProducts] = await Promise.all([loadIndexData(), loadP2wData()]);
+    indexItems = buildIndexItems(manual, p2wProducts);
+    return indexItems;
+  }
+
+  function findIndexItem(ref) {
+    const needle = String(ref ?? '').trim().toLowerCase();
+    return indexItems.find((item) => item.key === needle) ?? indexItems.find((item) => item.name.toLowerCase() === needle) ?? null;
+  }
+
+  // Renders one item's full page for a navigation entry
+  // ({ kind: 'item', ref, variant }). `ref` is an item key ("upgrader::alien
+  // invasion") or plain name ("Alien Invasion").
+  async function renderItemEntry(entry, scrollY) {
+    const token = ++pageToken;
+    pageBody.onclick = null;
+    pageBody.onkeydown = null;
+    homeView.hidden = true;
+    pageView.hidden = false;
+    await ensureIndexItems();
+    if (token !== pageToken) return;
+    const item = findIndexItem(entry.ref);
+    if (!item) {
+      pageTitle.textContent = 'Item not found';
+      pageBody.innerHTML = `<p>No item named "${escapeHtml(entry.ref)}" is in the Index.</p>`;
+      return;
+    }
+    let current = item.variants[entry.variant] ? entry.variant : item.variantList[0];
+    pageTitle.textContent = item.name;
+    if (navStack[navStack.length - 1]?.key === 'index') indexReturnKey = item.key;
+    const render = () => {
+      // Remember the variant on the history entry, so Back from a page
+      // opened here returns to the same variant.
+      entry.variant = current;
+      pageBody.innerHTML = itemPageHtml(item, current);
+      wirePageLinks();
+    };
+    render();
+    finishRender(token, entry, scrollY);
+    pageBody.onclick = (event) => {
+      // Effect/material tags: hover shows the tip on desktop; a click
+      // (the only option on touch) pins it open until clicked again.
+      const tag = event.target.closest('.wiki-modifier-tag');
+      if (tag) {
+        const open = !tag.classList.contains('is-open');
+        pageBody.querySelectorAll('.wiki-modifier-tag.is-open').forEach((el) => {
+          el.classList.remove('is-open');
+          el.setAttribute('aria-expanded', 'false');
+        });
+        tag.classList.toggle('is-open', open);
+        tag.setAttribute('aria-expanded', String(open));
+        return;
+      }
+      const pick = event.target.closest('[data-index-variant]');
+      if (!pick || pick.dataset.indexVariant === current) return;
+      current = pick.dataset.indexVariant;
+      render();
+    };
+    pageBody.onkeydown = (event) => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      if (!event.target.closest?.('.wiki-index-variant-row')) return;
+      const i = item.variantList.indexOf(current);
+      current = item.variantList[(i + (event.key === 'ArrowRight' ? 1 : -1) + item.variantList.length) % item.variantList.length];
+      render();
+      pageBody.querySelector('.wiki-index-variant-chip.is-active')?.focus();
+      event.preventDefault();
+    };
+  }
+
+  // ---- Wiki links (item / potion / decoration chips on any page) ------------
+  let decorationNames = new Set();
+  let conveyorNames = new Set();
+  // Rebirth data spells it "Reciever" — match conveyors spelling-insensitively.
+  const normalizeConveyorName = (name) => String(name).trim().toLowerCase().replace(/reciever/g, 'receiver');
+  async function loadLinkTargets() {
+    const [, decorations, worksheet] = await Promise.all([ensureIndexItems(), loadDecorationData(), loadGeometryWorksheet()]);
+    decorationNames = new Set(decorations.map((d) => String(d.name).trim().toLowerCase()));
+    conveyorNames = new Set(Object.values(worksheet?.conveyors ?? {}).map((c) => normalizeConveyorName(c.name)));
+  }
+
+  // Where a chip should go, or null if it has nowhere to go:
+  // - an Index item → its item page (Base)
+  // - a decoration → its row on the Decoration page
+  // - a potion → its tier's row on the Brewer page (Unbox Slot Potion,
+  //   which has no tiers, → the Brewer intro that covers it)
+  function resolveWikiLink(kind, ref, tier) {
+    const name = String(ref ?? '').trim();
+    const lower = name.toLowerCase();
+    if (kind === 'item') {
+      const item = findIndexItem(name);
+      if (item) return { kind: 'item', ref: item.key, variant: 'Base' };
+    }
+    if ((kind === 'item' || kind === 'decoration') && decorationNames.has(lower)) {
+      return { kind: 'page', key: 'decoration', anchor: `decoration:${lower}` };
+    }
+    if (kind === 'item' && conveyorNames.has(normalizeConveyorName(name))) {
+      return { kind: 'page', key: 'conveyor', anchor: `conveyor:${normalizeConveyorName(name)}` };
+    }
+    if (kind === 'potion' || /potions?$/i.test(name)) {
+      if (/(unbox|roll)\s*slot/i.test(name)) return { kind: 'page', key: 'brewer', anchor: 'potion:unbox slot' };
+      const potionTier = tier ?? name.match(/tier\s*(\d)/i)?.[1];
+      return { kind: 'page', key: 'brewer', anchor: potionTier ? `potion-tier:${potionTier}` : null };
+    }
+    return null;
+  }
+
+  // Runs after every page render: turns each [data-wiki-link] chip that
+  // resolves somewhere into a clickable link. A chip that would just link
+  // to the page it's already on (a decoration on the Decoration page) is
+  // left alone.
+  async function activateWikiLinks(token) {
+    const chips = [...pageBody.querySelectorAll('[data-wiki-link]')];
+    if (!chips.length) return;
+    await loadLinkTargets();
+    if (token !== pageToken) return;
+    for (const chip of chips) {
+      const target = resolveWikiLink(chip.dataset.wikiLink, chip.dataset.wikiRef, chip.dataset.wikiTier);
+      if (!target) continue;
+      if (target.kind === 'page' && navCurrent?.kind === 'page' && target.key === navCurrent.key) continue;
+      chip.classList.add('is-wiki-link');
+      chip.tabIndex = 0;
+      chip.setAttribute('role', 'link');
+      chip.title = target.kind === 'item'
+        ? `Open ${findIndexItem(target.ref).name}'s page`
+        : `Go to the ${PAGES[target.key].title} page`;
+    }
+  }
+
+  function followWikiLink(chip) {
+    const target = resolveWikiLink(chip.dataset.wikiLink, chip.dataset.wikiRef, chip.dataset.wikiTier);
+    if (target) navigate(target);
+  }
+  pageBody.addEventListener('click', (event) => {
+    const chip = event.target.closest('.is-wiki-link');
+    if (!chip) return;
+    event.preventDefault();
+    followWikiLink(chip);
+  });
+  pageBody.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const chip = event.target.closest?.('.is-wiki-link');
+    if (!chip) return;
+    event.preventDefault();
+    followWikiLink(chip);
+  });
+
+  function scrollToAnchor(anchor) {
+    const el = anchor && pageBody.querySelector(`[data-wiki-anchor="${CSS.escape(anchor)}"]`);
+    if (!el) return false;
+    el.scrollIntoView({ block: 'center' });
+    el.classList.remove('wiki-anchor-flash');
+    void el.offsetWidth; // restart the highlight animation
+    el.classList.add('wiki-anchor-flash');
+    return true;
+  }
+
+  // After a page/item renders: restore the scroll position (Back), else
+  // jump to the linked row (anchor), else start at the top.
+  function finishRender(token, entry, scrollY) {
+    if (scrollY != null) window.scrollTo(0, scrollY);
+    else if (!scrollToAnchor(entry.anchor)) window.scrollTo(0, 0);
+    activateWikiLinks(token);
   }
 
   const PAGES = {
@@ -1397,7 +2199,8 @@
     },
     index: {
       title: 'Index',
-      body: '<p>Every Dropper, Upgrader, and Furnace in the game, organized by index tier — plus what each tier rewards. Not written yet.</p>',
+      body: renderIndexPage,
+      after: wireIndexPage,
     },
     rebirth: {
       title: 'Rebirth',
@@ -1414,7 +2217,7 @@
     mastery: {
       title: 'Mastery',
       body: renderMasteryPage,
-      after: wireMasteryPageLinks,
+      after: wirePageLinks,
     },
     events: {
       title: 'Events',
@@ -1451,35 +2254,303 @@
     },
   };
 
-  function openPage(key) {
-    const page = PAGES[key];
-    if (!page) return;
+  // ---- Navigation history ------------------------------------------------------
+  // Every page view is an entry: { kind: 'page', key, anchor? } or
+  // { kind: 'item', ref, variant }. Following a link pushes the current
+  // entry (with its scroll position) onto navStack; Back pops it and puts
+  // the player back exactly where they were. The home page clears it.
+  // pageToken is bumped on every render, so a slow fetch for a page the
+  // player already left never overwrites the page they're on now.
+  let pageToken = 0;
+  let navCurrent = null;
+  const navStack = [];
+
+  function navEntryLabel(entry) {
+    if (entry.kind === 'item') return findIndexItem(entry.ref)?.name ?? 'the item';
+    return PAGES[entry.key]?.title ?? 'the previous page';
+  }
+  function updateBackButton() {
+    const previous = navStack[navStack.length - 1];
+    if (backButton) backButton.textContent = previous ? `← Back to ${navEntryLabel(previous)}` : '← Back to Navigate';
+  }
+
+  function navigate(entry, { push = true, scrollY = null } = {}) {
+    if (entry.kind === 'page' && !PAGES[entry.key]) return;
+    if (push && navCurrent) navStack.push({ ...navCurrent, scrollY: window.scrollY });
+    navCurrent = entry;
+    activeIndexPage?.hidePopover();
+    activeIndexPage = null;
+    updateBackButton();
+    if (entry.kind === 'item') renderItemEntry(entry, scrollY);
+    else renderPageEntry(entry, scrollY);
+  }
+
+  function renderPageEntry(entry, scrollY) {
+    const page = PAGES[entry.key];
+    const token = ++pageToken;
+    pageBody.onclick = null;
+    pageBody.onkeydown = null;
     pageTitle.textContent = page.title;
+    homeView.hidden = true;
+    pageView.hidden = false;
     if (typeof page.body === 'function') {
       pageBody.innerHTML = '<p>Loading…</p>';
       Promise.resolve(page.body()).then((html) => {
-        // Guard against a slow fetch resolving after the player has already
-        // navigated away to a different page.
-        if (pageTitle.textContent !== page.title) return;
+        if (token !== pageToken) return;
         pageBody.innerHTML = html;
         if (typeof page.after === 'function') page.after();
+        finishRender(token, entry, scrollY);
       });
     } else {
       pageBody.innerHTML = page.body;
+      finishRender(token, entry, scrollY);
     }
-    homeView.hidden = true;
-    pageView.hidden = false;
+  }
+
+  function openPage(key, anchor = null) {
+    navigate({ kind: 'page', key, anchor });
+  }
+  function openItemPage(ref, variant = 'Base') {
+    navigate({ kind: 'item', ref, variant });
   }
 
   function goHome() {
+    pageToken += 1;
+    navStack.length = 0;
+    navCurrent = null;
+    activeIndexPage?.hidePopover();
+    activeIndexPage = null;
     pageView.hidden = true;
     homeView.hidden = false;
   }
 
   navTiles.forEach((tile) => {
-    tile.addEventListener('click', () => openPage(tile.dataset.wikiPage));
+    tile.addEventListener('click', () => {
+      goHome();
+      openPage(tile.dataset.wikiPage);
+    });
   });
-  backButton?.addEventListener('click', goHome);
+  backButton?.addEventListener('click', () => {
+    const previous = navStack.pop();
+    if (!previous) {
+      goHome();
+      return;
+    }
+    navigate(previous, { push: false, scrollY: previous.scrollY });
+  });
+
+  // Hook for cross-tool navigation (e.g. a Luck Simulator button that opens
+  // an item's wiki page): TycoonWiki.openItem('Alien Invasion', 'Mythic'),
+  // TycoonWiki.openPage('brewer', 'potion-tier:5'). These only render into
+  // the wiki — switching the Tool Menu over to the wiki is the caller's job.
+  globalThis.TycoonWiki = {
+    openItem: (ref, variant) => openItemPage(ref, variant),
+    openPage: (key, anchor) => openPage(key, anchor),
+  };
+
+  // ---- Wiki search bar ---------------------------------------------------------
+  // One flat list of everything findable, built lazily on first use from the
+  // same data files the pages render: pages (with keywords), Index items
+  // (searchable by type, rarity, crate, source and effect text too),
+  // potions, decorations, conveyors, codes, achievements, P2W products,
+  // masteries, events, rebirths and index tiers. Each result navigates like
+  // a wiki link, jumping straight to the matching row where there is one.
+  const searchInput = document.querySelector('#wiki-search-input');
+  const searchResults = document.querySelector('#wiki-search-results');
+  const SEARCH_PAGE_KEYWORDS = {
+    index: 'items droppers upgraders furnaces item index tiers chat tags collection',
+    rebirth: 'rebirths rewards prestige',
+    merchant: 'traveling merchant shop stock restock',
+    achievements: 'achievements rewards',
+    mastery: 'masteries upgrades levels',
+    events: 'events event cycle lucky luck',
+    'furnace-loot': 'furnace loot drops corium',
+    codes: 'codes redeem promo free rewards',
+    decoration: 'decorations cosmetic',
+    conveyor: 'conveyors teleporters belts',
+    enchanter: 'enchant enchanting enchanter shiny mythic variants skip upgrade',
+    brewer: 'brewer potions upcraft craft',
+    p2w: 'p2w robux gamepasses dev products premium shop',
+    updates: 'wiki tools update log changelog',
+    'game-updates': 'game update log patch notes changelog',
+  };
+  const SEARCH_KIND_ORDER = ['Page', 'Item', 'Potion'];
+  const POTION_TYPES = ['Luck', 'Shiny Luck', 'Mythic Luck', 'Roll Speed'];
+
+  let searchIndexPromise = null;
+  function buildSearchIndex() {
+    if (searchIndexPromise) return searchIndexPromise;
+    searchIndexPromise = (async () => {
+      const [, codes, achievements, products, masteries, events, rebirths, decorations, worksheet, tiers] = await Promise.all([
+        ensureIndexItems(), loadCodesData(), loadAchievementsData(), loadP2wData(), loadMasteryData(),
+        loadEventsData(), loadRebirthData(), loadDecorationData(), loadGeometryWorksheet(), loadIndexTierData(),
+      ]);
+      const entries = [];
+      const add = (kind, label, sub, extra, target, icon = null) => {
+        if (!label) return;
+        entries.push({ kind, label: String(label), sub: sub ?? '', icon, target, hay: `${label} ${sub ?? ''} ${extra ?? ''} ${kind}`.toLowerCase() });
+      };
+      const page = (key, kind, name) => ({ kind: 'page', key, anchor: `${kind}:${String(name).trim().toLowerCase()}` });
+
+      for (const [key, pageDef] of Object.entries(PAGES)) add('Page', pageDef.title, 'Wiki page', SEARCH_PAGE_KEYWORDS[key], { kind: 'page', key });
+      for (const item of indexItems) {
+        const effects = item.variantList.map((v) => `${item.variants[v].effect} ${item.variants[v].source ?? ''}`).join(' ');
+        add('Item', item.name, `${item.rarity} ${INDEX_TYPES[item.type]}${item.crate ? ` · ${indexSourceLabel(item.crate)}` : ''}`,
+          `${item.variantList.join(' ')} ${item.tags.join(' ')} ${item.statType ?? ''} ${effects}`,
+          { kind: 'item', ref: item.key, variant: 'Base' }, indexIconSrc(item.name, item.variantList[0]));
+      }
+      for (let tier = 1; tier <= 6; tier += 1) {
+        for (const type of POTION_TYPES) {
+          const key = `tier${tier}${normalizePotionKey(`${type} Potion`)}`;
+          const iconFile = POTION_ICON_FILES[key] ?? POTION_ICON_FILES[key.replace('mythicluckpotion', 'mythicpotion')];
+          add('Potion', `Tier ${tier} ${type} Potion`, 'Brewer', `${type} potions`, { kind: 'page', key: 'brewer', anchor: `potion-tier:${tier}` },
+            iconFile ? `icons/items/${encodeURIComponent(iconFile)}` : null);
+        }
+      }
+      add('Potion', 'Unbox Slot Potion', 'Brewer', 'roll slot potions', { kind: 'page', key: 'brewer', anchor: 'potion:unbox slot' },
+        `icons/items/${encodeURIComponent(POTION_ICON_FILES.tier1unboxslotpotion)}`);
+      for (const deco of decorations) {
+        add('Decoration', deco.name, deco.rarity ?? 'Decoration', deco.obtain, page('decoration', 'decoration', deco.name),
+          `icons/decoration/${encodeURIComponent(deco.name)}.png`);
+      }
+      for (const conveyor of Object.values(worksheet?.conveyors ?? {})) {
+        const displayName = CONVEYOR_DISPLAY_NAMES[conveyor.name] ?? conveyor.name;
+        add('Conveyor', displayName, 'Conveyor', conveyor.name, page('conveyor', 'conveyor', conveyor.name),
+          `icons/conveyor/${encodeURIComponent(displayName)}.png`);
+      }
+      for (const code of codes) {
+        add('Code', code.code, code.active ? 'Active code' : 'Expired code', (code.rewards ?? []).join(' '), page('codes', 'code', code.code));
+      }
+      for (const achievement of achievements) {
+        const rewards = (achievement.levels ?? []).flatMap((l) => [l.requirement ?? '', ...(l.rewards ?? [])]).join(' ');
+        add('Achievement', achievement.name, achievement.description ?? 'Achievement', rewards, page('achievements', 'achievement', achievement.name));
+      }
+      for (const product of products) {
+        add('P2W', product.name, product.robuxCost != null ? `R$${formatNumber(product.robuxCost)}` : 'P2W', `${(product.gives ?? []).join(' ')} ${product.notes ?? ''} robux`, page('p2w', 'p2w', product.name));
+      }
+      for (const mastery of masteries) {
+        add('Mastery', mastery.name, mastery.description ?? 'Mastery', '', page('mastery', 'mastery', mastery.name));
+      }
+      for (const event of events.filter((e) => e?.name)) {
+        add('Event', event.name, event.effect ?? 'Event', '', page('events', 'event', event.name));
+      }
+      for (const row of rebirths) {
+        add('Rebirth', `Rebirth ${row.rebirth}`, (row.itemRewards ?? []).join(', ') || 'Rebirth rewards',
+          `${(row.potionRewards ?? []).join(' ')} ${(row.statRewards ?? []).join(' ')}`, page('rebirth', 'rebirth', row.rebirth));
+      }
+      for (const tier of tiers) {
+        add('Index Tier', tier.name, `[${tier['chat tag']}] · ${tier['Items Required']} items`, (tier.Rewards ?? []).join(' '), page('index', 'tier', tier.name));
+      }
+      return entries;
+    })();
+    return searchIndexPromise;
+  }
+
+  function searchScore(entry, query, tokens) {
+    const name = entry.label.toLowerCase();
+    if (name === query) return 100;
+    if (name.startsWith(query)) return 80;
+    if (name.split(/[^a-z0-9]+/).some((word) => word.startsWith(query))) return 70;
+    if (name.includes(query)) return 60;
+    if (tokens.every((t) => name.includes(t))) return 50;
+    if (tokens.every((t) => entry.hay.includes(t))) return 20;
+    return 0;
+  }
+
+  function runSearch(entries, rawQuery) {
+    const query = rawQuery.trim().toLowerCase();
+    if (!query) return [];
+    const tokens = query.split(/\s+/);
+    const kindRank = (kind) => {
+      const i = SEARCH_KIND_ORDER.indexOf(kind);
+      return i === -1 ? SEARCH_KIND_ORDER.length : i;
+    };
+    return entries
+      .map((entry) => ({ entry, score: searchScore(entry, query, tokens) }))
+      .filter((r) => r.score > 0)
+      .sort((a, b) => b.score - a.score || kindRank(a.entry.kind) - kindRank(b.entry.kind) || a.entry.label.localeCompare(b.entry.label))
+      .map((r) => r.entry);
+  }
+
+  const SEARCH_LIMIT = 12;
+  let searchMatches = [];
+  let searchActive = -1;
+
+  function closeSearch() {
+    searchResults.hidden = true;
+    searchInput.setAttribute('aria-expanded', 'false');
+    searchActive = -1;
+  }
+
+  function renderSearchResults(total) {
+    const shown = searchMatches.slice(0, SEARCH_LIMIT);
+    if (!searchInput.value.trim()) {
+      closeSearch();
+      return;
+    }
+    searchResults.innerHTML = shown.length
+      ? shown.map((entry, i) => `
+        <button type="button" class="wiki-search-result${i === searchActive ? ' is-active' : ''}" role="option" aria-selected="${i === searchActive}" data-search-index="${i}">
+          ${entry.icon ? `<img class="wiki-search-icon" src="${entry.icon}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : '<span class="wiki-search-icon"></span>'}
+          <span class="wiki-search-text">
+            <span class="wiki-search-label">${escapeHtml(entry.label)}</span>
+            <span class="wiki-search-sub">${escapeHtml(entry.sub)}</span>
+          </span>
+          <span class="wiki-search-kind">${escapeHtml(entry.kind)}</span>
+        </button>`).join('') + (total > SEARCH_LIMIT ? `<p class="wiki-search-more">${total - SEARCH_LIMIT} more — keep typing to narrow it down</p>` : '')
+      : '<p class="wiki-search-more">No matches.</p>';
+    searchResults.hidden = false;
+    searchInput.setAttribute('aria-expanded', 'true');
+  }
+
+  function goToSearchResult(i) {
+    const entry = searchMatches[i];
+    if (!entry) return;
+    closeSearch();
+    searchInput.value = '';
+    searchInput.blur();
+    navigate(entry.target);
+  }
+
+  async function updateSearch() {
+    const query = searchInput.value;
+    const entries = await buildSearchIndex();
+    if (query !== searchInput.value) return; // a newer keystroke already ran
+    searchMatches = runSearch(entries, query);
+    searchActive = searchMatches.length ? 0 : -1;
+    renderSearchResults(searchMatches.length);
+  }
+
+  if (searchInput && searchResults) {
+    searchInput.addEventListener('input', updateSearch);
+    searchInput.addEventListener('focus', () => {
+      buildSearchIndex();
+      if (searchInput.value.trim()) updateSearch();
+    });
+    searchInput.addEventListener('keydown', (event) => {
+      const count = Math.min(searchMatches.length, SEARCH_LIMIT);
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        if (!count) return;
+        searchActive = (searchActive + (event.key === 'ArrowDown' ? 1 : -1) + count) % count;
+        renderSearchResults(searchMatches.length);
+        searchResults.querySelector('.is-active')?.scrollIntoView({ block: 'nearest' });
+        event.preventDefault();
+      } else if (event.key === 'Enter') {
+        if (searchActive >= 0) goToSearchResult(searchActive);
+        event.preventDefault();
+      } else if (event.key === 'Escape') {
+        closeSearch();
+      }
+    });
+    // mousedown (not click) so the input's blur doesn't close the list
+    // before the click lands.
+    searchResults.addEventListener('mousedown', (event) => {
+      const result = event.target.closest('[data-search-index]');
+      event.preventDefault();
+      if (result) goToSearchResult(Number(result.dataset.searchIndex));
+    });
+    searchInput.addEventListener('blur', () => setTimeout(closeSearch, 120));
+  }
 
   // Both home-page update panels ("Wiki & Tools Updates" and "Game
   // Updates") share this exact preview+view-all pattern: show only the most

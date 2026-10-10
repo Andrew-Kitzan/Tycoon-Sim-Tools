@@ -114,16 +114,20 @@
   // shinyLuck/mythicLuck are the "1 in X" inputs. Returns the probability of
   // landing on `variant` specifically, or null if the item doesn't have that
   // variant at all.
+  // The item is picked first, then its variant — so a Shiny/Mythic roll
+  // only exists for items that actually HAVE that variant (player-confirmed
+  // 2026-10-10). An item with no Mythic version never loses odds to a Mythic
+  // roll, and likewise for Shiny.
   function variantChance(baseChance, variant, hasShiny, hasMythic, shinyLuck, mythicLuck) {
-    if (variant === 'Shiny' && !hasShiny) return null;
+    if ((variant === 'Shiny' || variant === 'Shiny Mythic') && !hasShiny) return null;
     if ((variant === 'Mythic' || variant === 'Shiny Mythic') && !hasMythic) return null;
-    const A = Math.max(1.0001, shinyLuck);
-    const B = Math.max(1.0001, mythicLuck);
-    if (variant === 'Shiny Mythic') return baseChance * (1 / A) * (1 / B);
-    if (variant === 'Mythic') return baseChance * (1 - 1 / A) * (1 / B);
-    if (variant === 'Shiny') return baseChance * (1 / A) * (hasMythic ? (1 - 1 / B) : 1);
+    const S = hasShiny ? 1 / Math.max(1.0001, shinyLuck) : 0;
+    const M = hasMythic ? 1 / Math.max(1.0001, mythicLuck) : 0;
+    if (variant === 'Shiny Mythic') return baseChance * S * M;
+    if (variant === 'Mythic') return baseChance * (1 - S) * M;
+    if (variant === 'Shiny') return baseChance * S * (1 - M);
     // Base
-    return baseChance * (1 - 1 / A) * (hasMythic ? (1 - 1 / B) : 1);
+    return baseChance * (1 - S) * (1 - M);
   }
 
   // ---- "How long" (item detail popup) ---------------------------------------
@@ -400,7 +404,7 @@
         <button type="button" class="luck-item-cell" style="--rarity-color: ${color}" data-luck-item="${name}">
           ${itemIconHtml(name, variant)}
           <span class="luck-item-name">${name}</span>
-          <span class="luck-item-odds">1/${compactOdds(1 / probability)}</span>
+          <span class="luck-item-odds">1/${compactOdds(1 / probability)}${item.oddsAssumed ? ' (assumed)' : ''}</span>
         </button>
       `;
     }).join('') || '<p class="capgrader-empty-note">No items have this variant in this crate — try Base or Shiny, or toggle on more any-crate items.</p>';
@@ -425,7 +429,8 @@
       return `<div class="luck-time-row"><span>${Math.round(confidence * 100)}% chance by</span><strong>${formatDuration(seconds)}</strong></div>`;
     }).join('');
     itemDialogBody.innerHTML = `
-      <p class="luck-item-odds-line">Odds: <strong>1/${compactOdds(1 / probability)}</strong></p>
+      <p class="luck-item-odds-line">Odds: <strong>1/${compactOdds(1 / probability)}</strong>${item.oddsAssumed ? ' (assumed)' : ''}</p>
+      ${item.oddsAssumed ? `<p class="capgrader-panel-note luck-assumed-note">${typeof item.oddsAssumed === 'string' ? item.oddsAssumed : 'Assumed odds — the real odds aren\'t known yet.'}</p>` : ''}
       ${variantData.mainStat != null ? `<p class="capgrader-panel-note">Main stat: ${variantData.mainStat}${variantData.mainStatType ? ` (${variantData.mainStatType})` : ''}</p>` : ''}
       ${variantData.otherStats && variantData.otherStats !== 'N/A' ? `<p class="capgrader-panel-note">${variantData.otherStats.replaceAll('\n', '<br />')}</p>` : ''}
       ${variantData.effects && variantData.effects !== 'N/A' ? `<p class="capgrader-panel-note">${variantData.effects}</p>` : ''}

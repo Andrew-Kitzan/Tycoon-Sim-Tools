@@ -1,0 +1,307 @@
+{
+  "oreModifiers": {
+    "notes": [
+      "When Fire and Frost get applied to the same ore, the ore gets destroyed.",
+      "Cosmetic means it does nothing by itself, it just adds that look to the ore (some items still check for it).",
+      "Unlike effects, only 1 material can be on an ore at a time, so applying a new material replaces whatever material the ore already had (right now: Neon removes Sandy, and Sandy removes Neon)."
+    ],
+    "list": [
+      {
+        "name": "Fire",
+        "type": "Effect",
+        "color": "#ff6a3d",
+        "description": "Ore dies after 2 seconds (Ore Flamethrower) or 3 seconds (Dragon's Breath).",
+        "match": "\\bfire\\b|\\bburnt\\b"
+      },
+      {
+        "name": "Nuclear",
+        "type": "Effect",
+        "color": "#c6f432",
+        "description": "Ore dies after 3 seconds.",
+        "match": "nuclear"
+      },
+      {
+        "name": "Toxic",
+        "type": "Effect",
+        "color": "#3fd06a",
+        "description": "Ore dies after 5 seconds.",
+        "match": "toxic"
+      },
+      {
+        "name": "Overcharged",
+        "type": "Effect",
+        "color": "#ffb020",
+        "description": "Destroys ore after 3 seconds, and no more effects can be applied to the ore.",
+        "match": "overcharg"
+      },
+      {
+        "name": "Derp",
+        "type": "Effect",
+        "color": "#b98bff",
+        "description": "Cosmetic.",
+        "match": "derp"
+      },
+      {
+        "name": "Sparkles",
+        "type": "Effect",
+        "color": "#ffe680",
+        "description": "Cosmetic.",
+        "match": "sparkle"
+      },
+      {
+        "name": "Rainbow",
+        "type": "Effect",
+        "color": "rainbow",
+        "description": "Cosmetic.",
+        "match": "rainbow"
+      },
+      {
+        "name": "Electrified",
+        "type": "Effect",
+        "color": "#4fb8ff",
+        "description": "Cosmetic.",
+        "match": "electrif"
+      },
+      {
+        "name": "Frost",
+        "type": "Effect",
+        "color": "#b3ecff",
+        "description": "Cosmetic.",
+        "match": "frost"
+      },
+      {
+        "name": "Neon",
+        "type": "Material",
+        "color": "#ff4fd8",
+        "description": "Cosmetic.",
+        "match": "neon"
+      },
+      {
+        "name": "Sandy",
+        "type": "Material",
+        "color": "#e3c27f",
+        "description": "Cosmetic.",
+        "match": "sandy"
+      }
+    ]
+  },
+  "textFixes": [
+    {
+      "find": "Neon or Fire Effect",
+      "replace": "Neon material or Fire Effect"
+    },
+    {
+      "find": "Neon & Electrified Effect",
+      "replace": "Neon material & Electrified Effect"
+    },
+    {
+      "find": "fire and neon effects",
+      "replace": "Fire Effect and Neon material"
+    },
+    {
+      "find": "fire or neon",
+      "replace": "Fire Effect or Neon material"
+    },
+    {
+      "find": "Nuclear & Neon.",
+      "replace": "Nuclear Effect & Neon material."
+    },
+    {
+      "find": "neon effect",
+      "replace": "Neon material"
+    },
+    {
+      "find": "(neon doesnt effect)",
+      "replace": "(Neon is a material, not an effect, so it doesn't stop this from upgrading your ore)"
+    }
+  ],
+  "modifierExclusions": {
+    "Acid Plant": ["Neon"]
+  },
+  "extraEffects": {
+    "Clockwork": "Centers your ore.",
+    "Orbital Messenger": "Centers your ore.",
+    "World Eater": "Ore must be centered on the upgrader for it to work."
+  },
+  "crateOverrides": {
+    "Tornado": {
+      "name": "Tornado Alley",
+      "targetChance": 1e-8,
+      "oddsNote": "Assumed odds — the real odds aren't known yet. Assumed to be 1/100M like Dragon's Breath, Atlantis Remnant, and Robot Apocalypse."
+    }
+  },
+  "inGameLabels": [
+    {
+      "name": "Oil Well",
+      "variant": "Shiny",
+      "label": "1.26x"
+    },
+    {
+      "name": "Portable Upgrader",
+      "variant": "Shiny",
+      "label": "1.16x"
+    },
+    {
+      "name": "Incremental Upgrader",
+      "variant": "Shiny",
+      "label": "1.38x on the 2nd pass, 1.93x on the 3rd",
+      "realValue": "1.375x and 1.925x"
+    },
+    {
+      "name": "Fairy Forest",
+      "variant": "Shiny",
+      "label": "1.38x"
+    },
+    {
+      "name": "Satellite Enhancer",
+      "variant": "Shiny",
+      "label": "1.49x"
+    },
+    {
+      "name": "Ore Wash",
+      "variant": "Mythic",
+      "label": "1.38x"
+    },
+    {
+      "name": "Cookie Upgrader",
+      "variant": "Shiny",
+      "label": "1.26x"
+    },
+    {
+      "name": "Helio-Grader",
+      "variant": "Shiny",
+      "label": "1.38x"
+    },
+    {
+      "name": "Alien Invasion",
+      "variant": "Mythic",
+      "label": "1.88x"
+    },
+    {
+      "name": "Electric Overdrive",
+      "variant": "Mythic",
+      "label": "3.13x"
+    },
+    {
+      "name": "Leviathans' Wrath",
+      "variant": "Shiny",
+      "label": "1.49x"
+    },
+    {
+      "name": "Leviathans' Wrath",
+      "variant": "Mythic",
+      "label": "1.69x"
+    },
+    {
+      "name": "Leviathans' Wrath",
+      "variant": "Shiny Mythic",
+      "label": "2.03x"
+    },
+    {
+      "name": "Atlantis Remnant",
+      "variant": "Shiny",
+      "label": "1.38x"
+    },
+    {
+      "name": "Atlantis Remnant",
+      "variant": "Mythic",
+      "label": "1.56x"
+    },
+    {
+      "name": "Atlantis Remnant",
+      "variant": "Shiny Mythic",
+      "label": "1.88x"
+    },
+    {
+      "name": "Dream Machine",
+      "variant": "Mythic",
+      "label": "+0.62x per effect",
+      "realValue": "+0.625x per effect"
+    },
+    {
+      "name": "Enforced Furnace",
+      "variant": "Mythic",
+      "label": "4.38x"
+    },
+    {
+      "name": "Temple Furnace",
+      "variant": "Mythic",
+      "label": "8.13x"
+    },
+    {
+      "name": "Toxic Wasteland",
+      "variant": "Mythic",
+      "label": "15.62x"
+    }
+  ],
+  "extraItems": [
+    {
+      "name": "Tornado Alley",
+      "variant": "Base",
+      "type": "upgrader",
+      "rarity": "Secret",
+      "size": {
+        "width": 6,
+        "length": 4
+      },
+      "mainStat": 8,
+      "mainStatType": "Multiplicative",
+      "range": null,
+      "limitedUses": "1",
+      "conveyorSpeed": 24,
+      "source": "Obtained from nature crate",
+      "effects": "Has a chance to fling your ore!"
+    },
+    {
+      "name": "Tornado Alley",
+      "variant": "Shiny",
+      "type": "upgrader",
+      "rarity": "Secret",
+      "size": {
+        "width": 6,
+        "length": 4
+      },
+      "mainStat": 8.8,
+      "mainStatType": "Multiplicative",
+      "source": "Obtained from nature crate",
+      "effects": "Has a chance to fling your ore!",
+      "limitedUses": "1",
+      "conveyorSpeed": 24,
+      "range": null
+    },
+    {
+      "name": "Tornado Alley",
+      "variant": "Mythic",
+      "type": "upgrader",
+      "rarity": "Secret",
+      "size": {
+        "width": 6,
+        "length": 4
+      },
+      "mainStat": 10,
+      "mainStatType": "Multiplicative",
+      "source": "Obtained from nature crate",
+      "effects": "Has a chance to fling your ore!",
+      "limitedUses": "1",
+      "conveyorSpeed": 24,
+      "range": null
+    },
+    {
+      "name": "Tornado Alley",
+      "variant": "Shiny Mythic",
+      "type": "upgrader",
+      "rarity": "Secret",
+      "size": {
+        "width": 6,
+        "length": 4
+      },
+      "mainStat": 12,
+      "mainStatType": "Multiplicative",
+      "source": "Obtained from nature crate",
+      "effects": "Has a chance to fling your ore!",
+      "limitedUses": "1",
+      "conveyorSpeed": 24,
+      "range": null
+    }
+  ]
+}

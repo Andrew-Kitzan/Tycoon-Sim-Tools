@@ -118,13 +118,13 @@
     "name": "Offline Earnings",
     "description": null,
     "levels": [
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null },
-      { "currency": null, "cost": null, "effect": null }
+      { "currency": "Cash", "cost": "1k", "effect": null },
+      { "currency": "Cash", "cost": "30k", "effect": null },
+      { "currency": "Cash", "cost": "100k", "effect": null },
+      { "currency": "Cash", "cost": "15M", "effect": null },
+      { "currency": "Crystal", "cost": "500", "effect": null },
+      { "currency": "Crystal", "cost": "12k", "effect": null },
+      { "currency": "Crystal", "cost": "30k", "effect": null }
     ]
   }
 ]

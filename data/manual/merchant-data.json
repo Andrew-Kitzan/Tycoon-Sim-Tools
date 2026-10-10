@@ -2,18 +2,18 @@
   "mechanics": {
     "slots": 6,
     "restockInterval": "2 Hours",
-    "restockRobuxCost": null
+    "restockRobuxCost": 25
   },
   "stock": [
     { "name": "Luck Potion", "rarity": "Common", "itemType": "Potion", "odds": "1/2.45", "currency": "Crystal", "cost": "500" },
     { "name": "Shiny Luck Potion", "rarity": "Common", "itemType": "Potion", "odds": "1/2.45", "currency": "Crystal", "cost": "500" },
     { "name": "Mythic Luck Potion", "rarity": "Common", "itemType": "Potion", "odds": "1/2.45", "currency": "Crystal", "cost": "500" },
     { "name": "Roll Speed Potion", "rarity": "Common", "itemType": "Potion", "odds": "1/2.45", "currency": "Crystal", "cost": "500" },
-    { "name": "Starlight Enhancer", "rarity": "Common", "itemType": "Upgrader", "odds": "1.71", "currency": "Crystal", "cost": "1K" },
-    { "name": "Alien Helper", "rarity": "Common", "itemType": "Upgrader", "odds": "1.71", "currency": "Crystal", "cost": "1K" },
-    { "name": "Crates", "rarity": "Common", "itemType": "Decoration", "odds": "1.24", "currency": "Cash", "cost": "500K" },
+    { "name": "Starlight Enhancer", "rarity": "Common", "itemType": "Upgrader", "odds": "1/1.71", "currency": "Crystal", "cost": "1K" },
+    { "name": "Alien Helper", "rarity": "Common", "itemType": "Upgrader", "odds": "1/1.71", "currency": "Crystal", "cost": "1K" },
+    { "name": "Crates", "rarity": "Common", "itemType": "Decoration", "odds": "1/1.24", "currency": "Cash", "cost": "500K" },
 
-    { "name": "Scarabyte Dropper", "rarity": "Uncommon", "itemType": "Dropper", "odds": "1.43", "currency": "Crystal", "cost": "10K" },
+    { "name": "Scarabyte Dropper", "rarity": "Uncommon", "itemType": "Dropper", "odds": "1/1.43", "currency": "Crystal", "cost": "10K" },
 
     { "name": "Luck Potion", "rarity": "Rare", "itemType": "Potion", "odds": "1/4.41", "currency": "Crystal", "cost": "2.5K" },
     { "name": "Shiny Luck Potion", "rarity": "Rare", "itemType": "Potion", "odds": "1/4.41", "currency": "Crystal", "cost": "2.5K" },

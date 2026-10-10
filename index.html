@@ -341,9 +341,10 @@
       <section id="wiki-tool" class="wiki-tool" aria-label="Wiki" hidden>
         <div class="wiki-frame">
           <div class="wiki-topbar">
-            <label class="wiki-search" aria-label="Search the wiki">
-              <input type="search" id="wiki-search-input" placeholder="Search the wiki..." />
-            </label>
+            <div class="wiki-search" role="search">
+              <input type="search" id="wiki-search-input" placeholder="Search items, potions, codes, pages..." aria-label="Search the wiki" autocomplete="off" aria-controls="wiki-search-results" aria-expanded="false" />
+              <div id="wiki-search-results" class="wiki-search-results" role="listbox" hidden></div>
+            </div>
           </div>
 
           <div class="wiki-body">

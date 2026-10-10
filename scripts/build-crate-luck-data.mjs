@@ -35,7 +35,7 @@ function numeric(value) {
 }
 
 const HEADER = {
-  itemType: 0, name: 3, variant: 5, rarity: 6, size: 7, weight: 9, odds: 24,
+  itemType: 0, name: 3, variant: 5, rarity: 6, size: 7, weight: 9, rawOdds: 22, odds: 24,
   obtainment: 25, mainStatType: 27, mainStat: 29, otherStats: 31, otherEffects: 33,
 };
 
@@ -113,6 +113,10 @@ try {
 
 const items = {};
 const crates = [];
+// Each item's chance of being picked at all at 1x Unbox Luck (the sheet's
+// Raw Odds column on its Base row) — kept out of the output, only used to
+// recompute sheetOdds below.
+const rawBaseChance = new Map();
 
 for (const block of blocks) {
   const isAnyCrate = /^any crate$/i.test(block.name);
@@ -151,12 +155,106 @@ for (const block of blocks) {
       obtainment: clean(row[HEADER.obtainment]) || null,
       sheetOdds: clean(row[HEADER.odds]) || null,
     };
+    if (variant === 'Base') {
+      const rawOdds = numeric(row[HEADER.rawOdds]);
+      rawBaseChance.set(item, rawOdds && rawOdds > 0 ? 1 / rawOdds : null);
+    }
     if (currentName !== name) itemKeys.push(name);
     currentName = name;
   }
 
   if (!isAnyCrate) {
     crates.push({ name: crateKey, cost: block.cost, items: [...new Set(itemKeys)] });
+  }
+}
+
+// Player-supplied fixes for crate items the sheet doesn't have real data for
+// yet (data/manual/index-data.json's `crateOverrides`, keyed by the sheet's
+// own Name). Tornado Alley is the first: the sheet lists it as "Tornado" with
+// a 0 weight and "?" stats. An override can rename the item, give it a
+// target raw chance at 1x Unbox Luck (Weight = chance * otherWeights /
+// (1 - chance), the same formula the sheet uses for its 1/100M secrets),
+// and pull its stats from the matching `extraItems` entries.
+const manualIndex = JSON.parse(await fs.readFile(path.join(root, 'data', 'manual', 'index-data.json'), 'utf8'));
+const SHINY_LUCK = 20;
+const MYTHIC_LUCK = 100;
+function sheetOddsText(chance) {
+  if (!(chance > 0)) return null;
+  const odds = 1 / chance;
+  const units = [[1e30, 'No'], [1e27, 'Oc'], [1e24, 'Sp'], [1e21, 'Sx'], [1e18, 'Qn'], [1e15, 'Qd'], [1e12, 'T'], [1e9, 'B'], [1e6, 'M'], [1e3, 'K']];
+  // Pick the unit after rounding, so 999,999.99 shows as "1.00M", not "1000.00K".
+  const [divisor, suffix] = units.find(([minimum]) => Number((odds / minimum).toFixed(2)) >= 1) ?? [1, ''];
+  return `1/${(odds / divisor).toFixed(2)}${suffix}`;
+}
+// Same variant math as luck-crate-generator.js's variantChance(), at the
+// default 1-in-20 Shiny / 1-in-100 Mythic luck. The game picks the item
+// first, then its variant, so a Shiny or Mythic roll only counts for items
+// that HAVE that variant (player-confirmed 2026-10-10). The
+// sheet's own Odds column gets this wrong for one item per crate (e.g. Ore
+// Pollinator, Nuclear Upgrader, Floral Frenzy: their Base/Shiny odds include
+// the Mythic roll with no Mythic variant), so sheetOdds is recomputed here
+// from the Raw Odds column instead of copied.
+function setVariantOdds(item, chance) {
+  const S = item.variants.Shiny ? 1 / SHINY_LUCK : 0;
+  const M = item.variants.Mythic ? 1 / MYTHIC_LUCK : 0;
+  const variantChance = {
+    Base: chance * (1 - S) * (1 - M),
+    Shiny: chance * S * (1 - M),
+    Mythic: chance * (1 - S) * M,
+    'Shiny Mythic': chance * S * M,
+  };
+  for (const [v, data] of Object.entries(item.variants)) data.sheetOdds = sheetOddsText(variantChance[v]);
+}
+for (const item of Object.values(items)) {
+  const chance = rawBaseChance.get(item);
+  if (chance) setVariantOdds(item, chance);
+}
+for (const [sheetName, override] of Object.entries(manualIndex.crateOverrides ?? {})) {
+  const item = items[sheetName];
+  if (!item) throw new Error(`crateOverrides: "${sheetName}" is not on the Crates sheet.`);
+  const name = override.name ?? sheetName;
+  if (name !== sheetName) {
+    delete items[sheetName];
+    items[name] = item;
+    for (const crate of crates) crate.items = crate.items.map((n) => (n === sheetName ? name : n));
+  }
+  const extras = (manualIndex.extraItems ?? []).filter((r) => r.name === name);
+  if (extras[0]?.size) item.size = `${extras[0].size.width}x${extras[0].size.length}`;
+  for (const extra of extras) {
+    const variant = item.variants[extra.variant];
+    if (!variant) continue;
+    variant.mainStat = extra.mainStat ?? null;
+    variant.mainStatType = extra.mainStatType ?? null;
+    variant.otherStats = [
+      extra.range ? `Range: ${extra.range}` : null,
+      extra.limitedUses ? `Limited Uses: ${extra.limitedUses}` : null,
+      extra.conveyorSpeed != null ? `Conveyor Speed: ${extra.conveyorSpeed}` : null,
+    ].filter(Boolean).join('\n') || null;
+    variant.effects = extra.effects ?? null;
+  }
+  if (override.targetChance) {
+    const chance = override.targetChance;
+    const crate = crates.find((c) => c.items.includes(name));
+    const otherWeight = crate.items
+      .filter((n) => n !== name)
+      .reduce((sum, n) => sum + (items[n].variants.Base?.weight ?? 0), 0);
+    item.variants.Base.weight = (chance * otherWeight) / (1 - chance);
+    setVariantOdds(item, chance);
+    // Flags the odds as a guess for every page that shows them (Luck
+    // Simulator, wiki Index) — this is not a real weight from the sheet.
+    item.oddsAssumed = override.oddsNote ?? true;
+  }
+}
+
+// Same wording fixes the wiki applies (index-data.json `textFixes`, e.g.
+// Neon is a material, not an effect), so the Luck Simulator's item popup
+// says the same thing as the item's wiki page.
+for (const item of Object.values(items)) {
+  for (const variant of Object.values(item.variants)) {
+    if (!variant.effects) continue;
+    for (const { find, replace } of manualIndex.textFixes ?? []) {
+      variant.effects = variant.effects.replace(new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), replace);
+    }
   }
 }
 

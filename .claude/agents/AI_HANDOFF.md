@@ -120,6 +120,275 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-10 (Index page + item pages, wiki-wide links and search, effect/material
+tags; committed and pushed as one commit with the Merchant answers):
+
+**Also in this push:**
+- The Merchant answers from 2026-10-09: odds are 1/X, the early restock
+  costs 25 Robux, and Legendary potions cost 2.5K.
+- The player's Offline Earnings mastery costs in `mastery-data.json`. The
+  effects are still null.
+- A new 2026-10-10 Wiki & Tools Updates entry.
+
+**Left untracked on purpose** (they were already untracked before this
+session and aren't part of this work): `scripts/scanner-kunzite-check*.mjs`,
+`scripts/scanner-spacing-*.mjs`, `scripts/star-scanner-chain.mjs`.
+
+**Next step the player named:** tool-to-wiki navigation, e.g. a Luck
+Simulator button that opens an item's wiki page.
+- It should switch the Tool Menu to the wiki, then call
+  `TycoonWiki.openItem(name, variant)`.
+- Item pages have no URL or hash routing yet.
+
+**Index page** (`renderIndexPage()` + `wireIndexPage()` in `wiki-tool.js`,
+`.wiki-index-*` in `styles.css`, `data/manual/index-data.json`). One card per
+item (153: 36 droppers, 99 upgraders, 18 furnaces), not one per variant.
+Hover (only when `(hover: hover) and (pointer: fine)`) shows a popover with
+variant chips; hovering a chip previews it, clicking opens that variant.
+
+**Item pages.** The player asked for full item pages so other pages and
+tools can link to an item. They replaced the earlier side panel.
+- Clicking a card opens that item's own page through
+  `openItemPage(ref, variant, from)`.
+  - `ref` is an item key or a plain name.
+  - `from` is the PAGES key the back button returns to. The back button
+    label becomes "← Back to Index".
+- Page contents:
+  - Large icon.
+  - Rarity, type and tags.
+  - Variant chips (←/→ keys cycle) and stat tiles.
+  - The in-game label note.
+  - Effect.
+  - How to Get.
+  - All Variants table. Its rows also switch the variant, and the Odds
+    column is hidden when no variant has odds.
+- Going back to the Index scrolls to and highlights the card you opened
+  (`indexReturnKey`).
+- `globalThis.TycoonWiki.openItem(name, variant)` is the hook for the
+  player's planned next step: cross-page, search-bar and tool-to-wiki
+  navigation, such as a Luck Simulator button that opens an item's page.
+  - It only renders into the wiki. Switching the Tool Menu over to the wiki
+    is still up to the caller.
+  - There is no URL or hash routing yet.
+- `openPage` and `openItemPage` share a `pageToken`, so a slow fetch can't
+  overwrite a newer page. This replaced the old title-comparison guard.
+- `wireMasteryPageLinks` was renamed `wirePageLinks` and is scoped to
+  `pageBody`.
+- **P2W items** list the P2W products that give them (`item.p2wProducts`),
+  each with its Robux cost and notes, plus a "See the P2W page" button.
+  - `formatNotes` turns "Drillbit & Co." into the same link button the P2W
+    page uses. Bling Dropper and Derp Blaster were the player's request.
+  - The sheet's source line is hidden for P2W items unless it mentions
+    Enchanter, because otherwise it only repeats the P2W note.
+
+**Wiki navigation (history, links, anchors)** in `wiki-tool.js`.
+- **History.** Every view is an entry: `{kind:'page', key, anchor?}` or
+  `{kind:'item', ref, variant}`.
+  - `navigate(entry)` pushes the current entry, with its `scrollY`, onto
+    `navStack`.
+  - The page view's Back button pops it and restores the exact scroll
+    position. Its label reads "← Back to <previous page/item>".
+  - The home page and the nav tiles clear the stack.
+  - `openPage(key, anchor)` and `openItemPage(ref, variant)` are thin
+    wrappers around `navigate`.
+  - `renderPageEntry` / `renderItemEntry` + `finishRender` restore the
+    scroll position, else jump to the anchor, else scroll to the top.
+- **Anchors.** Rows carry `data-wiki-anchor="kind:name"` via `anchorAttr()`.
+  Covered: decoration, conveyor, code, achievement, p2w, mastery, event,
+  rebirth, loot, tier (Index tiers), potion-tier:N (Brewer tier rows) and
+  `potion:unbox slot` (Brewer intro). Jumping to one scrolls it into view
+  and plays `.wiki-anchor-flash`.
+- **Links.** Chip formatters tag candidates with `linkAttrs(kind, ref, tier)`
+  (kinds: item, potion, decoration).
+  - After each render, `activateWikiLinks()` loads the targets and makes
+    only the resolvable chips clickable (`.is-wiki-link`, role=link,
+    Enter/Space).
+  - Targets: Index items → item page; decorations → their Decoration row;
+    conveyors → their Conveyor row (the rebirth data's "Reciever" typo is
+    normalized); potions → their Brewer tier row; Unbox Slot → the Brewer
+    intro.
+  - Chips that would link to the page they're already on are skipped.
+- `globalThis.TycoonWiki.{openItem, openPage}` are for tool-to-wiki links.
+  Switching the Tool Menu over to the wiki is still the caller's job.
+  There's no URL routing yet.
+
+**Wiki search bar** (`#wiki-search-input` in the wiki topbar; the wrapper
+is now a `div`, not a `label`, so it can hold the dropdown).
+- `buildSearchIndex()` lazily builds one flat list from the same data files
+  as the pages:
+  - pages, with `SEARCH_PAGE_KEYWORDS`;
+  - Index items, whose search text includes type, rarity, crate, tags,
+    source and effect text;
+  - 24 tiered potions plus Unbox Slot;
+  - decorations, conveyors, codes, achievements, P2W products, masteries,
+    events, rebirths and index tiers.
+- Ranking: exact match, then name prefix, word prefix, substring, all
+  tokens in the name, then all tokens anywhere. Ties are broken by kind
+  (Page > Item > Potion) and then alphabetically.
+- The dropdown shows the top 12. Arrow keys and Enter work, Esc closes it,
+  and a result navigates like a link.
+- `.wiki-topbar` is z-index 2 so the dropdown sits above `.wiki-body`.
+
+**Effect / material tags** (player request, data from the sheet's "Other
+Info" → "Effects/Material" table).
+- `index-data.json` `oreModifiers.list` holds 10 effects (Fire, Nuclear,
+  Toxic, Overcharged, Derp, Sparkles, Rainbow, Electrified, Frost) and 2
+  materials (Neon, Sandy).
+  - Each has a description and a `match` regex run against the variant's
+    effect text.
+  - Each also has its own `color`, so the tags can be told apart at a
+    glance (player request). The tag outline and tint come from it via
+    `--modifier-color`.
+  - `"rainbow"` is special-cased into a gradient outline (`.is-rainbow`).
+  - `modifierExclusions` (item name → tag names) suppresses a tag the text
+    mentions but the item doesn't actually interact with.
+    - Acid Plant → Neon. Its "(neon doesnt effect)" is a player note
+      clarifying that Neon doesn't stop it from upgrading.
+    - A `textFixes` entry rewrites that note as "(Neon is a material, not
+      an effect, so it doesn't stop this from upgrading your ore)".
+  - Materials get a dashed outline so they still read as a different kind
+    of thing from effects.
+- `oreModifiers.notes` holds the general notes:
+  - Fire + Frost destroys the ore.
+  - What "Cosmetic" means.
+  - Only 1 material can be on an ore at a time, so a new material replaces
+    the old one. The player wanted this worded generally in case more
+    materials are added.
+- The section heading follows the tags (player request, `effectHeading()`):
+  - only materials → "Material" / "Materials";
+  - only effects → "Effect" / "Effects";
+  - both → "Effects/Materials";
+  - no tags → "Effect".
+- The item page shows the tags above the Effect text. Hover or focus shows
+  a tooltip with the description and the relevant notes; a click toggles
+  `.is-open` for touch.
+- **Neon and Sandy are materials, not effects** (player correction).
+  - `index-data.json` `textFixes` holds ordered, case-insensitive literal
+    find/replace pairs. Examples: "neon effect" → "Neon material", "Neon or
+    Fire Effect" → "Neon material or Fire Effect".
+  - Both `buildIndexItems` and `build-crate-luck-data.mjs` apply them, so
+    the wiki and the Luck Simulator say the same thing.
+  - Not applied to `data/manual/item-geometry-worksheet.json`, which is the
+    hidden Base Builder's input.
+
+**The fixed Tool Menu and Feedback buttons cover anything at the top of the
+screen** (z-index 30, bottom edge at 54px). `.wiki-body` is its own stacking
+context (z-index 1), so no z-index inside the wiki can rise above them.
+- The player caught the old details panel's X and header hidden under them;
+  that panel is gone now.
+- The hover popover is still clamped to `top ≥ 62px`.
+- `.wiki-frame` now uses `overflow: clip` (with a `hidden` fallback).
+  `overflow: hidden` made it a scroll container, which silently broke
+  `position: sticky` inside the wiki. That was found with the old sticky
+  panel; it was kept because any future sticky element in the wiki needs it.
+  Checked afterwards: no horizontal page scroll on the home, Merchant,
+  Achievements or Update Log pages.
+
+The player chose the sort options and source groups:
+- **Sort:** A–Z, Z–A, Rarity: Low to High, Rarity: High to Low. Main-stat
+  and odds sorting were removed.
+- **Source filter:** every crate, Any Crate, Merchant, Achievements, Codes,
+  Rebirth, and "Not from a crate".
+  - The four new groups are matched against the Base variant's Obtainment
+    Method in `INDEX_SOURCE_GROUPS`.
+  - A Shiny's source is usually "Enchanter Exclusive", which is why only
+    Base is used.
+  - **P2W** (16 items) is not matched by text. An item is P2W if any entry
+    in `data/manual/p2w-dev-products-data.json` lists it in `gives`, so
+    Derp Blaster counts. `renderIndexPage` loads that file with
+    `loadP2wData()`.
+  - Only Corium Dropper (Furnace Loot) and White hat Dropper have no group.
+    They only appear under "Not from a crate".
+- The displayed source text fixes the sheet's "Rebrith" and "Exlusive"
+  typos. Filters and sort persist in localStorage
+(`wiki-index-filters`); that is player input, so it's allowed.
+
+Data sources (player-confirmed rules):
+- Stats come from `globalThis.TycoonDatabase` (already loaded), filtered to
+  `sheet` in Droppers/Upgraders/Furnaces. The other sheets hold duplicate
+  copies of the same items (803 records → 385 variants).
+- **Odds only come from the Crates sheet** (`CrateLuckData.items[name].variants[v].sheetOdds`,
+  base luck under the new luck system). The item sheets' Odds column is the
+  OLD luck system and must never be used; the sheet's own NOTICE says so.
+- `index-data.json`:
+  - Index tiers are NOT in this file. They live in the player's own
+    `data/manual/index-tier-data.json`, loaded by `loadIndexTierData()`.
+    - 18 tiers, using the player's key names: `name`, `"Items Required"`,
+      `"chat tag"`, `Rewards[]`.
+    - Rewards go through `formatCodeRewards`. "1.05x unbox luck" now matches
+      the luck-multi chip and renders as "Unbox Luck".
+    - `normalizePotionKey` maps "unbox luck potion" to the plain "Luck
+      Potion" icon.
+    - An identical extensionless copy (`data/manual/index-tier-data`) was
+      deleted with the player's OK. "Emporor" was fixed to "Emperor".
+  - `extraEffects`: effects for items the sheet lists as "N/A", by name,
+    applied to every variant. Clockwork and Orbital Messenger have "Centers
+    your ore." per the player. World Eater has "Ore must be centered on the
+    upgrader for it to work.", added after its sheet effect.
+  - `extraItems`: Tornado Alley, which is missing from the item sheets.
+    - Base comes from a player screenshot: 8x, 6x4, 1 use, conveyor speed 24.
+    - The other variants are a player call: same as Robot Apocalypse, so
+      8.8 / 10 / 12.
+  - `crateOverrides`: keyed by the Crates sheet's own name ("Tornado").
+    - It renames the item and sets `targetChance` 1e-8. The player assumes
+      1/100M, like Dragon's Breath, Atlantis Remnant and Robot Apocalypse.
+    - `scripts/build-crate-luck-data.mjs` reads it. It back-solves the
+      weight with the sheet's formula, writes each variant's base-luck
+      `sheetOdds`, and fills stats from `extraItems`.
+    - Re-run `node scripts/build-crate-luck-data.mjs` after editing.
+    - The override's `oddsNote` becomes `item.oddsAssumed` in the generated
+      data. The player asked for assumed odds to be labeled everywhere:
+      - Luck Simulator: grid cell and item popup ("(assumed)" plus the note).
+      - Index page: popover, odds tile, All Variants table, and the note.
+    - Tornado Alley now appears in the Luck Simulator's Nature crate at
+      1/106.33M (Base), the same as Robot Apocalypse.
+  - `crateNameAliases` (optional) is still supported by `buildIndexItems`
+    but is no longer used.
+- A bare "Centered" in the effect text (Alien Helper, Fine Point, Prismatic)
+  is rendered as "Ore must be centered on the upgrader for it to work."
+  This is player-confirmed.
+  - `inGameLabels`: all 20 rows of the "Items That Lie" sheet.
+    - Each row renders the same note: "In-game shows: X — the real value is
+      Y (the game rounds it)". The player asked for this to be applied to
+      every one of them or none.
+    - Y is the main stat unless the entry has `realValue`. Two entries do:
+      Dream Machine (per-effect bonus) and Incremental Upgrader (2nd/3rd
+      passes).
+- Tags: "P2W" and "Exlusive" in effect cells become tags. "Exlusive" is the
+  player's recurring typo and is normalized to "Exclusive".
+- Tornado Alley icons were copied from `C:\Users\andre\Documents\Tycoon Sim\Icons`,
+  the player's icon source folder.
+- Ore Pollinator has no icon anywhere. The game itself uses the wrong one,
+  so its card shows a blank icon on purpose.
+
+Open with the player:
+- The index tier data. The player is making it now.
+
+**Resolved: the sheet's Odds were wrong for one item per crate.**
+- In 20 crates, one item without a Mythic variant still got the Mythic
+  factor: Raw / (0.95 × 0.99) instead of Raw / 0.95. Examples are Ore
+  Pollinator, Nuclear Upgrader, Floral Frenzy and Shark Dropper.
+- Player rule (2026-10-10): **the game picks the item first, then its
+  variant.**
+  - A Shiny or Mythic roll only applies to items that have that variant.
+    Variants only take odds from the same item's other variants.
+  - Both `variantChance()` in `luck-crate-generator.js` and
+    `setVariantOdds()` use S = 0 when an item has no Shiny and M = 0 when it
+    has no Mythic.
+  - No crate item currently lacks a Shiny, so the Shiny half changed no
+    numbers.
+  - Player clarification on which items have which forms:
+    - Every crate-rollable item has a Shiny; only code items don't.
+    - Common–Epic items have Base and Shiny.
+    - Legendary–Secret items have Base, Shiny, Mythic and Shiny Mythic.
+    - Checked against all 113 crate items on 2026-10-10: no exceptions.
+- `build-crate-luck-data.mjs` no longer copies the sheet's Odds column into
+  `sheetOdds`. It recomputes them from each item's Raw Odds (column 22,
+  Base row) with `setVariantOdds()`, which uses the same math as the
+  simulator.
+- Every other item's odds match the sheet exactly. The only other
+  differences are unit rollovers: "1/1000.00M" now reads "1/1.00B".
+
 2026-10-09 (Merchant page; Base Builder + Base Design hidden):
 
 **Merchant page** (`data/manual/merchant-data.json`, `renderMerchantPage()`).
@@ -147,14 +416,12 @@ Machine 250K, Parasitic Fiend 1M, The Epik Duck 50Sx, Godly Stone Dropper
 3.5M), but its odds do not match the code's old weights, which is why the
 page uses the spreadsheet as the source for odds.
 
-**Open questions put to the player, unanswered so far:**
-1. Starlight Enhancer, Alien Helper, Crates and Scarabyte Dropper have
-   odds `1.71`/`1.71`/`1.24`/`1.43` in the sheet, unlike every other row's
-   `1/X`. Shown verbatim; unknown whether they mean `1/X` or a percentage.
-2. Legendary potions are 2.5K Crystals in the sheet (same as Rare); the
-   old code priced the Legendary potion pool at 10K.
-3. `restockRobuxCost` is null (price unknown). The page only shows a
-   price if it's filled in.
+**Data questions, answered by the player:** the four odds the sheet
+stores as bare numbers (Starlight Enhancer, Alien Helper `1.71`, Crates
+`1.24`, Scarabyte Dropper `1.43`) are `1/X` odds and are now written that
+way; Legendary potions really cost 2.5K Crystals (the sheet is right, the
+old code's 10K is outdated); the early restock costs 25 Robux
+(`restockRobuxCost`).
 
 Rendering details: potions use `formatMerchantItem()`, which maps rarity to
 potion tier (Common=1, Rare=3, Legendary=5, same as Brewer) and looks up

@@ -1,0 +1,175 @@
+[
+  {
+    "name": "Tier 1 - Beginner",
+    "Items Required": "5",
+    "chat tag": "BGNR",
+    "Rewards": [
+        "1.05x unbox luck",
+        "1x tier 1 shiny luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 2 - Novice",
+    "Items Required": "10",
+    "chat tag": "NVCE",
+    "Rewards": [
+      "1.05x unbox luck",
+      "1x tier 1 unbox luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 3 - Apprentice",
+    "Items Required": "20",
+    "chat tag": "APRN",
+    "Rewards": [
+      "1.05x unbox luck",
+      "1x tier 2 mythic luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 4 - Rookie",
+    "Items Required": "30",
+    "chat tag": "RKIE",
+    "Rewards": [
+      "1.05x unbox luck",
+      "1x tier 2 shiny luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 5 - Intermediate",
+    "Items Required": "40",
+    "chat tag": "INTR",
+    "Rewards": [
+      "1.05x unbox luck",
+      "1x tier 3 unbox luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 6 - Skilled",
+    "Items Required": "50",
+    "chat tag": "SKLD",
+    "Rewards": [
+      "1.05x unbox luck",
+      "1x tier 3 mythic luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 7 - Adept",
+    "Items Required": "60",
+    "chat tag": "ADPT",
+    "Rewards": [
+      "1.05x unbox luck",
+      "1x tier 4 shiny luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 8 - Expert",
+    "Items Required": "70",
+    "chat tag": "XPRT",
+    "Rewards": [
+      "1.05x unbox luck",
+      "2x tier 4 unbox luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 9 - Master",
+    "Items Required": "80",
+    "chat tag": "MSTR",
+    "Rewards": [
+      "1.05x unbox luck",
+      "2x tier 5 mythic luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 10 - Grandmaster",
+    "Items Required": "90",
+    "chat tag": "GMSTR",
+    "Rewards": [
+      "1.05x unbox luck",
+      "3x tier 5 shiny luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 11 - Legend",
+    "Items Required": "100",
+    "chat tag": "LGND",
+    "Rewards": [
+      "1.05x unbox luck",
+      "4x tier 5 mythic luck potion"
+    ]
+  },
+
+  {
+    "name": "Tier 12 - Greatest",
+    "Items Required": "125",
+    "chat tag": "GOAT",
+    "Rewards": [
+      "1.05x unbox luck",
+      "2x tier 6 unbox luck potion"
+    ]
+  },
+  {
+    "name": "Tier 13 - Gamer",
+    "Items Required": "150",
+    "chat tag": "GAMER",
+    "Rewards": [
+      "1.05x unbox luck",
+      "2x tier 6 shiny luck potion"
+    ]
+  },
+  {
+    "name": "Tier 14 - Royal",
+    "Items Required": "175",
+    "chat tag": "ROYAL",
+    "Rewards": [
+      "1.05x unbox luck",
+      "6x tier 6 mythic luck potion"
+    ]
+  },
+  {
+    "name": "Tier 15 - Emperor",
+    "Items Required": "200",
+    "chat tag": "EMP",
+    "Rewards": [
+      "1.05x unbox luck",
+      "8x tier 6 Roll Speed potion"
+    ]
+  },
+  {
+    "name": "Tier 16 - No Life",
+    "Items Required": "225",
+    "chat tag": "NOLIFE",
+    "Rewards": [
+      "1.05x unbox luck",
+      "10x tier 6 unbox luck potion"
+    ]
+  },
+  {
+    "name": "Tier 17 - Sigma",
+    "Items Required": "250",
+    "chat tag": "SIGMA",
+    "Rewards": [
+      "1.05x unbox luck",
+      "8x tier 6 mythic luck potion"
+    ]
+  },
+  {
+    "name": "Tier 18 - NYAN",
+    "Items Required": "300",
+    "chat tag": "NYAN",
+    "Rewards": [
+      "1.05x unbox luck",
+      "10x tier 6 shiny luck potion"
+    ]
+  }
+]
