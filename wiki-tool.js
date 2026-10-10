@@ -1923,10 +1923,7 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
       </div>
       <p class="wiki-index-muted">Avg multiplier counts a miss as 1x (the ore just isn't upgraded)${sweep ? '. "Side" is ore a quarter of the way in from either edge' : ''}. Ore Size is the same number as a dropper's Ore Size stat.</p>
       <h4 class="wiki-scanner-subheading">Formula</h4>
-      <div class="wiki-scanner-scroll">${scannerFormulaHtml(geometry)}</div>
-      <p class="wiki-index-muted">${sweep
-        ? 'Worked out from a simulation of the beam and a stream of ore, then fit to this formula (within about 6 percentage points of the simulation). Not yet checked against in-game testing.'
-        : 'A straight-line fit to the simulated average hit chance. Checked against one in-game test so far.'}</p>`;
+      <div class="wiki-scanner-scroll">${scannerFormulaHtml(geometry)}</div>`;
   }
 
   // The full item page (replaces the old Index side panel) — opened by

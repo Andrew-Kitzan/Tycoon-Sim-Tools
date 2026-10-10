@@ -146,6 +146,10 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   the player if it comes up.
 - Not added to the Wiki & Tools update log (player said not to update the
   log).
+- Follow-up: the player said the scanner formulas have been proven by
+  in-game testing, so the "not yet checked against in-game testing" /
+  "checked against one in-game test so far" notes under the formula were
+  removed from the wiki pages.
 
 2026-10-10, later (Tornado Alley hidden as ??? in the Index):
 
