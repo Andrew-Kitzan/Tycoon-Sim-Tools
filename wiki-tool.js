@@ -1908,8 +1908,13 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
         <p class="wiki-index-lie"><strong>Tip:</strong> it's better to hit the ore on the sides of the belt instead of the center — the beam spends more of its time near the edges.</p>`
       : `<p>The beam spins in a full circle (180° per second) standing up across the belt, like a fan blade. Any ore with an Ore Size of ${geometry.guaranteedHitAtOrAboveRaw} or more is tall enough to always get hit. Smaller ore can miss, and where the ore is on the belt doesn't matter.</p>
         <p class="wiki-index-lie">For ore smaller than ${geometry.guaranteedHitAtOrAboveRaw}, the hit chance is an average, not a promise: the same ore and drop speed can hit almost every time or almost never, depending on when your base started running. Drop speeds that line up with the beam's 2-second spin (0.25, 1, 1.5, 2, 3, 4) are the most likely to get stuck that way; 1.2 avoids it best.</p>`;
+    // Same collapsed dropdown as Stats for Nerds (open state shares
+    // mechanicsOpen, keyed separately so the two remember their own state).
+    const openKey = `${item.name}::hit-chance`;
     return `
-      <h3 class="wiki-section-heading">Hit Chance</h3>
+      <details class="wiki-mech-details" data-mech-item="${escapeHtml(openKey)}"${mechanicsOpen.has(openKey) ? ' open' : ''}>
+      <summary class="wiki-section-heading wiki-mech-summary">Hit Chance <span class="wiki-mech-hint">how the beam moves, calculator &amp; formula</span></summary>
+      <div class="wiki-mech">
       ${movement}
       <label class="wiki-scanner-input">Your ore size
         <input type="number" min="0" step="0.05" value="${scannerOreSize}" data-scanner-ore-size aria-label="Ore size">
@@ -1923,7 +1928,9 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
       </div>
       <p class="wiki-index-muted">Avg multiplier counts a miss as 1x (the ore just isn't upgraded)${sweep ? '. "Side" is ore a quarter of the way in from either edge' : ''}. Ore Size is the same number as a dropper's Ore Size stat.</p>
       <h4 class="wiki-scanner-subheading">Formula</h4>
-      <div class="wiki-scanner-scroll">${scannerFormulaHtml(geometry)}</div>`;
+      <div class="wiki-scanner-scroll">${scannerFormulaHtml(geometry)}</div>
+      </div>
+      </details>`;
   }
 
   // ---- Stats for Nerds (item pages) -------------------------------------------

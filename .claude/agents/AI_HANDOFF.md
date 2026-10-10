@@ -156,7 +156,8 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   ("Stats for Nerds" summary styled as a section heading with a ▸ chevron),
   closed by default. Open state is remembered per item in `mechanicsOpen`
   (one capture-phase `toggle` listener on `pageBody`) so switching variants
-  doesn't close it. The scanner Hit Chance section is NOT a dropdown.
+  doesn't close it. The scanner Hit Chance section is now the same kind of
+  dropdown too (player asked), open state keyed `<name>::hit-chance`.
 - Follow-up: Mischievous Furnace's "Is it worth it?" note was replaced (at
   the player's request) by how much each upgrade costs the furnace per
   variant (flat (100·vm − 1)/75: 1.32x / 1.453x / 1.653x / 1.987x) and a
