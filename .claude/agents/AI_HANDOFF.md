@@ -120,6 +120,33 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-10, later still (scanner Hit Chance on wiki item pages):
+
+- All 4 scanners' item pages (Ancient, Star, Precision Ore, Azure) now have
+  a **Hit Chance** section: how the beam moves, a "Your ore size" box
+  (live result tiles), a sample table by ore size, and the formula with
+  that scanner's constants. Sweep scanners show Center vs Side of belt
+  (side = laneFrac 0.25, one of the simulator's tested lanes) plus avg
+  multiplier (`hit * mainStat + (1 - hit)`). Azure shows one column (lane
+  doesn't matter) plus its phase-lock caveat.
+- Formulas are NOT duplicated: `capgrader-generator.js` now exposes
+  `globalThis.TycoonScanners = { geometry, hitChance, constants }`, and
+  Star Scanner was added to its `SCANNER_GEOMETRY` (copied from
+  `scripts/scanner-hit-simulator.mjs`; Star isn't in `SCANNER_NAMES`, so
+  the Capgrader Generator still doesn't offer it). `scannerHitChance` took
+  an optional `laneFrac` (default 0.5 = old behavior).
+- The sheet's bare "Scanner" effect line is stripped in
+  `splitIndexEffect()` (it only meant "the beam moves"), so scanners no
+  longer show an Effect section or count for "Has a special effect".
+- Player asked for a note on the 3 sine-wave scanners (not Azure) that
+  hitting the ore on the sides beats the center — shown as a Tip box.
+  Caveat told to the player: by the formula that's true for small/medium
+  ore, but for very large ore (~2+ raw) the center wins (2.5 raw is 100%
+  center vs ~70% side on Ancient/Precision). The tip wasn't changed; ask
+  the player if it comes up.
+- Not added to the Wiki & Tools update log (player said not to update the
+  log).
+
 2026-10-10, later (Tornado Alley hidden as ??? in the Index):
 
 - The player asked to hide Tornado Alley's info until someone actually gets

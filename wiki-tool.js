@@ -1453,6 +1453,9 @@
     // A bare "Centered" line (Alien Helper, Fine Point, Prismatic) is the
     // sheet's shorthand for "only upgrades ore that's centered on it".
     rest = rest.replace(/^centered$/gim, 'Ore must be centered on the upgrader for it to work.');
+    // A bare "Scanner" line only documented that the beam moves — the
+    // scanner's own Hit Chance section covers that now.
+    rest = rest.replace(/^scanner$/gim, '').trim();
     return { tags, effect: isBlankIndexValue(rest) ? '' : rest };
   }
 
@@ -1829,6 +1832,103 @@
       </div>`;
   }
 
+  // ---- Scanner hit chance (item pages) ----------------------------------------
+  // The formulas and beam geometry come from capgrader-generator.js
+  // (globalThis.TycoonScanners), fit against scripts/scanner-hit-simulator.mjs
+  // — see AI_DECISIONS.md "Scanner hit-chance formulas". Ore sizes are raw
+  // database units, the same as a dropper's Ore Size stat.
+  const SCANNER_SAMPLE_SIZES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5];
+  const SCANNER_SIDE_LANE = 0.25; // a quarter of the way in from either edge
+  let scannerOreSize = 1;
+
+  function scannerPercent(chance) {
+    return `${Number((chance * 100).toFixed(1))}%`;
+  }
+
+  function scannerAvgMultiplier(chance, mainStat) {
+    return `${Number((chance * mainStat + (1 - chance)).toFixed(3))}x`;
+  }
+
+  function scannerFormulaHtml(geometry) {
+    const k = globalThis.TycoonScanners.constants;
+    if (geometry.kind === 'azure') {
+      const when = `if oreSize ≥ ${geometry.guaranteedHitAtOrAboveRaw}:`;
+      return `
+        <pre class="wiki-scanner-formula">${when}  hit chance = 100%
+${'otherwise:'.padEnd(when.length)}  hit chance = (${k.AZURE_EXPECTED_INTERCEPT} + ${k.AZURE_EXPECTED_SLOPE} × oreSize) %</pre>`;
+    }
+    const n = (value) => Number(value.toFixed(4));
+    return `
+      <pre class="wiki-scanner-formula">oreTiles      = oreSize / 2.5
+dwell         = (oreTiles + ${geometry.beamLenY}) / ${n(geometry.conveyorSpeed)}
+beamSpeed     = π × ${geometry.speedCyc} × ${geometry.convWidth}
+reach         = oreTiles / 2 + ${n(geometry.beamWidthX / 2)} + ${k.SWEEP_DWELL_K} × dwell × beamSpeed
+lo, hi        = ore's lane ∓ reach, clipped to the belt
+u             = the same lo, hi rescaled so the belt runs from -1 to 1
+hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
+  }
+
+  function scannerCalcResultHtml(item, v, geometry) {
+    const hit = globalThis.TycoonScanners.hitChance;
+    const size = scannerOreSize;
+    if (!(size > 0)) return '<p class="wiki-index-muted">Enter an ore size above 0.</p>';
+    if (geometry.kind === 'azure') {
+      const chance = hit(item.name, size);
+      return `<div class="wiki-index-stats">${indexStatTile('Hit Chance', scannerPercent(chance))}${indexStatTile('Avg Multiplier', scannerAvgMultiplier(chance, v.mainStat))}</div>`;
+    }
+    const center = hit(item.name, size, 0.5);
+    const side = hit(item.name, size, SCANNER_SIDE_LANE);
+    return `<div class="wiki-index-stats">
+      ${indexStatTile('Center of Belt', scannerPercent(center))}
+      ${indexStatTile('Side of Belt', scannerPercent(side))}
+      ${indexStatTile('Avg Multiplier (Center)', scannerAvgMultiplier(center, v.mainStat))}
+      ${indexStatTile('Avg Multiplier (Side)', scannerAvgMultiplier(side, v.mainStat))}
+    </div>`;
+  }
+
+  function scannerSectionHtml(item, v) {
+    const geometry = globalThis.TycoonScanners?.geometry?.[item.name];
+    if (!geometry || typeof v.mainStat !== 'number') return '';
+    const hit = globalThis.TycoonScanners.hitChance;
+    const sweep = geometry.kind === 'sweep';
+    const rows = SCANNER_SAMPLE_SIZES.map((size) => {
+      if (!sweep) {
+        const chance = hit(item.name, size);
+        return `<tr><td>${size}</td><td>${scannerPercent(chance)}</td><td>${scannerAvgMultiplier(chance, v.mainStat)}</td></tr>`;
+      }
+      const center = hit(item.name, size, 0.5);
+      const side = hit(item.name, size, SCANNER_SIDE_LANE);
+      return `<tr><td>${size}</td><td>${scannerPercent(center)}</td><td>${scannerPercent(side)}</td><td>${scannerAvgMultiplier(center, v.mainStat)}</td><td>${scannerAvgMultiplier(side, v.mainStat)}</td></tr>`;
+    }).join('');
+    const head = sweep
+      ? '<tr><th>Ore Size</th><th>Center</th><th>Side</th><th>Avg Mult. (Center)</th><th>Avg Mult. (Side)</th></tr>'
+      : '<tr><th>Ore Size</th><th>Hit Chance</th><th>Avg Multiplier</th></tr>';
+    const movement = sweep
+      ? `<p>The beam sweeps side to side across the belt in a sine wave (${geometry.speedCyc} sweeps per second), slowing down at each edge and moving fastest through the middle. It only upgrades ore the beam touches as the ore passes under it.</p>
+        <p class="wiki-index-lie"><strong>Tip:</strong> it's better to hit the ore on the sides of the belt instead of the center — the beam spends more of its time near the edges.</p>`
+      : `<p>The beam spins in a full circle (180° per second) standing up across the belt, like a fan blade. Any ore with an Ore Size of ${geometry.guaranteedHitAtOrAboveRaw} or more is tall enough to always get hit. Smaller ore can miss, and where the ore is on the belt doesn't matter.</p>
+        <p class="wiki-index-lie">For ore smaller than ${geometry.guaranteedHitAtOrAboveRaw}, the hit chance is an average, not a promise: the same ore and drop speed can hit almost every time or almost never, depending on when your base started running. Drop speeds that line up with the beam's 2-second spin (0.25, 1, 1.5, 2, 3, 4) are the most likely to get stuck that way; 1.2 avoids it best.</p>`;
+    return `
+      <h3 class="wiki-section-heading">Hit Chance</h3>
+      ${movement}
+      <label class="wiki-scanner-input">Your ore size
+        <input type="number" min="0" step="0.05" value="${scannerOreSize}" data-scanner-ore-size aria-label="Ore size">
+      </label>
+      <div class="wiki-scanner-result">${scannerCalcResultHtml(item, v, geometry)}</div>
+      <div class="wiki-scanner-scroll">
+        <table class="wiki-data-table wiki-scanner-table">
+          <thead>${head}</thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <p class="wiki-index-muted">Avg multiplier counts a miss as 1x (the ore just isn't upgraded)${sweep ? '. "Side" is ore a quarter of the way in from either edge' : ''}. Ore Size is the same number as a dropper's Ore Size stat.</p>
+      <h4 class="wiki-scanner-subheading">Formula</h4>
+      <div class="wiki-scanner-scroll">${scannerFormulaHtml(geometry)}</div>
+      <p class="wiki-index-muted">${sweep
+        ? 'Worked out from a simulation of the beam and a stream of ore, then fit to this formula (within about 6 percentage points of the simulation). Not yet checked against in-game testing.'
+        : 'A straight-line fit to the simulated average hit chance. Checked against one in-game test so far.'}</p>`;
+  }
+
   // The full item page (replaces the old Index side panel) — opened by
   // clicking a card, or from anywhere via openItemPage().
   // A hidden item's page: icon, name, rarity, variant switcher and odds only.
@@ -1916,6 +2016,7 @@
           </div>
         </div>
         ${v.effect ? `<h3 class="wiki-section-heading">${effectHeading(v.modifiers)}</h3>${modifierTagsHtml(v.modifiers)}<p class="wiki-index-effect">${escapeHtml(v.effect)}</p>` : ''}
+        ${scannerSectionHtml(item, v)}
         <h3 class="wiki-section-heading">How to Get</h3>
         ${howToGet.join('') || (p2w ? '' : '<p>—</p>')}
         ${p2w}
@@ -2085,6 +2186,7 @@
     const token = ++pageToken;
     pageBody.onclick = null;
     pageBody.onkeydown = null;
+    pageBody.oninput = null;
     homeView.hidden = true;
     pageView.hidden = false;
     await ensureIndexItems();
@@ -2125,6 +2227,16 @@
       if (!pick || pick.dataset.indexVariant === current) return;
       current = pick.dataset.indexVariant;
       render();
+    };
+    // Scanner pages: the "Your ore size" box updates just its result tiles
+    // (re-rendering the whole page would steal focus from the input).
+    pageBody.oninput = (event) => {
+      const input = event.target.closest?.('[data-scanner-ore-size]');
+      if (!input) return;
+      scannerOreSize = Number(input.value);
+      const geometry = globalThis.TycoonScanners?.geometry?.[item.name];
+      const result = pageBody.querySelector('.wiki-scanner-result');
+      if (geometry && result) result.innerHTML = scannerCalcResultHtml(item, item.variants[current], geometry);
     };
     pageBody.onkeydown = (event) => {
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
@@ -2336,6 +2448,7 @@
     const token = ++pageToken;
     pageBody.onclick = null;
     pageBody.onkeydown = null;
+    pageBody.oninput = null;
     pageTitle.textContent = page.title;
     homeView.hidden = true;
     pageView.hidden = false;

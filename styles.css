@@ -1199,6 +1199,14 @@ button.wiki-notes-link { cursor: pointer; font-family: inherit; }
 .wiki-index-stat strong { font-size: .9rem; overflow-wrap: anywhere; }
 .wiki-index-effect { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.03); font-size: .86rem; white-space: pre-line; }
 .wiki-index-lie { padding: 8px 10px; border: 1px solid #f0a93a; border-radius: 8px; background: color-mix(in srgb, #f0a93a 14%, var(--surface)); font-size: .84rem; }
+.wiki-scanner-input { display: inline-flex; align-items: center; gap: 8px; margin: 10px 0 8px; font-weight: 700; font-size: .9rem; }
+.wiki-scanner-input input { width: 90px; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: inherit; font: inherit; }
+.wiki-scanner-table { margin-top: 12px; }
+/* width: 0 + min-width: 100% keeps the wide table/formula from stretching
+   the page on phones (it scrolls sideways inside its own box instead). */
+.wiki-scanner-scroll { width: 0; min-width: 100%; overflow-x: auto; }
+.wiki-scanner-subheading { margin: 14px 0 6px; font-size: .95rem; }
+.wiki-scanner-formula { margin: 0 0 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: .8rem; line-height: 1.5; white-space: pre; }
 .wiki-index-compare { margin-top: 0; font-size: .82rem; }
 .wiki-index-compare th, .wiki-index-compare td { padding: 6px 8px; }
 .wiki-index-compare tbody tr { cursor: pointer; }
