@@ -1213,6 +1213,15 @@ button.wiki-notes-link { cursor: pointer; font-family: inherit; }
 .wiki-mech-steps li { margin-bottom: 6px; }
 .wiki-mech-inputs { display: flex; flex-wrap: wrap; gap: 4px 18px; }
 .wiki-mech-calc { margin: 6px 0 4px; }
+.wiki-mech-details { margin: 0; }
+.wiki-item-page > .wiki-mech-details > .wiki-mech-summary { margin-top: 24px; }
+.wiki-mech-summary { display: flex; align-items: baseline; gap: 10px; cursor: pointer; list-style: none; user-select: none; }
+.wiki-mech-summary::-webkit-details-marker { display: none; }
+.wiki-mech-summary::before { content: '▸'; display: inline-block; width: 12px; transition: transform .15s; }
+.wiki-mech-details[open] > .wiki-mech-summary::before { transform: rotate(90deg); }
+.wiki-mech-summary:hover, .wiki-mech-summary:focus-visible { outline: none; text-decoration: underline; }
+.wiki-mech-hint { font-size: .78rem; font-weight: 600; color: var(--muted); }
+.wiki-mech-details > .wiki-mech { margin-top: 8px; }
 .wiki-mech-figure { margin: 10px 0 14px; }
 .wiki-mech-figure img { display: block; max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
 .wiki-mech-figure figcaption { margin-top: 6px; font-size: .82rem; color: var(--muted, #9fb3c0); }

@@ -1932,6 +1932,17 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
   // (globalThis.TycoonItemMechanics). Calculator values are remembered per
   // item for the session, so switching variants keeps what was typed.
   const mechanicsValues = new Map();
+  // The section is a collapsed dropdown by default; once opened it stays
+  // open for that item while switching variants (which re-renders the page).
+  const mechanicsOpen = new Set();
+
+  // 'toggle' doesn't bubble, so listen in the capture phase (registered once).
+  pageBody?.addEventListener('toggle', (event) => {
+    const details = event.target;
+    if (!details.classList?.contains('wiki-mech-details')) return;
+    if (details.open) mechanicsOpen.add(details.dataset.mechItem);
+    else mechanicsOpen.delete(details.dataset.mechItem);
+  }, true);
 
   function mechanicsContext(item, variant) {
     const vm = globalThis.TycoonItemMechanics?.variantMulti?.[variant] ?? 1;
@@ -1978,12 +1989,14 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
         </div>`;
     }
     return `
-      <h3 class="wiki-section-heading">Stats for Nerds</h3>
-      <div class="wiki-mech">
-        ${entry.intro ? entry.intro(ctx) : ''}
-        ${calc}
-        ${entry.after ? entry.after(ctx) : ''}
-      </div>`;
+      <details class="wiki-mech-details" data-mech-item="${escapeHtml(item.name)}"${mechanicsOpen.has(item.name) ? ' open' : ''}>
+        <summary class="wiki-section-heading wiki-mech-summary">Stats for Nerds <span class="wiki-mech-hint">formulas, calculator &amp; how it works</span></summary>
+        <div class="wiki-mech">
+          ${entry.intro ? entry.intro(ctx) : ''}
+          ${calc}
+          ${entry.after ? entry.after(ctx) : ''}
+        </div>
+      </details>`;
   }
 
   // The full item page (replaces the old Index side panel) — opened by

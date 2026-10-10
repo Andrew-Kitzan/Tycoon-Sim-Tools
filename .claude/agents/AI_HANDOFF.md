@@ -152,6 +152,11 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   `icons/wiki/mechanics/` (converted to JPG): crimson-side-track,
   ore-duplication, dream-machine-line.
 - Not added to the Wiki & Tools update log (player said not to).
+- Follow-up: the section is now a collapsed `<details>` dropdown
+  ("Stats for Nerds" summary styled as a section heading with a ▸ chevron),
+  closed by default. Open state is remembered per item in `mechanicsOpen`
+  (one capture-phase `toggle` listener on `pageBody`) so switching variants
+  doesn't close it. The scanner Hit Chance section is NOT a dropdown.
 
 2026-10-10, later still (scanner Hit Chance on wiki item pages):
 
