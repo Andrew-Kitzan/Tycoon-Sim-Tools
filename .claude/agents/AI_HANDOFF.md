@@ -128,8 +128,10 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   `extraItems` data is untouched — to reveal it, just remove the name from
   `hiddenItems`.
 - In `wiki-tool.js`, a hidden item keeps its icon, name and variant chips;
-  the hover popover, item page (type, stat tiles, effect, How to Get, odds)
-  and search-result subtitle show "???". Its RARITY (Secret) is shown
+  the hover popover, item page (type, stat tiles, effect, How to Get text)
+  and search-result subtitle show "???". Its assumed odds (and the
+  assumed-odds note) DO show on the popover and item page — player asked
+  for that in a follow-up. Its RARITY (Secret) is shown
   normally everywhere — the player said it's already known (follow-up the
   same day; the first version hid it too). It only matches Index filters
   its icons/name/rarity already give away (search, variants, rarity);
@@ -141,8 +143,9 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   `crate-luck-data.generated.js`; diffed — nothing else changed besides
   `generatedAt`). `luck-crate-generator.js` shows ??? in a hidden item's popup
   for main stat, other stats and effect (rarity shown normally), but KEEPS the odds, the "(assumed)" note and the roll-time
-  estimates. The wiki Index still shows ??? for its odds too (the player
-  hasn't said to change that). The 2026-10-10 update-log entry still
+  estimates. The wiki Index now shows the assumed odds too. Player said
+  NOT to add any of this Tornado Alley hiding work to the Wiki & Tools
+  update log — don't add an entry for it. The 2026-10-10 update-log entry still
   mentions Tornado Alley's assumed odds.
 
 2026-10-10 (Index page + item pages, wiki-wide links and search, effect/material

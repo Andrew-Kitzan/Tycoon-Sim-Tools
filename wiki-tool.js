@@ -1782,6 +1782,7 @@
       <img class="wiki-index-popover-icon" src="${indexIconSrc(item.name, variant)}" alt="" onerror="this.classList.add('is-missing')">
       <div class="wiki-index-popover-stats">
         <div><span>${HIDDEN_TEXT}</span> <strong>${HIDDEN_TEXT}</strong></div>
+        ${v.odds ? `<div><span>Odds</span> <strong>${escapeHtml(indexOddsText(v))}</strong></div>` : ''}
         <p>${HIDDEN_TEXT}</p>
       </div>`;
     }
@@ -1830,8 +1831,9 @@
 
   // The full item page (replaces the old Index side panel) — opened by
   // clicking a card, or from anywhere via openItemPage().
-  // A hidden item's page: icon, name, rarity and variant switcher only.
+  // A hidden item's page: icon, name, rarity, variant switcher and odds only.
   function hiddenItemPageHtml(item, variant) {
+    const v = item.variants[variant];
     return `
       <div class="wiki-item-page">
         <div class="wiki-item-hero">
@@ -1851,6 +1853,8 @@
         <p class="wiki-index-effect">${HIDDEN_TEXT}</p>
         <h3 class="wiki-section-heading">How to Get</h3>
         <p>${HIDDEN_TEXT}</p>
+        ${v.odds ? `<div class="wiki-index-stats">${indexStatTile('Odds (Base Luck)', escapeHtml(indexOddsText(v)))}</div>` : ''}
+        ${v.oddsNote ? `<p class="wiki-index-lie">${escapeHtml(v.oddsNote)}</p>` : ''}
       </div>`;
   }
 
