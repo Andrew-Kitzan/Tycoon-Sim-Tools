@@ -196,6 +196,14 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   Raceway / Mischievous and Throne's 45 s average now state the selected
   form's numbers, and every formula's variantMulti line reads
   `variantMulti = 1.5 for Shiny Mythic (…)` via `variantLine(ctx)`.
+- Follow-up: the Mischievous list now shows **every form of every
+  upgrader** below the break-even (grouped per item, e.g. "Ore Wash Base
+  1.1x · Shiny 1.21x · Mythic 1.375x"), not just the selected/best form —
+  the player wants all unusable variants listed. `upgraderForm()` was
+  removed. Added a "Furnace Loses" tile (flat amount + % of current multi)
+  and a "Why the break-even goes up when the loss is flat" explanation: the
+  loss per upgrade IS flat ((100·vm − 1)/75), but upgraders multiply, so
+  what matters is the fraction F(n+1)/F(n), which shrinks as F shrinks.
 
 2026-10-10, later still (scanner Hit Chance on wiki item pages):
 

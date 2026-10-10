@@ -59,16 +59,7 @@
     return n >= 1 ? s : 1;
   }
   const lambdaGood = (n) => (16 / 19) ** n;
-  // An upgrader's multiplier in the given form, or in the strongest form it
-  // has below that one when it doesn't come in it (most have no Mythic).
-  function upgraderForm(u, variant) {
-    if (u.variants[variant] != null) return { variant, multi: u.variants[variant] };
-    const cap = VARIANT_MULTI[variant] ?? 1;
-    const best = Object.keys(u.variants)
-      .filter((name) => (VARIANT_MULTI[name] ?? 1) <= cap)
-      .sort((a, b) => VARIANT_MULTI[b] - VARIANT_MULTI[a])[0];
-    return best ? { variant: best, multi: u.variants[best] } : { variant, multi: null };
-  }
+  const VARIANT_ORDER = ['Base', 'Shiny', 'Mythic', 'Shiny Mythic'];
   const CORIUM_MAX_EATS = 8;
   const UPGRADER_FIT_SIZE = 2.4;
 
@@ -200,21 +191,22 @@
           const now = mischievous(count, ctx.vm);
           const next = mischievous(count + 1, ctx.vm);
           const breakEven = now / next;
-          const pairs = [['Multiplier', mult(now)], ['One More Upgrade', mult(next)], ['Break-even Upgrader', breakEven > 1 ? mult(breakEven, 3) : 'Any']];
+          const pairs = [['Multiplier', mult(now)], ['One More Upgrade', mult(next)], ['Furnace Loses', now > next ? `${mult(now - next, 3)} (${pct(1 - next / now)})` : 'Nothing'], ['Break-even Upgrader', breakEven > 1 ? mult(breakEven, 3) : 'Any']];
           let list;
           if (count < 25) list = p(`Upgrades ${count + 1} through 25 are free — the furnace stays at its max, so use whatever you like.`);
           else if (count >= 100) list = p('The furnace is already down to 1x, so extra upgrades can\'t cost it anything more.');
           else {
-            // Compare against the same form of each upgrader (a Shiny Mythic
-            // furnace player is comparing Shiny Mythic upgraders), or the
-            // best lower form an upgrader has when it doesn't come in that one.
-            const bad = (ctx.upgraders ?? []).map((u) => ({ name: u.name, ...upgraderForm(u, ctx.variant) }))
-              .filter((u) => u.multi != null && u.multi < breakEven)
-              .sort((a, b) => a.multi - b.multi || a.name.localeCompare(b.name));
-            const form = ctx.variant === 'Base' ? 'Base stats' : `${ctx.variant} form, or the best form below it they come in`;
+            // Every form of every upgrader that falls short — a player might
+            // own any of them, so a Base form that fails is listed even when
+            // that item's Shiny form is fine.
+            const bad = (ctx.upgraders ?? [])
+              .map((u) => ({ name: u.name, forms: VARIANT_ORDER.filter((f) => u.variants[f] != null && u.variants[f] < breakEven).map((f) => [f, u.variants[f]]) }))
+              .filter((u) => u.forms.length)
+              .sort((a, b) => a.forms[0][1] - b.forms[0][1] || a.name.localeCompare(b.name));
+            const formCount = bad.reduce((sum, u) => sum + u.forms.length, 0);
             list = bad.length
-              ? `${p(`At ${count} upgrades, adding another upgrader costs the furnace ${mult(now - next, 3)} (${mult(now)} → ${mult(next)}), so it has to be at least ${mult(breakEven, 3)} to be worth it. ${bad.length === 1 ? `This multiplier upgrader (${form}) isn't` : `These ${bad.length} multiplier upgraders (${form}) aren't`}:`)}<ul class="wiki-mech-chips">${bad.map((u) => `<li>${esc(u.name)} <span>${mult(u.multi, 3)}${u.variant !== ctx.variant ? ` (${esc(u.variant)})` : ''}</span></li>`).join('')}</ul>`
-              : p(`At ${count} upgrades, any upgrader of at least ${mult(breakEven, 3)} is worth adding — every multiplier upgrader's ${esc(ctx.variant)} form clears that.`);
+              ? `${p(`At ${count} upgrades, adding another upgrader costs the furnace ${mult(now - next, 3)} (${mult(now)} → ${mult(next)}, ${pct(1 - next / now)} of its multi), so it has to be at least ${mult(breakEven, 3)} to be worth it. These ${formCount} upgrader form${formCount === 1 ? '' : 's'} (${bad.length} item${bad.length === 1 ? '' : 's'}) aren't:`)}<ul class="wiki-mech-chips">${bad.map((u) => `<li>${esc(u.name)} <span>${u.forms.map(([f, m]) => `${esc(f)} ${mult(m, 3)}`).join(' · ')}</span></li>`).join('')}</ul>`
+              : p(`At ${count} upgrades, any upgrader of at least ${mult(breakEven, 3)} is worth adding — every form of every multiplier upgrader clears that.`);
           }
           return tiles(pairs) + list;
         },
@@ -225,7 +217,14 @@
           sub('How much each upgrade costs the furnace'),
           p(`Between 25 and 100 upgrades, every upgrade the ore goes through takes the same flat amount off the furnace's multiplier: <strong>${mult(loss, 3)}</strong> on a ${esc(ctx.variant)} Mischievous Furnace.`),
           table(['Variant', 'Max (≤ 25 upgrades)', 'Lost per Upgrade'], Object.entries(VARIANT_MULTI).map(([name, vm]) => [name === ctx.variant ? `${name} (selected)` : name, mult(100 * vm), mult((100 * vm - 1) / 75, 3)])),
-          p('An upgrader is only worth adding if its own multiplier makes up for that loss. Because the loss is flat while the furnace\'s multiplier keeps shrinking, each loss hurts more the more upgrades you already have — so the break-even multiplier rises with every upgrader you add. Put your upgrade count in the calculator above to see which upgraders aren\'t worth using. Additive upgraders and ones whose multiplier depends on their effect aren\'t listed.'),
+          sub('Why the break-even goes up when the loss is flat'),
+          p('The furnace does lose the same flat amount every upgrade — but your ore\'s final value is all your upgraders multiplied together, then multiplied by the furnace. So what matters is what <em>fraction</em> of the furnace\'s multi each upgrade takes, and a flat loss is a bigger and bigger fraction as the multi shrinks. An upgrader is worth adding only if its own multiplier makes up for that fraction:'),
+          formula([
+            'worth it if  upgraderMulti > furnaceNow / furnaceAfter',
+            `furnaceAfter = furnaceNow − ${trim(loss, 3)}   (${ctx.variant}, between 25 and 100 upgrades)`,
+          ]),
+          p(`On a ${esc(ctx.variant)} furnace: at 25 upgrades, ${mult(mischievous(25, ctx.vm))} → ${mult(mischievous(26, ctx.vm))} only loses ${pct(1 - mischievous(26, ctx.vm) / mischievous(25, ctx.vm))} of its multi, so anything above ${mult(mischievous(25, ctx.vm) / mischievous(26, ctx.vm), 3)} is worth it. At 97 upgrades, ${mult(mischievous(97, ctx.vm))} → ${mult(mischievous(98, ctx.vm))} loses the same ${mult(loss, 3)}, but that's ${pct(1 - mischievous(98, ctx.vm) / mischievous(97, ctx.vm))} of its multi, so an upgrader now needs ${mult(mischievous(97, ctx.vm) / mischievous(98, ctx.vm), 3)}.`),
+          p('Put your upgrade count in the calculator above to see every upgrader form that isn\'t worth using. Additive upgraders and ones whose multiplier depends on their effect aren\'t listed.'),
           table(['Upgrades', `Multiplier (${ctx.variant})`, 'Break-even for the next upgrader'], [25, 40, 50, 60, 75, 80, 90, 96, 99].map((n) => [String(n), mult(mischievous(n, ctx.vm)), mult(mischievous(n, ctx.vm) / mischievous(n + 1, ctx.vm), 3)])),
         ].join('');
       },
