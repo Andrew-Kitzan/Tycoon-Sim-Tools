@@ -11,7 +11,8 @@
 
 (function () {
   const VARIANT_MULTI = { Base: 1, Shiny: 1.1, Mythic: 1.25, 'Shiny Mythic': 1.5 };
-  const VARIANT_MULTI_LINE = 'variantMulti: Base 1, Shiny 1.1, Mythic 1.25, Shiny Mythic 1.5';
+  // The formula's variantMulti line, filled in for the form selected on the page.
+  const variantLine = (ctx) => `variantMulti = ${ctx.vm} for ${ctx.variant}   (Base 1, Shiny 1.1, Mythic 1.25, Shiny Mythic 1.5)`;
 
   // ---- Formatting / markup helpers -------------------------------------------
   const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
@@ -58,6 +59,16 @@
     return n >= 1 ? s : 1;
   }
   const lambdaGood = (n) => (16 / 19) ** n;
+  // An upgrader's multiplier in the given form, or in the strongest form it
+  // has below that one when it doesn't come in it (most have no Mythic).
+  function upgraderForm(u, variant) {
+    if (u.variants[variant] != null) return { variant, multi: u.variants[variant] };
+    const cap = VARIANT_MULTI[variant] ?? 1;
+    const best = Object.keys(u.variants)
+      .filter((name) => (VARIANT_MULTI[name] ?? 1) <= cap)
+      .sort((a, b) => VARIANT_MULTI[b] - VARIANT_MULTI[a])[0];
+    return best ? { variant: best, multi: u.variants[best] } : { variant, multi: null };
+  }
   const CORIUM_MAX_EATS = 8;
   const UPGRADER_FIT_SIZE = 2.4;
 
@@ -80,12 +91,12 @@
 
   const ENTRIES = {
     "Periastron's Throne": {
-      intro: () => [
-        p('Throne\'s multiplier depends on how old the ore is when it reaches the furnace (counted from when it was dropped). It stays at its max until the ore is 15 seconds old, then drops in a straight line to its minimum at 60 seconds — losing 7.78x every 10 seconds on a Base Throne.'),
+      intro: (ctx) => [
+        p(`Throne's multiplier depends on how old the ore is when it reaches the furnace (counted from when it was dropped). A ${esc(ctx.variant)} Throne stays at its max of ${mult(50 * ctx.vm)} until the ore is 15 seconds old, then drops in a straight line to its minimum of ${mult(15 * ctx.vm)} at 60 seconds — losing ${mult((35 / 4.5) * ctx.vm)} every 10 seconds.`),
         formula([
           'multiplier = (50 − ((oreAge − 15) / 45) × 35) × variantMulti',
           'oreAge under 15 s counts as 15 s, over 60 s counts as 60 s',
-          VARIANT_MULTI_LINE,
+          variantLine(ctx),
         ]),
       ].join(''),
       calc: {
@@ -94,17 +105,17 @@
       },
       after: (ctx) => [
         table(['Ore Age', `Multiplier (${ctx.variant})`], [15, 20, 25, 30, 35, 40, 45, 50, 55, 60].map((a) => [`${a} s`, mult(throne(a, ctx.vm))])),
-        qa('Is Throne worth it?', 'Most end-game setups take about 45 seconds for ore to reach the furnace, which gives a Base Throne an average of 26.67x. Every second counts after the first 15, so with Throne the faster your ore gets to the furnace, the better.'),
+        qa('Is Throne worth it?', `Most end-game setups take about 45 seconds for ore to reach the furnace, which gives a ${esc(ctx.variant)} Throne an average of ${mult(throne(45, ctx.vm))}. Every second counts after the first 15, so with Throne the faster your ore gets to the furnace, the better.`),
       ].join(''),
     },
 
     'Runic Array': {
-      intro: () => [
-        p('Runic Array\'s multiplier grows with the ore\'s age (counted from when it was dropped): it starts at 1x and grows exponentially to 3x at 2 minutes old, then stays at 3x.'),
+      intro: (ctx) => [
+        p(`Runic Array's multiplier grows with the ore's age (counted from when it was dropped). A ${esc(ctx.variant)} Runic Array starts at ${mult(ctx.vm)} and grows exponentially to ${mult(3 * ctx.vm)} at 2 minutes old, then stays at ${mult(3 * ctx.vm)}.`),
         formula([
           'multiplier = 3 ^ (oreAge / 120) × variantMulti',
           'capped at 3 × variantMulti from 120 s on',
-          VARIANT_MULTI_LINE,
+          variantLine(ctx),
         ]),
       ].join(''),
       calc: {
@@ -136,12 +147,12 @@
     },
 
     'Parasitic Fiend': {
-      intro: () => [
-        p('Parasitic Fiend\'s multiplier depends on the ore\'s starting value — what the dropper made it worth, before any upgrades. It scales in a straight line from 1x at 1K up to 30x (times the variant multiplier) at 375K. Below 1K or above 375K it\'s only 1x.'),
+      intro: (ctx) => [
+        p(`Parasitic Fiend's multiplier depends on the ore's starting value — what the dropper made it worth, before any upgrades. A ${esc(ctx.variant)} Parasitic Fiend scales in a straight line from 1x at 1K up to ${mult(30 * ctx.vm)} at 375K. Below 1K or above 375K it's only 1x.`),
         formula([
           'if startingValue < 1,000 or startingValue > 375,000:  multiplier = 1',
           'otherwise:  multiplier = 1 + (startingValue − 1,000) × (30 × variantMulti − 1) / 374,000',
-          VARIANT_MULTI_LINE,
+          variantLine(ctx),
         ]),
       ].join(''),
       calc: {
@@ -155,12 +166,12 @@
     },
 
     'Raceway Accelerator': {
-      intro: () => [
-        p('The smaller the ore, the bigger the multi. Ore size 0.25 or under gets the full 5x (times the variant multiplier); ore size 1 or over gets 1x; in between it scales in a straight line.'),
+      intro: (ctx) => [
+        p(`The smaller the ore, the bigger the multi. On a ${esc(ctx.variant)} Raceway Accelerator, ore size 0.25 or under gets the full ${mult(5 * ctx.vm)}; ore size 1 or over gets 1x; in between it scales in a straight line.`),
         formula([
           'multiplier = 1 + (5 × variantMulti − 1) × ((1 − oreSize) / 0.75)',
           'oreSize under 0.25 counts as 0.25, over 1 counts as 1',
-          VARIANT_MULTI_LINE,
+          variantLine(ctx),
         ]),
       ].join(''),
       calc: {
@@ -174,12 +185,12 @@
     },
 
     'Mischievous Furnace': {
-      intro: () => [
-        p('Mischievous Furnace rewards ore that went through few upgrades: 25 or fewer gets the full 100x (times the variant multiplier), 100 or more gets 1x, and in between it scales in a straight line.'),
+      intro: (ctx) => [
+        p(`Mischievous Furnace rewards ore that went through few upgrades. On a ${esc(ctx.variant)} Mischievous Furnace, 25 or fewer upgrades gets the full ${mult(100 * ctx.vm)}, 100 or more gets 1x, and in between it scales in a straight line.`),
         formula([
           'multiplier = 1 + (100 × variantMulti − 1) × (1 − (upgrades − 25) / 75)',
           'upgrades under 25 counts as 25, over 100 counts as 100',
-          VARIANT_MULTI_LINE,
+          variantLine(ctx),
         ]),
       ].join(''),
       calc: {
@@ -194,10 +205,16 @@
           if (count < 25) list = p(`Upgrades ${count + 1} through 25 are free — the furnace stays at its max, so use whatever you like.`);
           else if (count >= 100) list = p('The furnace is already down to 1x, so extra upgrades can\'t cost it anything more.');
           else {
-            const bad = (ctx.upgraders ?? []).filter((u) => u.multi < breakEven).sort((a, b) => a.multi - b.multi || a.name.localeCompare(b.name));
+            // Compare against the same form of each upgrader (a Shiny Mythic
+            // furnace player is comparing Shiny Mythic upgraders), or the
+            // best lower form an upgrader has when it doesn't come in that one.
+            const bad = (ctx.upgraders ?? []).map((u) => ({ name: u.name, ...upgraderForm(u, ctx.variant) }))
+              .filter((u) => u.multi != null && u.multi < breakEven)
+              .sort((a, b) => a.multi - b.multi || a.name.localeCompare(b.name));
+            const form = ctx.variant === 'Base' ? 'Base stats' : `${ctx.variant} form, or the best form below it they come in`;
             list = bad.length
-              ? `${p(`At ${count} upgrades, adding another upgrader costs the furnace ${mult(now - next, 3)} (${mult(now)} → ${mult(next)}), so it has to be at least ${mult(breakEven, 3)} to be worth it. ${bad.length === 1 ? 'This multiplier upgrader (Base stats) isn\'t' : `These ${bad.length} multiplier upgraders (Base stats) aren't`}:`)}<ul class="wiki-mech-chips">${bad.map((u) => `<li>${esc(u.name)} <span>${mult(u.multi, 3)}</span></li>`).join('')}</ul>`
-              : p(`At ${count} upgrades, any upgrader of at least ${mult(breakEven, 3)} is worth adding — every multiplier upgrader clears that.`);
+              ? `${p(`At ${count} upgrades, adding another upgrader costs the furnace ${mult(now - next, 3)} (${mult(now)} → ${mult(next)}), so it has to be at least ${mult(breakEven, 3)} to be worth it. ${bad.length === 1 ? `This multiplier upgrader (${form}) isn't` : `These ${bad.length} multiplier upgraders (${form}) aren't`}:`)}<ul class="wiki-mech-chips">${bad.map((u) => `<li>${esc(u.name)} <span>${mult(u.multi, 3)}${u.variant !== ctx.variant ? ` (${esc(u.variant)})` : ''}</span></li>`).join('')}</ul>`
+              : p(`At ${count} upgrades, any upgrader of at least ${mult(breakEven, 3)} is worth adding — every multiplier upgrader's ${esc(ctx.variant)} form clears that.`);
           }
           return tiles(pairs) + list;
         },
@@ -207,7 +224,7 @@
         return [
           sub('How much each upgrade costs the furnace'),
           p(`Between 25 and 100 upgrades, every upgrade the ore goes through takes the same flat amount off the furnace's multiplier: <strong>${mult(loss, 3)}</strong> on a ${esc(ctx.variant)} Mischievous Furnace.`),
-          table(['Variant', 'Max (≤ 25 upgrades)', 'Lost per Upgrade'], Object.entries(VARIANT_MULTI).map(([name, vm]) => [name, mult(100 * vm), mult((100 * vm - 1) / 75, 3)])),
+          table(['Variant', 'Max (≤ 25 upgrades)', 'Lost per Upgrade'], Object.entries(VARIANT_MULTI).map(([name, vm]) => [name === ctx.variant ? `${name} (selected)` : name, mult(100 * vm), mult((100 * vm - 1) / 75, 3)])),
           p('An upgrader is only worth adding if its own multiplier makes up for that loss. Because the loss is flat while the furnace\'s multiplier keeps shrinking, each loss hurts more the more upgrades you already have — so the break-even multiplier rises with every upgrader you add. Put your upgrade count in the calculator above to see which upgraders aren\'t worth using. Additive upgraders and ones whose multiplier depends on their effect aren\'t listed.'),
           table(['Upgrades', `Multiplier (${ctx.variant})`, 'Break-even for the next upgrader'], [25, 40, 50, 60, 75, 80, 90, 96, 99].map((n) => [String(n), mult(mischievous(n, ctx.vm)), mult(mischievous(n, ctx.vm) / mischievous(n + 1, ctx.vm), 3)])),
         ].join('');
@@ -373,7 +390,7 @@
           p(`Dream Machine starts at 1x and adds +${trim(per, 3)}x for every effect on the ore, so the more effects you stack before it, the bigger the multi.`),
           formula([
             'multiplier = 1 + effects × 0.5 × variantMulti',
-            VARIANT_MULTI_LINE,
+            variantLine(ctx),
           ]),
         ].join('');
       },

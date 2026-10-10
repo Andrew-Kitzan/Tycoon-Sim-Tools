@@ -187,6 +187,15 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   `mechanicsContext()` from `indexItems`: Multiplicative upgraders with a
   numeric Base mainStat > 1 — 1x ones like Dream Machine/Runic Array/Ore
   Replicator are effect-based and excluded; additive ones too).
+- Follow-up: everything follows the **form (variant) selected** on the
+  page. `ctx.upgraders` now carries each upgrader's multiplier per form
+  (`variants: { Base, Shiny, ... }`); the Mischievous list compares the
+  selected form of each upgrader, falling back to the strongest form below
+  it that the upgrader has (`upgraderForm()` — most have no Mythic), shown
+  as e.g. "1.21x (Shiny)". The intros of Throne / Runic / Parasitic /
+  Raceway / Mischievous and Throne's 45 s average now state the selected
+  form's numbers, and every formula's variantMulti line reads
+  `variantMulti = 1.5 for Shiny Mythic (…)` via `variantLine(ctx)`.
 
 2026-10-10, later still (scanner Hit Chance on wiki item pages):
 

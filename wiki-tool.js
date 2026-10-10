@@ -1953,13 +1953,18 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
 
   function mechanicsContext(item, variant) {
     const vm = globalThis.TycoonItemMechanics?.variantMulti?.[variant] ?? 1;
-    // Every multiplier upgrader's Base multiplier, for entries that compare
+    // Every multiplier upgrader's multiplier in each form, for entries that compare
     // against them (Mischievous Furnace's "not worth using" list). A listed
     // 1x means the real multiplier comes from the item's effect (Dream
     // Machine, Runic Array, Ore Replicator), so those are left out.
     const upgraders = indexItems
       .filter((u) => u.type === 'upgrader' && !u.hidden && u.base.mainStatType === 'Multiplicative' && typeof u.base.mainStat === 'number' && u.base.mainStat > 1)
-      .map((u) => ({ name: u.name, multi: u.base.mainStat }));
+      .map((u) => ({
+        name: u.name,
+        variants: Object.fromEntries(u.variantList
+          .filter((name) => typeof u.variants[name].mainStat === 'number')
+          .map((name) => [name, u.variants[name].mainStat])),
+      }));
     return { name: item.name, variant, vm, v: item.variants[variant], upgraders };
   }
 
