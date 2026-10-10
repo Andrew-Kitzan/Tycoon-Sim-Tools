@@ -1,0 +1,39 @@
+{
+  "mechanics": {
+    "slots": 6,
+    "restockInterval": "2 Hours",
+    "restockRobuxCost": null
+  },
+  "stock": [
+    { "name": "Luck Potion", "rarity": "Common", "itemType": "Potion", "odds": "1/2.45", "currency": "Crystal", "cost": "500" },
+    { "name": "Shiny Luck Potion", "rarity": "Common", "itemType": "Potion", "odds": "1/2.45", "currency": "Crystal", "cost": "500" },
+    { "name": "Mythic Luck Potion", "rarity": "Common", "itemType": "Potion", "odds": "1/2.45", "currency": "Crystal", "cost": "500" },
+    { "name": "Roll Speed Potion", "rarity": "Common", "itemType": "Potion", "odds": "1/2.45", "currency": "Crystal", "cost": "500" },
+    { "name": "Starlight Enhancer", "rarity": "Common", "itemType": "Upgrader", "odds": "1.71", "currency": "Crystal", "cost": "1K" },
+    { "name": "Alien Helper", "rarity": "Common", "itemType": "Upgrader", "odds": "1.71", "currency": "Crystal", "cost": "1K" },
+    { "name": "Crates", "rarity": "Common", "itemType": "Decoration", "odds": "1.24", "currency": "Cash", "cost": "500K" },
+
+    { "name": "Scarabyte Dropper", "rarity": "Uncommon", "itemType": "Dropper", "odds": "1.43", "currency": "Crystal", "cost": "10K" },
+
+    { "name": "Luck Potion", "rarity": "Rare", "itemType": "Potion", "odds": "1/4.41", "currency": "Crystal", "cost": "2.5K" },
+    { "name": "Shiny Luck Potion", "rarity": "Rare", "itemType": "Potion", "odds": "1/4.41", "currency": "Crystal", "cost": "2.5K" },
+    { "name": "Mythic Luck Potion", "rarity": "Rare", "itemType": "Potion", "odds": "1/4.41", "currency": "Crystal", "cost": "2.5K" },
+    { "name": "Roll Speed Potion", "rarity": "Rare", "itemType": "Potion", "odds": "1/4.41", "currency": "Crystal", "cost": "2.5K" },
+    { "name": "Fireworks", "rarity": "Rare", "itemType": "Decoration", "odds": "1/4.41", "currency": "Cash", "cost": "25K" },
+    { "name": "Star Scanner", "rarity": "Rare", "itemType": "Upgrader", "odds": "1/4.41", "currency": "Crystal", "cost": "25K" },
+
+    { "name": "Dance Floor", "rarity": "Epic", "itemType": "Decoration", "odds": "1/8.39", "currency": "Cash", "cost": "500T" },
+    { "name": "World Eater", "rarity": "Epic", "itemType": "Upgrader", "odds": "1/8.39", "currency": "Crystal", "cost": "100K" },
+
+    { "name": "Luck Potion", "rarity": "Legendary", "itemType": "Potion", "odds": "1/160.35", "currency": "Crystal", "cost": "2.5K" },
+    { "name": "Shiny Luck Potion", "rarity": "Legendary", "itemType": "Potion", "odds": "1/160.35", "currency": "Crystal", "cost": "2.5K" },
+    { "name": "Mythic Luck Potion", "rarity": "Legendary", "itemType": "Potion", "odds": "1/160.35", "currency": "Crystal", "cost": "2.5K" },
+    { "name": "Roll Speed Potion", "rarity": "Legendary", "itemType": "Potion", "odds": "1/160.35", "currency": "Crystal", "cost": "2.5K" },
+    { "name": "THE EPIK DUCK", "rarity": "Legendary", "itemType": "Decoration", "odds": "1/160.35", "currency": "Cash", "cost": "50Sx" },
+    { "name": "Money Moves", "rarity": "Legendary", "itemType": "Decoration", "odds": "1/160.35", "currency": "Cash", "cost": "1Ud" },
+    { "name": "Dream Machine", "rarity": "Legendary", "itemType": "Upgrader", "odds": "1/160.35", "currency": "Crystal", "cost": "250K" },
+    { "name": "Parasitic Fiend", "rarity": "Legendary", "itemType": "Furnace", "odds": "1/160.35", "currency": "Crystal", "cost": "1M" },
+
+    { "name": "Godly Stone Dropper", "rarity": "Secret", "itemType": "Dropper", "odds": "1/662.4", "currency": "Crystal", "cost": "3.5M" }
+  ]
+}

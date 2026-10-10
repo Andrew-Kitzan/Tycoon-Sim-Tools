@@ -120,6 +120,69 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-09 (Merchant page; Base Builder + Base Design hidden):
+
+**Merchant page** (`data/manual/merchant-data.json`, `renderMerchantPage()`).
+Schema: `{ mechanics: { slots, restockInterval, restockRobuxCost },
+stock: [{ name, rarity, itemType, odds, currency, cost }] }`, 25 rows, kept
+in rarity order (not alphabetized). **Item/price/odds rows come from the
+"Merchant" sheet of `data/Tycoon Sim Database.xlsx`, filtered to rows whose
+Obtainement Method is "Sold by Traveling Merchant"** (the "Enchanter
+Exclusive" rows are the Shiny/Mythic variants, not merchant stock). Read it
+with `engine/xlsx-reader.mjs` (`openXlsx(buf).readSheet('Merchant')`).
+
+The mechanic text comes from the player's screenshots of the
+TravelingMerchant Luau, **with two player corrections that override the
+code**: stock is per player (own seed), and it restocks every 2 hours. The
+code shown tied the merchant to a "Traveling Merchant" event in the shared
+EventSchedule; that is outdated, so do NOT add a Traveling Merchant row to
+events-data.json. What the code shows that still holds: 6 slots
+(`MAX_MERCHANT_SLOTS`); each slot does a weighted roll over drop pools; an
+items pool picks one item uniformly, a potion pool picks a random potion
+type; a duplicate reward key in the same stock is re-rolled; decorations
+cost Cash, everything else Crystals; items are always Base variant; a
+Robux "restock" product rerolls early. The spreadsheet's prices match the
+code's Legendary/Secret pools exactly (Money Moves = MaxCash = 1Ud, Dream
+Machine 250K, Parasitic Fiend 1M, The Epik Duck 50Sx, Godly Stone Dropper
+3.5M), but its odds do not match the code's old weights, which is why the
+page uses the spreadsheet as the source for odds.
+
+**Open questions put to the player, unanswered so far:**
+1. Starlight Enhancer, Alien Helper, Crates and Scarabyte Dropper have
+   odds `1.71`/`1.71`/`1.24`/`1.43` in the sheet, unlike every other row's
+   `1/X`. Shown verbatim; unknown whether they mean `1/X` or a percentage.
+2. Legendary potions are 2.5K Crystals in the sheet (same as Rare); the
+   old code priced the Legendary potion pool at 10K.
+3. `restockRobuxCost` is null (price unknown). The page only shows a
+   price if it's filled in.
+
+Rendering details: potions use `formatMerchantItem()`, which maps rarity to
+potion tier (Common=1, Rare=3, Legendary=5, same as Brewer) and looks up
+`POTION_ICON_FILES`; Tier 1 Mythic's file is "tier1 Mythic Potion.png"
+(no "Luck"), so it falls back to the `tier1mythicpotion` key.
+Decorations reuse the Decoration page's `formatDecorationName()`
+(`icons/decoration/`), at the player's request, because those icons have no
+baked-in count badge. The duck's file is "THE EPIK DUCK.png", so the
+merchant row's name is spelled that way. The player explicitly did not
+want a Details column (items will link to their own pages once
+navigation exists), so don't re-add per-item stat text here.
+
+**Achievements**: the player filled in Ore Processor level 7 (15M ore,
+Tier 4 Mythic Luck Potion and 100K Crystals). Every achievement level is
+now filled in.
+
+**Base Builder hidden, not deleted** (the player is redesigning it): the
+Tool Menu button is removed from `index.html`, and `app.js`'s
+`loadActiveTool()`/`setActiveTool()` no longer accept `'builder'`, so a
+saved "builder" choice falls back to the Wiki (verified in a fresh tab).
+All builder code and markup are untouched. To restore: re-add the
+`data-tool="builder"` button and `'builder'` to those two checks. README
+says it's temporarily unavailable. **Base Design tile removed** (tile, CSS
+rule, PAGES entry, README mention); its background image
+`icons/wiki/base-progression-bg.png` was kept in case the page returns.
+Preview gotcha seen again: the preview browser kept running a cached
+`app.js` after the edit, so a fresh tab was needed to verify.
+
 2026-09-21 (Events page, more Mastery data, Crystals Farming removed):
 
 **Events page** (`data/manual/events-data.json`, `renderEventsPage()`).

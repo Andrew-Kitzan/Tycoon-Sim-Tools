@@ -1,5 +1,9 @@
 [
   {
+    "date": "2026-10-09",
+    "summary": "Built the Merchant page: how the Traveling Merchant's personal stock works and everything he can sell, with odds and prices. Also finished Ore Processor on the Achievements page. The Base Builder and the Base Design page are hidden for now while the builder gets redesigned."
+  },
+  {
     "date": "2026-09-21",
     "summary": "Built the Events page (how the 15-minute event cycle works, every event's effect and weight, and its real chance of coming up), and filled in Unbox Luck and Friend Luck on the Mastery page. The Crystals Farming tile is gone since it isn't planned."
   },

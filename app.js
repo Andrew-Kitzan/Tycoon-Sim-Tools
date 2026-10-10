@@ -2113,7 +2113,7 @@ function loadActiveTool() {
   if (!storage) return 'wiki';
   try {
     const saved = storage.getItem(activeToolStorageKey);
-    return saved === 'builder' || saved === 'capgrader' || saved === 'luck' || saved === 'calculator' || saved === 'mpa' ? saved : 'wiki';
+    return saved === 'capgrader' || saved === 'luck' || saved === 'calculator' || saved === 'mpa' ? saved : 'wiki';
   } catch {
     return 'wiki';
   }
@@ -2161,7 +2161,9 @@ function applyActiveToolUi() {
 }
 
 function setActiveTool(nextTool) {
-  activeTool = nextTool === 'builder' || nextTool === 'capgrader' || nextTool === 'luck' || nextTool === 'calculator' || nextTool === 'mpa' ? nextTool : 'wiki';
+  // Base Builder is temporarily unavailable while it's being redesigned —
+  // its code and markup are kept, it just can't be opened.
+  activeTool = nextTool === 'capgrader' || nextTool === 'luck' || nextTool === 'calculator' || nextTool === 'mpa' ? nextTool : 'wiki';
   applyActiveToolUi();
   saveActiveTool();
 }

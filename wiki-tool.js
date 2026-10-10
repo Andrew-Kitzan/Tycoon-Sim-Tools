@@ -1058,6 +1058,92 @@
       </table>`;
   }
 
+  // Traveling Merchant data lives in data/manual/merchant-data.json — same
+  // plain-hand-edited-JSON convention as every other data/manual/ file.
+  // Item/price/odds rows come from the player's spreadsheet ("Merchant"
+  // sheet, "Sold by Traveling Merchant" rows only); the mechanic text comes
+  // from the game's TravelingMerchant script plus the player's notes on
+  // what changed after it (per-player seed, 2-hour restock).
+  let merchantDataPromise = null;
+  function loadMerchantData() {
+    if (!merchantDataPromise) {
+      merchantDataPromise = fetch('data/manual/merchant-data.json', { cache: 'no-store' })
+        .then((res) => res.json())
+        .catch(() => null);
+    }
+    return merchantDataPromise;
+  }
+
+  // Potions are listed by name + rarity, but their icons are keyed by tier
+  // ("Tier3 Luck Potion.png"), so map rarity to tier the same way the Brewer
+  // page does. Tier 1 Mythic's file is "tier1 Mythic Potion.png" (no "Luck"),
+  // hence the fallback key. Everything else uses the generic item-icon guess.
+  const RARITY_TO_POTION_TIER = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5, secret: 6 };
+  function formatMerchantItem(item) {
+    if (String(item.itemType).toLowerCase() === 'potion') {
+      const tier = RARITY_TO_POTION_TIER[String(item.rarity).toLowerCase()];
+      const key = `tier${tier}${normalizePotionKey(item.name)}`;
+      const iconFile = POTION_ICON_FILES[key] ?? POTION_ICON_FILES[key.replace('mythicluckpotion', 'mythicpotion')];
+      if (tier && iconFile) {
+        return `<span class="wiki-reward-chip"><img class="wiki-reward-icon" src="icons/items/${encodeURIComponent(iconFile)}" alt="" onerror="this.remove()">${escapeHtml(item.name)}</span>`;
+      }
+      return escapeHtml(item.name);
+    }
+    if (String(item.itemType).toLowerCase() === 'decoration') return formatDecorationName(item.name);
+    return formatCodeRewards([item.name]);
+  }
+
+  async function renderMerchantPage() {
+    const data = await loadMerchantData();
+    const mechanics = data?.mechanics ?? {};
+    const stock = data?.stock ?? [];
+    const rows = stock.map((item) => {
+      const currency = String(item.currency ?? '').trim().toLowerCase();
+      const costCell = currency.startsWith('crystal') ? formatCrystalCost(item.cost)
+        : currency === 'cash' ? formatCashCost(item.cost)
+        : '—';
+      return `
+      <tr>
+        <td>${formatMerchantItem(item)}</td>
+        <td>${formatRarity(item.rarity)}</td>
+        <td>${item.itemType ? escapeHtml(item.itemType) : '—'}</td>
+        <td>${item.odds ? escapeHtml(item.odds) : '—'}</td>
+        <td>${costCell}</td>
+      </tr>`;
+    }).join('');
+    const restock = mechanics.restockRobuxCost != null
+      ? ` for ${formatRobuxCost(formatNumber(mechanics.restockRobuxCost))}`
+      : '';
+    return `
+      <p>The Traveling Merchant sells a rotating stock of potions, upgraders,
+      droppers, furnaces and decorations. His stock is <strong>personal to you</strong>: every
+      player gets their own stock, and it restocks every
+      <strong>${escapeHtml(mechanics.restockInterval ?? '2 Hours')}</strong>.
+      You can also pay Robux to restock early${restock}.</p>
+      <h3 class="wiki-section-heading">How his stock is rolled</h3>
+      <p>Each restock fills <strong>${escapeHtml(mechanics.slots ?? 6)}
+      slots</strong>. Every slot rolls on its own, so you can get several
+      items of the same rarity in one restock, but <strong>the same reward
+      never appears twice in one stock</strong> — a duplicate is
+      re-rolled. When a potion slot comes up, its type (Luck, Shiny Luck,
+      Mythic Luck or Roll Speed) is picked at random. Potions and gear cost
+      Crystals; decorations cost Cash. Every item is sold as its Base
+      variant — Shiny and Mythic versions only come from the Enchanter.</p>
+      <h3 class="wiki-section-heading">Everything he can sell</h3>
+      <table class="wiki-data-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Rarity</th>
+            <th>Type</th>
+            <th>Odds</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="5">Not filled in yet.</td></tr>'}</tbody>
+      </table>`;
+  }
+
   // Events data lives in data/manual/events-data.json — same
   // plain-hand-edited-JSON convention as every other data/manual/ file.
   // Shape: an array of { name, effect, weight }. Weight is the game's raw
@@ -1319,7 +1405,7 @@
     },
     merchant: {
       title: 'Merchant',
-      body: '<p>The traveling merchant’s rotating stock and prices. Not written yet.</p>',
+      body: renderMerchantPage,
     },
     achievements: {
       title: 'Achievements',
@@ -1362,10 +1448,6 @@
     p2w: {
       title: 'P2W',
       body: renderP2wPage,
-    },
-    'base-progression': {
-      title: 'Base Design',
-      body: '<p>How to design and grow your base over time. Not written yet.</p>',
     },
   };
 
