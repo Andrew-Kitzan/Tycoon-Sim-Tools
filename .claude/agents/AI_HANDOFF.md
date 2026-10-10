@@ -120,6 +120,24 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-10, later (Tornado Alley hidden as ??? in the Index):
+
+- The player asked to hide Tornado Alley's info until someone actually gets
+  it or the next Halloween update comes out. New `hiddenItems` list in
+  `data/manual/index-data.json` (currently `["Tornado Alley"]`). Its real
+  `extraItems` data is untouched — to reveal it, just remove the name from
+  `hiddenItems`.
+- In `wiki-tool.js`, a hidden item keeps its icon, name and variant chips;
+  the card uses the neutral Common border instead of its rarity color, and
+  the hover popover, item page (rarity, type, stat tiles, effect, How to
+  Get) and search-result subtitle all show "???". It only matches Index
+  filters its icons/name already give away (search, variants); picking a
+  type/rarity/stat/source/uses/effect filter hides it so the filter can't
+  leak the info. Rarity sorts put it last.
+- NOT hidden: the Luck Simulator's Nature crate still lists Tornado Alley
+  with its assumed odds, and the 2026-10-10 update-log entry still mentions
+  it. The player only asked about the Index; ask before hiding it there.
+
 2026-10-10 (Index page + item pages, wiki-wide links and search, effect/material
 tags; committed and pushed as one commit with the Merchant answers):
 

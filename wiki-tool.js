@@ -1548,6 +1548,10 @@
     const extras = (manual.extraItems ?? []).map((r) => ({ ...r, isManual: true }));
     const modifiers = (manual.oreModifiers?.list ?? []).map((m) => ({ ...m, pattern: new RegExp(m.match, 'i') }));
     oreModifierNotes = manual.oreModifiers?.notes ?? [];
+    // index-data.json `hiddenItems`: items nobody has properly obtained yet
+    // (Tornado Alley) — the Index shows their icon and name, everything else
+    // as "???". Their real data stays in the file for when they're revealed.
+    const hiddenNames = new Set((manual.hiddenItems ?? []).map((n) => String(n).trim().toLowerCase()));
     const items = new Map();
     for (const rec of [...records, ...extras]) {
       const name = String(rec.name ?? '').trim();
@@ -1607,6 +1611,7 @@
       item.modifiers = [...new Map(item.variantList.flatMap((v) => item.variants[v].modifiers).map((m) => [m.name, m])).values()];
       item.p2wProducts = productsFor(item.name);
       item.sourceGroup = indexSourceGroup(base, item.p2wProducts.length > 0);
+      item.hidden = hiddenNames.has(item.name.toLowerCase());
     }
     return [...items.values()];
   }
@@ -1719,6 +1724,9 @@
 
   function indexItemMatches(item, f) {
     if (f.search && !item.name.toLowerCase().includes(f.search.trim().toLowerCase())) return false;
+    // A hidden item only shows under filters its icons and name already
+    // give away — otherwise the filter itself would leak its type/rarity/etc.
+    if (item.hidden) return !(f.type || f.rarity || f.statType || f.source || f.uses || f.effectOnly);
     if (f.type && item.type !== f.type) return false;
     if (f.rarity && item.rarity !== f.rarity) return false;
     if (f.statType && item.statType !== f.statType) return false;
@@ -1736,7 +1744,7 @@
 
   function sortIndexItems(list, sort) {
     const byName = (a, b) => a.name.localeCompare(b.name);
-    const rank = (item) => INDEX_RARITIES.indexOf(item.rarity);
+    const rank = (item) => (item.hidden ? INDEX_RARITIES.length : INDEX_RARITIES.indexOf(item.rarity));
     const sorters = {
       name: byName,
       'name-desc': (a, b) => byName(b, a),
@@ -1751,8 +1759,9 @@
       .map((v) => `<span class="wiki-index-dot is-${v.toLowerCase().replace(' ', '-')}" title="${escapeHtml(v)}"></span>`).join('');
   }
 
+  const HIDDEN_TEXT = '???';
   function indexCardHtml(item) {
-    const color = RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
+    const color = item.hidden ? RARITY_COLORS.Common : RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
     return `
       <button type="button" class="wiki-index-card" data-index-key="${escapeHtml(item.key)}" style="--rarity-color: ${color}">
         <span class="wiki-index-dots">${indexVariantDots(item)}</span>
@@ -1768,6 +1777,14 @@
 
   function indexPopoverPreview(item, variant) {
     const v = item.variants[variant];
+    if (item.hidden) {
+      return `
+      <img class="wiki-index-popover-icon" src="${indexIconSrc(item.name, variant)}" alt="" onerror="this.classList.add('is-missing')">
+      <div class="wiki-index-popover-stats">
+        <div><span>${HIDDEN_TEXT}</span> <strong>${HIDDEN_TEXT}</strong></div>
+        <p>${HIDDEN_TEXT}</p>
+      </div>`;
+    }
     const stat = indexMainStat(item, v);
     return `
       <img class="wiki-index-popover-icon" src="${indexIconSrc(item.name, variant)}" alt="" onerror="this.classList.add('is-missing')">
@@ -1782,7 +1799,7 @@
     return `
       <div class="wiki-index-popover-head">
         <strong>${escapeHtml(item.name)}</strong>
-        ${formatRarity(item.rarity)}
+        ${formatRarity(item.hidden ? HIDDEN_TEXT : item.rarity)}
       </div>
       <div class="wiki-index-variant-row">${indexVariantChips(item, variant)}</div>
       <div class="wiki-index-popover-preview">${indexPopoverPreview(item, variant)}</div>
@@ -1813,7 +1830,32 @@
 
   // The full item page (replaces the old Index side panel) — opened by
   // clicking a card, or from anywhere via openItemPage().
+  // A hidden item's page: icon, name and variant switcher only.
+  function hiddenItemPageHtml(item, variant) {
+    return `
+      <div class="wiki-item-page">
+        <div class="wiki-item-hero">
+          <div class="wiki-index-detail-art" style="--rarity-color: ${RARITY_COLORS.Common}">
+            <img src="${indexIconSrc(item.name, variant)}" alt="" onerror="this.classList.add('is-missing')">
+          </div>
+          <div class="wiki-item-summary">
+            <div class="wiki-index-detail-tags">
+              ${formatRarity(HIDDEN_TEXT)}
+              <span class="wiki-index-tag">${HIDDEN_TEXT}</span>
+            </div>
+            <div class="wiki-index-variant-row" role="tablist" aria-label="Variant">${indexVariantChips(item, variant)}</div>
+            <div class="wiki-index-stats">${[1, 2, 3, 4].map(() => indexStatTile(HIDDEN_TEXT, HIDDEN_TEXT)).join('')}</div>
+          </div>
+        </div>
+        <h3 class="wiki-section-heading">Effect</h3>
+        <p class="wiki-index-effect">${HIDDEN_TEXT}</p>
+        <h3 class="wiki-section-heading">How to Get</h3>
+        <p>${HIDDEN_TEXT}</p>
+      </div>`;
+  }
+
   function itemPageHtml(item, variant) {
+    if (item.hidden) return hiddenItemPageHtml(item, variant);
     const v = item.variants[variant];
     const color = RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
     const stat = indexMainStat(item, v);
@@ -2394,6 +2436,10 @@
 
       for (const [key, pageDef] of Object.entries(PAGES)) add('Page', pageDef.title, 'Wiki page', SEARCH_PAGE_KEYWORDS[key], { kind: 'page', key });
       for (const item of indexItems) {
+        if (item.hidden) {
+          add('Item', item.name, HIDDEN_TEXT, item.variantList.join(' '), { kind: 'item', ref: item.key, variant: 'Base' }, indexIconSrc(item.name, item.variantList[0]));
+          continue;
+        }
         const effects = item.variantList.map((v) => `${item.variants[v].effect} ${item.variants[v].source ?? ''}`).join(' ');
         add('Item', item.name, `${item.rarity} ${INDEX_TYPES[item.type]}${item.crate ? ` · ${indexSourceLabel(item.crate)}` : ''}`,
           `${item.variantList.join(' ')} ${item.tags.join(' ')} ${item.statType ?? ''} ${effects}`,

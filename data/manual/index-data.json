@@ -234,6 +234,9 @@
       "label": "15.62x"
     }
   ],
+  "hiddenItems": [
+    "Tornado Alley"
+  ],
   "extraItems": [
     {
       "name": "Tornado Alley",
