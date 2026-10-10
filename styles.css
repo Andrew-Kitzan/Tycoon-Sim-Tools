@@ -1207,6 +1207,15 @@ button.wiki-notes-link { cursor: pointer; font-family: inherit; }
 .wiki-scanner-scroll { width: 0; min-width: 100%; overflow-x: auto; }
 .wiki-scanner-subheading { margin: 14px 0 6px; font-size: .95rem; }
 .wiki-scanner-formula { margin: 0 0 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: .8rem; line-height: 1.5; white-space: pre; }
+.wiki-scanner-input select { padding: 5px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: inherit; font: inherit; }
+.wiki-mech > p, .wiki-mech .wiki-mech-steps { margin: 0 0 10px; }
+.wiki-mech-steps { padding-left: 22px; }
+.wiki-mech-steps li { margin-bottom: 6px; }
+.wiki-mech-inputs { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.wiki-mech-calc { margin: 6px 0 4px; }
+.wiki-mech-figure { margin: 10px 0 14px; }
+.wiki-mech-figure img { display: block; max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
+.wiki-mech-figure figcaption { margin-top: 6px; font-size: .82rem; color: var(--muted, #9fb3c0); }
 .wiki-index-compare { margin-top: 0; font-size: .82rem; }
 .wiki-index-compare th, .wiki-index-compare td { padding: 6px 8px; }
 .wiki-index-compare tbody tr { cursor: pointer; }

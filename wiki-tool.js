@@ -1926,6 +1926,66 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
       <div class="wiki-scanner-scroll">${scannerFormulaHtml(geometry)}</div>`;
   }
 
+  // ---- Stats for Nerds (item pages) -------------------------------------------
+  // Formulas, calculators, tables and how-to notes from the database's
+  // "Stats for Nerds" sheet, defined per item in wiki-item-mechanics.js
+  // (globalThis.TycoonItemMechanics). Calculator values are remembered per
+  // item for the session, so switching variants keeps what was typed.
+  const mechanicsValues = new Map();
+
+  function mechanicsContext(item, variant) {
+    const vm = globalThis.TycoonItemMechanics?.variantMulti?.[variant] ?? 1;
+    return { name: item.name, variant, vm, v: item.variants[variant] };
+  }
+
+  function mechanicsCalcValues(item, entry) {
+    const saved = mechanicsValues.get(item.name) ?? {};
+    return Object.fromEntries(entry.calc.inputs.map((input) => [input.key, saved[input.key] ?? input.value]));
+  }
+
+  function mechanicsInputHtml(input, value) {
+    if (input.type === 'select') {
+      return `<label class="wiki-scanner-input">${escapeHtml(input.label)}
+        <select data-mech-input="${escapeHtml(input.key)}">${input.options.map(([v, label]) => `<option value="${escapeHtml(v)}"${v === value ? ' selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select>
+      </label>`;
+    }
+    return `<label class="wiki-scanner-input">${escapeHtml(input.label)}
+      <input type="number" step="${input.step ?? 'any'}"${input.min != null ? ` min="${input.min}"` : ''} value="${escapeHtml(value)}" data-mech-input="${escapeHtml(input.key)}">
+    </label>`;
+  }
+
+  function mechanicsResultHtml(item, variant) {
+    const entry = globalThis.TycoonItemMechanics?.entries?.[item.name];
+    if (!entry?.calc) return '';
+    const values = mechanicsCalcValues(item, entry);
+    const bad = entry.calc.inputs.some((input) => input.type !== 'select' && !Number.isFinite(Number(values[input.key])));
+    if (bad) return '<p class="wiki-index-muted">Enter a number to see the result.</p>';
+    const numeric = Object.fromEntries(entry.calc.inputs.map((input) => [input.key, input.type === 'select' ? values[input.key] : Number(values[input.key])]));
+    return entry.calc.result(numeric, mechanicsContext(item, variant));
+  }
+
+  function mechanicsSectionHtml(item, variant) {
+    const entry = globalThis.TycoonItemMechanics?.entries?.[item.name];
+    if (!entry) return '';
+    const ctx = mechanicsContext(item, variant);
+    let calc = '';
+    if (entry.calc) {
+      const values = mechanicsCalcValues(item, entry);
+      calc = `
+        <div class="wiki-mech-calc">
+          <div class="wiki-mech-inputs">${entry.calc.inputs.map((input) => mechanicsInputHtml(input, values[input.key])).join('')}</div>
+          <div class="wiki-mech-result">${mechanicsResultHtml(item, variant)}</div>
+        </div>`;
+    }
+    return `
+      <h3 class="wiki-section-heading">Stats for Nerds</h3>
+      <div class="wiki-mech">
+        ${entry.intro ? entry.intro(ctx) : ''}
+        ${calc}
+        ${entry.after ? entry.after(ctx) : ''}
+      </div>`;
+  }
+
   // The full item page (replaces the old Index side panel) — opened by
   // clicking a card, or from anywhere via openItemPage().
   // A hidden item's page: icon, name, rarity, variant switcher and odds only.
@@ -2014,6 +2074,7 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
         </div>
         ${v.effect ? `<h3 class="wiki-section-heading">${effectHeading(v.modifiers)}</h3>${modifierTagsHtml(v.modifiers)}<p class="wiki-index-effect">${escapeHtml(v.effect)}</p>` : ''}
         ${scannerSectionHtml(item, v)}
+        ${mechanicsSectionHtml(item, variant)}
         <h3 class="wiki-section-heading">How to Get</h3>
         ${howToGet.join('') || (p2w ? '' : '<p>—</p>')}
         ${p2w}
@@ -2228,6 +2289,15 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
     // Scanner pages: the "Your ore size" box updates just its result tiles
     // (re-rendering the whole page would steal focus from the input).
     pageBody.oninput = (event) => {
+      const mechInput = event.target.closest?.('[data-mech-input]');
+      if (mechInput) {
+        const saved = mechanicsValues.get(item.name) ?? {};
+        saved[mechInput.dataset.mechInput] = mechInput.value;
+        mechanicsValues.set(item.name, saved);
+        const result = pageBody.querySelector('.wiki-mech-result');
+        if (result) result.innerHTML = mechanicsResultHtml(item, current);
+        return;
+      }
       const input = event.target.closest?.('[data-scanner-ore-size]');
       if (!input) return;
       scannerOreSize = Number(input.value);

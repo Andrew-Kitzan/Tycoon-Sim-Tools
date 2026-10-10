@@ -1,0 +1,396 @@
+// Wiki "Stats for Nerds" sections for item pages — the formulas, tables,
+// calculators and how-to-use notes from the database's own "Stats for
+// Nerds" sheet (data/Tycoon Sim Database.xlsx), plus the build rules in
+// docs/BUILD_RULES.md (Crimson timing, chained Tikis, Lambda outcomes).
+// Plain script, loaded before wiki-tool.js, which renders an entry's
+// sections on that item's page and wires its calculator inputs.
+//
+// Each entry: { intro(ctx), calc?: { inputs, result(values, ctx) }, after?(ctx) }
+// ctx = { name, variant, vm (variant multiplier), v (the Index variant record:
+// mainStat, oreSize, dropSpeed, ...) }. All three return HTML strings.
+
+(function () {
+  const VARIANT_MULTI = { Base: 1, Shiny: 1.1, Mythic: 1.25, 'Shiny Mythic': 1.5 };
+  const VARIANT_MULTI_LINE = 'variantMulti: Base 1, Shiny 1.1, Mythic 1.25, Shiny Mythic 1.5';
+
+  // ---- Formatting / markup helpers -------------------------------------------
+  const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+  const trim = (x, digits = 2) => String(Number(x.toFixed(digits)));
+  const mult = (x, digits = 2) => `${trim(x, digits)}x`;
+  const pct = (x) => `${trim(x * 100, 2)}%`;
+  function compact(n) {
+    const units = [[1e12, 'T'], [1e9, 'B'], [1e6, 'M'], [1e3, 'K']];
+    const [div, suffix] = units.find(([min]) => Math.abs(n) >= min) ?? [1, ''];
+    return `${trim(n / div, 2)}${suffix}`;
+  }
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const p = (html) => `<p>${html}</p>`;
+  const tip = (html) => `<p class="wiki-index-lie">${html}</p>`;
+  const sub = (title) => `<h4 class="wiki-scanner-subheading">${esc(title)}</h4>`;
+  const formula = (lines) => `<div class="wiki-scanner-scroll"><pre class="wiki-scanner-formula">${esc(lines.join('\n'))}</pre></div>`;
+  const steps = (items) => `<ol class="wiki-mech-steps">${items.map((i) => `<li>${i}</li>`).join('')}</ol>`;
+  const tiles = (pairs) => `<div class="wiki-index-stats">${pairs.map(([label, value]) => `<div class="wiki-index-stat"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('')}</div>`;
+  function table(headers, rows) {
+    return `<div class="wiki-scanner-scroll"><table class="wiki-data-table wiki-scanner-table">
+      <thead><tr>${headers.map((h) => `<th>${esc(h)}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+  const figure = (file, caption) => `
+    <figure class="wiki-mech-figure">
+      <img src="icons/wiki/mechanics/${file}" alt="${esc(caption)}" loading="lazy" onerror="this.parentElement.remove()">
+      <figcaption>${esc(caption)}</figcaption>
+    </figure>`;
+  const qa = (question, answer) => `${sub(question)}${p(answer)}`;
+
+  // ---- Formulas ----------------------------------------------------------------
+  const throne = (age, vm) => clamp(50 - ((age - 15) / 45) * 35, 15, 50) * vm;
+  const runic = (age, vm) => Math.min(3, 3 ** (Math.max(0, age) / 120)) * vm;
+  const sugarbombExploded = (age) => clamp((age - 60) / 15, 0, 1);
+  const parasitic = (base, vm) => (base < 1000 || base > 375000 ? 1 : 1 + ((base - 1000) * (30 * vm - 1)) / 374000);
+  const raceway = (size, vm) => 1 + (5 * vm - 1) * ((1 - clamp(size, 0.25, 1)) / 0.75);
+  const mischievous = (n, vm) => 1 + (100 * vm - 1) * (1 - clamp((n - 25) / 75, 0, 1));
+  const crimsonCombusts = (seconds) => clamp((seconds - 1) / 14, 0, 1);
+  function lambdaSurvival(n) {
+    let s = 1;
+    for (let k = 2; k <= n; k += 1) s *= 1.5 / k;
+    return n >= 1 ? s : 1;
+  }
+  const lambdaGood = (n) => (16 / 19) ** n;
+  const CORIUM_MAX_EATS = 8;
+  const UPGRADER_FIT_SIZE = 2.4;
+
+  // ---- Entries -------------------------------------------------------------------
+  const duplication = (role) => ({
+    intro: (ctx) => [
+      p(role === 'replicator'
+        ? 'The Ore Replicator clones your ore. On its own the clone is just a copy, but it\'s the only kind of ore the Dual Plasma Upgrader will upgrade.'
+        : `The Dual Plasma Upgrader only upgrades duplicated ore (made by an Ore Replicator) for ${mult(ctx.v.mainStat)}. Any original, non-duplicated ore that touches it is destroyed.`),
+      sub('Keeping your original ore safe'),
+      p('Because the Ore Replicator\'s upgrade part is 2 tiles long, the original ore and its new clone come out of it separated. That gap lets you split them onto different paths:'),
+      steps([
+        'Send the <strong>original</strong> ore into a teleporter right after the Ore Replicator, so it continues on through the rest of your base untouched.',
+        'Let the <strong>clone</strong> continue straight on into the Dual Plasma Upgrader, which upgrades it.',
+        'Nothing original ever touches the Dual Plasma, so nothing gets destroyed — you keep all of your original ore and get an upgraded clone on top.',
+      ]),
+      figure('ore-duplication.jpg', 'The originals drop into the teleporter below the Ore Replicator, while the clones continue right through the Dual Plasma Upgrader (from the database).'),
+    ].join(''),
+  });
+
+  const ENTRIES = {
+    "Periastron's Throne": {
+      intro: () => [
+        p('Throne\'s multiplier depends on how old the ore is when it reaches the furnace (counted from when it was dropped). It stays at its max until the ore is 15 seconds old, then drops in a straight line to its minimum at 60 seconds — losing 7.78x every 10 seconds on a Base Throne.'),
+        formula([
+          'multiplier = (50 − ((oreAge − 15) / 45) × 35) × variantMulti',
+          'oreAge under 15 s counts as 15 s, over 60 s counts as 60 s',
+          VARIANT_MULTI_LINE,
+        ]),
+      ].join(''),
+      calc: {
+        inputs: [{ key: 'age', label: 'Ore age (seconds)', value: 45, step: 1 }],
+        result: ({ age }, ctx) => tiles([['Multiplier', mult(throne(age, ctx.vm))]]),
+      },
+      after: (ctx) => [
+        table(['Ore Age', `Multiplier (${ctx.variant})`], [15, 20, 25, 30, 35, 40, 45, 50, 55, 60].map((a) => [`${a} s`, mult(throne(a, ctx.vm))])),
+        qa('Is Throne worth it?', 'Most end-game setups take about 45 seconds for ore to reach the furnace, which gives a Base Throne an average of 26.67x. Every second counts after the first 15, so with Throne the faster your ore gets to the furnace, the better.'),
+      ].join(''),
+    },
+
+    'Runic Array': {
+      intro: () => [
+        p('Runic Array\'s multiplier grows with the ore\'s age (counted from when it was dropped): it starts at 1x and grows exponentially to 3x at 2 minutes old, then stays at 3x.'),
+        formula([
+          'multiplier = 3 ^ (oreAge / 120) × variantMulti',
+          'capped at 3 × variantMulti from 120 s on',
+          VARIANT_MULTI_LINE,
+        ]),
+      ].join(''),
+      calc: {
+        inputs: [{ key: 'age', label: 'Ore age (seconds)', value: 60, step: 1 }],
+        result: ({ age }, ctx) => tiles([['Multiplier', mult(runic(age, ctx.vm), 3)]]),
+      },
+      after: (ctx) => [
+        table(['Ore Age', `Multiplier (${ctx.variant})`], [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120].map((a) => [`${a} s`, mult(runic(a, ctx.vm), 3)])),
+        qa('Is it worth stalling for the max multi?', 'If you have the space and you\'re not hitting your ore limit, yes — it\'s worth stalling for a better multi. If you are at your ore limit, it isn\'t: getting ore to the furnace faster frees up your ore limit, which is worth more.'),
+      ].join(''),
+    },
+
+    'Sugarbomb Dropper': {
+      intro: () => [
+        p('Sugarbomb ore has the Neon material and explodes at a random time between 60 and 75 seconds after it\'s dropped. Every moment in that window is equally likely, so the longer your ore takes to reach the furnace past 60 seconds, the more of it explodes on the way.'),
+        formula([
+          'explodes at = 60 + random(0 to 1) × 15 seconds',
+          'chance it has exploded by oreAge = (oreAge − 60) / 15   (0% before 60 s, 100% from 75 s)',
+        ]),
+      ].join(''),
+      calc: {
+        inputs: [{ key: 'age', label: 'Seconds from drop to furnace', value: 65, step: 1 }],
+        result: ({ age }) => tiles([['Survives', pct(1 - sugarbombExploded(age))], ['Explodes', pct(sugarbombExploded(age))]]),
+      },
+      after: () => [
+        table(['Ore Age', 'Survives', 'Explodes'], [60, 62.5, 65, 67.5, 70, 72.5, 75].map((a) => [`${a} s`, pct(1 - sugarbombExploded(a)), pct(sugarbombExploded(a))])),
+        qa('How long until Sugarbomb is useless?', 'Keep your base under 1 minute from drop to furnace and you won\'t lose any ore. Past about the 65-second mark you\'re losing a third of it or more, so try your best to stay under that.'),
+      ].join(''),
+    },
+
+    'Parasitic Fiend': {
+      intro: () => [
+        p('Parasitic Fiend\'s multiplier depends on the ore\'s starting value — what the dropper made it worth, before any upgrades. It scales in a straight line from 1x at 1K up to 30x (times the variant multiplier) at 375K. Below 1K or above 375K it\'s only 1x.'),
+        formula([
+          'if startingValue < 1,000 or startingValue > 375,000:  multiplier = 1',
+          'otherwise:  multiplier = 1 + (startingValue − 1,000) × (30 × variantMulti − 1) / 374,000',
+          VARIANT_MULTI_LINE,
+        ]),
+      ].join(''),
+      calc: {
+        inputs: [{ key: 'base', label: 'Ore starting value', value: 337500, step: 1000 }],
+        result: ({ base }, ctx) => tiles([['Multiplier', mult(parasitic(base, ctx.vm), 3)]]),
+      },
+      after: (ctx) => [
+        table(['Starting Value', `Multiplier (${ctx.variant})`], [1000, 50000, 100000, 150000, 275000, 300000, 337500, 375000, 400000].map((b) => [compact(b), mult(parasitic(b, ctx.vm), 3)])),
+        qa('Is it useful?', 'It can be with Kunzite or Sugarbomb ore. If your ore\'s starting value isn\'t above 300K and at most 375K, it\'s not worth using.'),
+      ].join(''),
+    },
+
+    'Raceway Accelerator': {
+      intro: () => [
+        p('The smaller the ore, the bigger the multi. Ore size 0.25 or under gets the full 5x (times the variant multiplier); ore size 1 or over gets 1x; in between it scales in a straight line.'),
+        formula([
+          'multiplier = 1 + (5 × variantMulti − 1) × ((1 − oreSize) / 0.75)',
+          'oreSize under 0.25 counts as 0.25, over 1 counts as 1',
+          VARIANT_MULTI_LINE,
+        ]),
+      ].join(''),
+      calc: {
+        inputs: [{ key: 'size', label: 'Ore size', value: 0.53, step: 0.01 }],
+        result: ({ size }, ctx) => tiles([['Multiplier', mult(raceway(size, ctx.vm))]]),
+      },
+      after: (ctx) => [
+        table(['Ore Size', `Multiplier (${ctx.variant})`], [0.25, 0.44, 0.53, 0.62, 0.75, 0.89, 0.98, 1].map((s) => [String(s), mult(raceway(s, ctx.vm))])),
+        qa('Smaller the ore the better', 'Place it after your 5 shrinkers and before any expanders, while the ore is at its smallest.'),
+      ].join(''),
+    },
+
+    'Mischievous Furnace': {
+      intro: () => [
+        p('Mischievous Furnace rewards ore that went through few upgrades: 25 or fewer gets the full 100x (times the variant multiplier), 100 or more gets 1x, and in between it scales in a straight line.'),
+        formula([
+          'multiplier = 1 + (100 × variantMulti − 1) × (1 − (upgrades − 25) / 75)',
+          'upgrades under 25 counts as 25, over 100 counts as 100',
+          VARIANT_MULTI_LINE,
+        ]),
+      ].join(''),
+      calc: {
+        inputs: [{ key: 'n', label: 'Upgrades the ore went through', value: 80, step: 1 }],
+        result: ({ n }, ctx) => tiles([['Multiplier', mult(mischievous(n, ctx.vm))]]),
+      },
+      after: (ctx) => [
+        table(['Upgrades', `Multiplier (${ctx.variant})`], [25, 40, 50, 60, 75, 80, 90, 96, 100].map((n) => [String(n), mult(mischievous(n, ctx.vm))])),
+        qa('Is it worth it?', 'Not for current end-game bases: they have around 96 upgraders, which only gives a Shiny Mythic 8.94x. F2P bases have around 80 upgraders, which gives a Shiny Mythic about 40x — that is worth it.'),
+      ].join(''),
+    },
+
+    'Crimson Pillars': {
+      intro: (ctx) => [
+        p(`Crimson Pillars don't upgrade ore directly. They mark it, and each marked ore combusts at a random time 1–15 seconds after leaving the Pillars (if it hasn't reached the furnace yet). The ore is destroyed and leaves a phantom zone where it combusted for 30 seconds. Any ore passing through a phantom zone gets ${mult(ctx.v.mainStat)}, up to 3 times per ore (${mult(ctx.v.mainStat ** 3, 3)} max).`),
+        sub('Best practice: feed it with a secondary dropper'),
+        p('Since every ore that goes through the Pillars gets destroyed, don\'t run your main ore through them. Use a second, separate dropper just to make phantom zones:'),
+        steps([
+          'Put the Crimson Pillars on their own side track, fed by a secondary dropper. Its ore are only there to be turned into phantom zones, so it doesn\'t need to be valuable.',
+          'Bring that side track onto your main track, so the marked ore combust on the main track and leave their phantom zones right where your main ore travels.',
+          'Give the marked ore at least 15 seconds of route before the furnace, so all of them combust on the track instead of reaching the furnace first.',
+          'Your main ore never go through the Pillars, so none of them get marked or destroyed — they just pick up the phantom zone boosts as they pass.',
+        ]),
+        figure('crimson-side-track.jpg', 'Crimson Pillars on a side track next to the main line (from the database).'),
+        qa('Why do late-game players put Crimson Pillars on a side track?', 'Late-game routes already lose about 75% of their ore to Dragon and Lambdas. Running the main ore through the Pillars would destroy even more, so a side track saves a lot of ore that would otherwise be lost.'),
+        sub('How many marked ore combust before the furnace'),
+        formula([
+          'combust before the furnace = (secondsToFurnace − 1) / 14',
+          '0% under 1 s, 100% from 15 s (counted from leaving the Pillars)',
+        ]),
+      ].join(''),
+      calc: {
+        inputs: [{ key: 't', label: 'Seconds from the Pillars to the furnace', value: 15, step: 1 }],
+        result: ({ t }) => tiles([['Combust on the Track', pct(crimsonCombusts(t))], ['Reach the Furnace', pct(1 - crimsonCombusts(t))]]),
+      },
+    },
+
+    'Lambda Upgrader': {
+      intro: (ctx) => {
+        const vm = ctx.vm;
+        const outcomes = [
+          ['Explosion (ore destroyed)', '1/19', 'Bad'],
+          ['Set value to 1', '1/19', 'Bad'],
+          [`Fling (ore flung off) & ${mult(2.2 * vm)}`, '1/19', 'Bad'],
+          [`+${compact(1000 * vm)}`, '1/19', 'Good'],
+          [mult(2.2 * vm), '13/19', 'Good'],
+          [mult(3.2 * vm), '1/19', 'Good'],
+          [`${mult(6 * vm)} & Sparkle`, '1/19', 'Good'],
+        ];
+        return [
+          sub('Destruction'),
+          p('Every time a Lambda upgrades an ore, it first rolls to destroy it. The chance goes up with each Lambda the ore has been through: its 1st Lambda upgrade is always safe, the 2nd has a 25% chance to destroy it, the 3rd 50%, the 4th 62.5%, and so on.'),
+          formula([
+            'chance to destroy on the k-th Lambda upgrade = 1 − 1.5 / k',
+            'chance to survive n Lambdas = 1.5^(n − 1) / n!',
+          ]),
+          sub('If it survives: picking the outcome'),
+          p('An ore that survives then gets one random outcome, all from 19 equally likely slots: 13 of them are the normal multiplier, and the other 6 are one special outcome each. Every Lambda rolls again on its own, so 3 Lambdas means 3 separate outcomes.'),
+          table(['Outcome', 'Chance', ''], outcomes),
+          sub('Scaling with more Lambdas'),
+          formula([
+            'survives the destruction rolls = 1.5^(n − 1) / n!',
+            'at least one bad outcome      = 1 − (16/19)^n',
+            'all good outcomes             = (16/19)^n',
+            'survives with all good        = 1.5^(n − 1) / n! × (16/19)^n',
+          ]),
+        ].join('');
+      },
+      calc: {
+        inputs: [{ key: 'n', label: 'Number of Lambdas', value: 3, step: 1, min: 1 }],
+        result: ({ n }) => {
+          const count = Math.max(1, Math.round(n));
+          return tiles([
+            ['Survives Destruction', pct(lambdaSurvival(count))],
+            ['Any Bad Outcome', pct(1 - lambdaGood(count))],
+            ['All Good Outcomes', pct(lambdaGood(count))],
+            ['Survives With All Good', pct(lambdaSurvival(count) * lambdaGood(count))],
+          ]);
+        },
+      },
+      after: () => [
+        table(['Lambdas', 'Survives', 'Any Bad', 'All Good', 'Survives With All Good'], [1, 2, 3, 4, 5].map((n) => [String(n), pct(lambdaSurvival(n)), pct(1 - lambdaGood(n)), pct(lambdaGood(n)), pct(lambdaSurvival(n) * lambdaGood(n))])),
+        qa('Why 3 Lambdas instead of 2 or 4?', 'The more Lambdas you have, the more multi you can get — but it also gets much more likely that something bad happens or the ore gets destroyed. 3 is the sweet spot between the two. Since Lambda can give the Sparkle effect, place it after Acid Plant if you can easily wipe effects with an Ore Washer.'),
+      ].join(''),
+    },
+
+    'Ore Replicator': duplication('replicator'),
+    'Dual Plasma Upgrader': duplication('dual-plasma'),
+
+    'Corium Dropper': {
+      intro: (ctx) => [
+        p(`Corium ore eats every non-Corium ore it touches that has an effect. Each time it eats one, it grows 1.1x bigger and its value gets another 1.1x — but the value bonus stops after ${CORIUM_MAX_EATS} eats (${mult(1.1 ** CORIUM_MAX_EATS, 3)} max).`),
+        formula([
+          `value = dropperValue × 1.1 ^ eats   (eats capped at ${CORIUM_MAX_EATS} for value)`,
+          `size  = ${ctx.v.oreSize ?? 1.25} × 1.1 ^ eats`,
+        ]),
+        sub('Limits'),
+        steps([
+          'It only eats ore that has an effect, and never other Corium ore.',
+          `The value bonus maxes out at ${CORIUM_MAX_EATS} eats — anything it eats after that is wasted.`,
+          `It keeps getting bigger as it eats. Most upgraders only fit ore under size ${UPGRADER_FIT_SIZE}, so a fully fed Corium needs shrinking (or fewer eats) to keep fitting.`,
+        ]),
+      ].join(''),
+      calc: {
+        inputs: [{ key: 'eats', label: 'Ores eaten', value: 8, step: 1, min: 0 }],
+        result: ({ eats }, ctx) => {
+          const count = Math.max(0, Math.round(eats));
+          const valueMulti = 1.1 ** Math.min(count, CORIUM_MAX_EATS);
+          const size = (ctx.v.oreSize ?? 1.25) * 1.1 ** count;
+          return tiles([
+            ['Value Multi', mult(valueMulti, 3)],
+            ['Ore Value', typeof ctx.v.mainStat === 'number' ? compact(ctx.v.mainStat * valueMulti) : '—'],
+            ['Ore Size', `${trim(size, 2)}${size >= UPGRADER_FIT_SIZE ? ' (too big for most upgraders)' : ''}`],
+          ]);
+        },
+      },
+      after: (ctx) => [
+        table(['Eaten', 'Value Multi', 'Ore Value', 'Ore Size'], [0, 1, 2, 3, 4, 5, 6, 7, 8].map((n) => {
+          const valueMulti = 1.1 ** n;
+          const size = (ctx.v.oreSize ?? 1.25) * 1.1 ** n;
+          return [String(n), mult(valueMulti, 3), typeof ctx.v.mainStat === 'number' ? compact(ctx.v.mainStat * valueMulti) : '—', `${trim(size, 2)}${size >= UPGRADER_FIT_SIZE ? ' ⚠' : ''}`];
+        })),
+        p(`⚠ = size ${UPGRADER_FIT_SIZE} or bigger, too big for most upgraders.`),
+        qa('Is it useful?', `If you can keep the ore small enough to still fit inside most upgraders (under size ${UPGRADER_FIT_SIZE}) and feed it just right so it hits the max multi and eats nothing extra, it could be a good strat. The problem is it takes up a lot of room, and current P2W plots don't have that room.`),
+      ].join(''),
+    },
+
+    'Tiki Evaluator': {
+      intro: (ctx) => {
+        const m = ctx.v.mainStat;
+        const add = m * 10000;
+        return [
+          p(`Every 5 seconds the Tiki switches phase, cycling through 3: <strong>Red X</strong> destroys every ore that touches it, <strong>Green Circle</strong> gives ${mult(m)}, and <strong>Yellow Triangle</strong> gives +${compact(add)}. Each phase is on a third of the time, so on its own a Tiki destroys 1 in 3 ore.`),
+          sub('Using 2 or more: chain them'),
+          p('Place your Tikis right next to each other in a chain, so an ore reaches the next Tiki while it\'s still in the same phase. Chained Tikis act as one: if the first is on Red X the ore was already destroyed, and if it\'s on Green or Yellow, every Tiki after it is too — so it only ever rolls the 1-in-3 destruction once.'),
+          p('Spread apart, each Tiki is a separate roll and the losses stack up fast.'),
+          formula([
+            'chained:   survives = 2/3              (no matter how many Tikis)',
+            'separate:  survives = (2/3)^n',
+            `chained outcomes: 1/3 destroyed, 1/3 get ${trim(m)}^n x, 1/3 get +${compact(add)} × n`,
+          ]),
+        ].join('');
+      },
+      calc: {
+        inputs: [
+          { key: 'n', label: 'Number of Tikis', value: 2, step: 1, min: 1 },
+          { key: 'setup', label: 'Setup', type: 'select', value: 'chained', options: [['chained', 'Chained'], ['separate', 'Spread apart']] },
+        ],
+        result: ({ n, setup }, ctx) => {
+          const count = Math.max(1, Math.round(n));
+          const m = ctx.v.mainStat;
+          const survive = setup === 'separate' ? (2 / 3) ** count : 2 / 3;
+          const pairs = [['Survives', pct(survive)], ['Destroyed', pct(1 - survive)]];
+          if (setup !== 'separate') pairs.push(['Green Result', mult(m ** count, 3)], ['Yellow Result', `+${compact(m * 10000 * count)}`]);
+          return tiles(pairs);
+        },
+      },
+      after: () => [
+        table(['Tikis', 'Survives (Chained)', 'Survives (Spread Apart)'], [1, 2, 3, 4].map((n) => [String(n), pct(2 / 3), pct((2 / 3) ** n)])),
+        p('An ore that crosses right as the phase changes can still land in two different phases, so keep the chain tight.'),
+        qa('Is it worth it?', 'Yes. Two placed next to each other keep the losses down to 1 in 3, and the multi is worth it — two 4.5x hits on Shiny Mythics.'),
+      ].join(''),
+    },
+
+    'Dream Machine': {
+      intro: (ctx) => {
+        const per = 0.5 * ctx.vm;
+        return [
+          p(`Dream Machine starts at 1x and adds +${trim(per, 3)}x for every effect on the ore, so the more effects you stack before it, the bigger the multi.`),
+          formula([
+            'multiplier = 1 + effects × 0.5 × variantMulti',
+            VARIANT_MULTI_LINE,
+          ]),
+        ].join('');
+      },
+      calc: {
+        inputs: [{ key: 'effects', label: 'Effects on the ore', value: 6, step: 1, min: 0 }],
+        result: ({ effects }, ctx) => tiles([['Multiplier', mult(1 + Math.max(0, Math.round(effects)) * 0.5 * ctx.vm, 3)]]),
+      },
+      after: (ctx) => [
+        table(['Effects', `Multiplier (${ctx.variant})`], [0, 1, 2, 3, 4, 5, 6].map((e) => [String(e), mult(1 + e * 0.5 * ctx.vm, 3)])),
+        sub('How many effects can I get?'),
+        p('The effects are Fire, Frost, Acid, Nuclear, Overcharged, Rainbow, Sparkle, Derpy and Electrified — but not all of them can be on one ore:'),
+        steps([
+          'Fire and Frost can\'t be on the same ore — the ore gets destroyed.',
+          'Overcharged doesn\'t help, since it removes all the other effects.',
+          'Nuclear is too far out of range unless a newer item is added that can give it.',
+          'Derpy can only come from the Derp Blaster or the Godly Stone Dropper.',
+        ]),
+        p('So the max right now is <strong>6 effects</strong>: Fire (or Frost), Acid, Rainbow, Sparkle, Derpy and Electrified. Because of the current effect items and conveyor speeds, the best way to get Sparkle onto the ore is 1 Lambda in this line.'),
+        figure('dream-machine-line.jpg', 'An effect-stacking line (from the database).'),
+      ].join(''),
+    },
+
+    'Wind-Up Dropper': {
+      intro: (ctx) => {
+        const vm = ctx.vm;
+        const ores = [[50000, 1.1], [150000, 1.5], [1000000, 2]];
+        const avg = (ores.reduce((sum, [value]) => sum + value, 0) / 3) * vm;
+        return [
+          p('Every time it drops, the Wind-Up Dropper picks one of 3 ores at random, each with an equal 1-in-3 chance. Its drop speed is always 1.5 (one ore every 1.5 seconds, 40 a minute), no matter which ore it picks.'),
+          table(['Ore', 'Value', 'Size', 'Chance', 'Per Minute'], ores.map(([value, size], i) => [String(i + 1), compact(value * vm), String(size), '1/3', '13.33'])),
+          formula([
+            'each ore: chance = 1/3',
+            `average value per ore = (${ores.map(([value]) => compact(value * vm)).join(' + ')}) / 3 = ${compact(avg)}`,
+          ]),
+          qa('Each ore has an equal chance to drop', 'That means your capgrader setup has to support all 3 ore types (their different values and sizes), or you give up on the weaker ores.'),
+        ].join('');
+      },
+    },
+  };
+
+  globalThis.TycoonItemMechanics = { entries: ENTRIES, variantMulti: VARIANT_MULTI };
+})();

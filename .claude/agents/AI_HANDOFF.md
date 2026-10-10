@@ -120,6 +120,39 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-10, evening (Stats for Nerds sections on wiki item pages):
+
+- New `wiki-item-mechanics.js` (loaded right before `wiki-tool.js` in
+  `index.html`) defines `globalThis.TycoonItemMechanics.entries`, keyed by
+  exact item name. `wiki-tool.js` renders an entry as a **Stats for Nerds**
+  section on that item's page (`mechanicsSectionHtml`): intro/formula,
+  optional calculator (inputs → live result tiles via `pageBody.oninput`,
+  values remembered per item in `mechanicsValues`), then tables and Q&A.
+- Content comes from the workbook's "Stats for Nerds" sheet (formulas,
+  base-stat tables, "Is it worth it?" notes, reworded) plus
+  `docs/BUILD_RULES.md` (Crimson 1–15 s trigger window / 30 s zones,
+  chained Tikis share a phase, Lambda fling/explosion = destroyed).
+- Formula items: Periastron's Throne, Runic Array, Sugarbomb Dropper,
+  Parasitic Fiend, Raceway Accelerator, Mischievous Furnace.
+- Explanation items: Crimson Pillars (secondary-dropper side track + how
+  many marked ore combust before the furnace), Lambda Upgrader (per-use
+  destruction 1 − 1.5/k, the 19-slot outcome table scaled by variant, and
+  n-Lambda functions incl. "survives with all good" = survival × (16/19)^n
+  — that last one is derived, not in the sheet), Ore Replicator + Dual
+  Plasma Upgrader (same duplication section on both), Corium Dropper,
+  Tiki Evaluator (chained vs spread-apart survival), Dream Machine,
+  Wind-Up Dropper.
+- Judgment calls: Parasitic Fiend uses the sheet's Custom-calculator
+  formula `1 + (v − 1000)(30·vm − 1)/374000` (the item text's
+  `(…)·vm` version differs slightly for non-Base variants). Sugarbomb's
+  65 s survival is shown as 66.67% (sheet's 0.6767 was a typo). Corium's
+  size growth isn't stated as capped, so the page only shows 0–8 eats and
+  flags size ≥ 2.4 (a fully fed Corium from 1.25 is 2.68).
+- Diagrams copied from the workbook's embedded images into
+  `icons/wiki/mechanics/` (converted to JPG): crimson-side-track,
+  ore-duplication, dream-machine-line.
+- Not added to the Wiki & Tools update log (player said not to).
+
 2026-10-10, later still (scanner Hit Chance on wiki item pages):
 
 - All 4 scanners' item pages (Ancient, Star, Precision Ore, Azure) now have
