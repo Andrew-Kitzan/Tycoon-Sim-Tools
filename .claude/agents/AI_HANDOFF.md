@@ -204,6 +204,11 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   and a "Why the break-even goes up when the loss is flat" explanation: the
   loss per upgrade IS flat ((100·vm − 1)/75), but upgraders multiply, so
   what matters is the fraction F(n+1)/F(n), which shrinks as F shrinks.
+- Follow-up: the per-upgrade loss is now written as a subtracted amount
+  ("−1.32", `minus()` helper), never "1.32x" — the player read "costs the
+  furnace 1.32x" as a multiplier and asked why break-even was only 1.051x.
+  The calculator also shows a worked check with 100-value ore (without vs
+  with a break-even upgrader sell for the same).
 
 2026-10-10, later still (scanner Hit Chance on wiki item pages):
 
