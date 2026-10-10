@@ -184,12 +184,34 @@
       ].join(''),
       calc: {
         inputs: [{ key: 'n', label: 'Upgrades the ore went through', value: 80, step: 1 }],
-        result: ({ n }, ctx) => tiles([['Multiplier', mult(mischievous(n, ctx.vm))]]),
+        result: ({ n }, ctx) => {
+          const count = Math.round(n);
+          const now = mischievous(count, ctx.vm);
+          const next = mischievous(count + 1, ctx.vm);
+          const breakEven = now / next;
+          const pairs = [['Multiplier', mult(now)], ['One More Upgrade', mult(next)], ['Break-even Upgrader', breakEven > 1 ? mult(breakEven, 3) : 'Any']];
+          let list;
+          if (count < 25) list = p(`Upgrades ${count + 1} through 25 are free — the furnace stays at its max, so use whatever you like.`);
+          else if (count >= 100) list = p('The furnace is already down to 1x, so extra upgrades can\'t cost it anything more.');
+          else {
+            const bad = (ctx.upgraders ?? []).filter((u) => u.multi < breakEven).sort((a, b) => a.multi - b.multi || a.name.localeCompare(b.name));
+            list = bad.length
+              ? `${p(`At ${count} upgrades, adding another upgrader costs the furnace ${mult(now - next, 3)} (${mult(now)} → ${mult(next)}), so it has to be at least ${mult(breakEven, 3)} to be worth it. ${bad.length === 1 ? 'This multiplier upgrader (Base stats) isn\'t' : `These ${bad.length} multiplier upgraders (Base stats) aren't`}:`)}<ul class="wiki-mech-chips">${bad.map((u) => `<li>${esc(u.name)} <span>${mult(u.multi, 3)}</span></li>`).join('')}</ul>`
+              : p(`At ${count} upgrades, any upgrader of at least ${mult(breakEven, 3)} is worth adding — every multiplier upgrader clears that.`);
+          }
+          return tiles(pairs) + list;
+        },
       },
-      after: (ctx) => [
-        table(['Upgrades', `Multiplier (${ctx.variant})`], [25, 40, 50, 60, 75, 80, 90, 96, 100].map((n) => [String(n), mult(mischievous(n, ctx.vm))])),
-        qa('Is it worth it?', 'Not for current end-game bases: they have around 96 upgraders, which only gives a Shiny Mythic 8.94x. F2P bases have around 80 upgraders, which gives a Shiny Mythic about 40x — that is worth it.'),
-      ].join(''),
+      after: (ctx) => {
+        const loss = (100 * ctx.vm - 1) / 75;
+        return [
+          sub('How much each upgrade costs the furnace'),
+          p(`Between 25 and 100 upgrades, every upgrade the ore goes through takes the same flat amount off the furnace's multiplier: <strong>${mult(loss, 3)}</strong> on a ${esc(ctx.variant)} Mischievous Furnace.`),
+          table(['Variant', 'Max (≤ 25 upgrades)', 'Lost per Upgrade'], Object.entries(VARIANT_MULTI).map(([name, vm]) => [name, mult(100 * vm), mult((100 * vm - 1) / 75, 3)])),
+          p('An upgrader is only worth adding if its own multiplier makes up for that loss. Because the loss is flat while the furnace\'s multiplier keeps shrinking, each loss hurts more the more upgrades you already have — so the break-even multiplier rises with every upgrader you add. Put your upgrade count in the calculator above to see which upgraders aren\'t worth using. Additive upgraders and ones whose multiplier depends on their effect aren\'t listed.'),
+          table(['Upgrades', `Multiplier (${ctx.variant})`, 'Break-even for the next upgrader'], [25, 40, 50, 60, 75, 80, 90, 96, 99].map((n) => [String(n), mult(mischievous(n, ctx.vm)), mult(mischievous(n, ctx.vm) / mischievous(n + 1, ctx.vm), 3)])),
+        ].join('');
+      },
     },
 
     'Crimson Pillars': {

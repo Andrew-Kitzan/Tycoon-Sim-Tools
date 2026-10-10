@@ -1213,6 +1213,9 @@ button.wiki-notes-link { cursor: pointer; font-family: inherit; }
 .wiki-mech-steps li { margin-bottom: 6px; }
 .wiki-mech-inputs { display: flex; flex-wrap: wrap; gap: 4px 18px; }
 .wiki-mech-calc { margin: 6px 0 4px; }
+.wiki-mech-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; padding: 0; list-style: none; }
+.wiki-mech-chips li { padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: .8rem; font-weight: 700; }
+.wiki-mech-chips li span { color: var(--muted); font-weight: 600; }
 .wiki-mech-details { margin: 0; }
 .wiki-item-page > .wiki-mech-details > .wiki-mech-summary { margin-top: 24px; }
 .wiki-mech-summary { display: flex; align-items: baseline; gap: 10px; cursor: pointer; list-style: none; user-select: none; }

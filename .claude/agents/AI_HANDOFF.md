@@ -157,6 +157,15 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   closed by default. Open state is remembered per item in `mechanicsOpen`
   (one capture-phase `toggle` listener on `pageBody`) so switching variants
   doesn't close it. The scanner Hit Chance section is NOT a dropdown.
+- Follow-up: Mischievous Furnace's "Is it worth it?" note was replaced (at
+  the player's request) by how much each upgrade costs the furnace per
+  variant (flat (100·vm − 1)/75: 1.32x / 1.453x / 1.653x / 1.987x) and a
+  calculator that, for a given upgrade count n, shows the break-even
+  multiplier F(n)/F(n+1) and lists every multiplier upgrader whose Base
+  mainStat is below it. The list comes from `ctx.upgraders` (built in
+  `mechanicsContext()` from `indexItems`: Multiplicative upgraders with a
+  numeric Base mainStat > 1 — 1x ones like Dream Machine/Runic Array/Ore
+  Replicator are effect-based and excluded; additive ones too).
 
 2026-10-10, later still (scanner Hit Chance on wiki item pages):
 
