@@ -134,9 +134,16 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   filters its icons/name already give away (search, variants); picking a
   type/rarity/stat/source/uses/effect filter hides it so the filter can't
   leak the info. Rarity sorts put it last.
-- NOT hidden: the Luck Simulator's Nature crate still lists Tornado Alley
-  with its assumed odds, and the 2026-10-10 update-log entry still mentions
-  it. The player only asked about the Index; ask before hiding it there.
+- Luck Simulator (follow-up the same day, player asked "hide its info but
+  leave the assumed odds"): `scripts/build-crate-luck-data.mjs` now copies
+  `hiddenItems` into the generated data as `item.hidden = true` (regenerated
+  `crate-luck-data.generated.js`; diffed — nothing else changed besides
+  `generatedAt`). `luck-crate-generator.js` gives a hidden item the neutral
+  border, and its popup shows ??? for rarity, main stat, other stats and
+  effect, but KEEPS the odds, the "(assumed)" note and the roll-time
+  estimates. The wiki Index still shows ??? for its odds too (the player
+  hasn't said to change that). The 2026-10-10 update-log entry still
+  mentions Tornado Alley's assumed odds.
 
 2026-10-10 (Index page + item pages, wiki-wide links and search, effect/material
 tags; committed and pushed as one commit with the Merchant answers):
