@@ -2322,7 +2322,10 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
         saved[mechInput.dataset.mechInput] = mechInput.value;
         mechanicsValues.set(item.name, saved);
         const result = pageBody.querySelector('.wiki-mech-result');
-        if (result) result.innerHTML = mechanicsResultHtml(item, current);
+        if (result) {
+          result.innerHTML = mechanicsResultHtml(item, current);
+          activateWikiLinksIn(result);
+        }
         return;
       }
       const input = event.target.closest?.('[data-scanner-ore-size]');
@@ -2330,7 +2333,10 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
       scannerOreSize = Number(input.value);
       const geometry = globalThis.TycoonScanners?.geometry?.[item.name];
       const result = pageBody.querySelector('.wiki-scanner-result');
-      if (geometry && result) result.innerHTML = scannerCalcResultHtml(item, item.variants[current], geometry);
+      if (geometry && result) {
+        result.innerHTML = scannerCalcResultHtml(item, item.variants[current], geometry);
+        activateWikiLinksIn(result);
+      }
     };
     pageBody.onkeydown = (event) => {
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
@@ -2384,22 +2390,101 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
   // resolves somewhere into a clickable link. A chip that would just link
   // to the page it's already on (a decoration on the Decoration page) is
   // left alone.
+  // ---- Item names in plain text --------------------------------------------
+  // Any Index item named in a page's ordinary text (effects, Stats for Nerds,
+  // notes, update logs…) becomes a link too. Full names match exactly
+  // (case-sensitive, whole words, longest first so "Godly Stone Dropper"
+  // beats "Stone Dropper"); TEXT_LINK_ALIASES covers the short names the
+  // wiki and database use for some items. Formulas, inputs, buttons,
+  // headings and existing chips are left alone.
+  const TEXT_LINK_ALIASES = {
+    Lambdas: 'Lambda Upgrader',
+    Lambda: 'Lambda Upgrader',
+    Tikis: 'Tiki Evaluator',
+    Tiki: 'Tiki Evaluator',
+    Throne: "Periastron's Throne",
+    'Dual Plasma': 'Dual Plasma Upgrader',
+    Pillars: 'Crimson Pillars',
+    Sugarbomb: 'Sugarbomb Dropper',
+    Kunzite: 'Kunzite Dropper',
+    Corium: 'Corium Dropper',
+    Dragon: "Dragon's Breath",
+    'Ore Washer': 'Ore Wash',
+    'Wind-Up': 'Wind-Up Dropper',
+  };
+  const TEXT_LINK_SKIP = 'a, button, input, select, textarea, option, pre, code, summary, h1, h2, h3, h4, script, style, [data-wiki-link], .wiki-index-variant-chip, .wiki-modifier-tag, .wiki-index-tag, .wiki-rarity-pill, .wiki-index-card, .wiki-index-popover';
+  let textLinkPattern = null;
+  let textLinkTargets = null;
+
+  function buildTextLinkPattern() {
+    textLinkTargets = new Map(indexItems.map((item) => [item.name, item.name]));
+    for (const [alias, name] of Object.entries(TEXT_LINK_ALIASES)) {
+      if (findIndexItem(name)) textLinkTargets.set(alias, name);
+    }
+    const names = [...textLinkTargets.keys()].sort((a, b) => b.length - a.length)
+      .map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    textLinkPattern = names.length ? new RegExp(`(?<![\\w'-])(${names.join('|')})(?![\\w-])`, 'g') : null;
+  }
+
+  function linkItemNamesIn(root) {
+    if (!indexItems.length) return;
+    if (!textLinkPattern) buildTextLinkPattern();
+    if (!textLinkPattern) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node) => (node.parentElement?.closest(TEXT_LINK_SKIP) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (const node of nodes) {
+      const text = node.nodeValue;
+      textLinkPattern.lastIndex = 0;
+      if (!textLinkPattern.test(text)) continue;
+      textLinkPattern.lastIndex = 0;
+      const frag = document.createDocumentFragment();
+      let last = 0;
+      for (const match of text.matchAll(textLinkPattern)) {
+        if (match.index > last) frag.append(text.slice(last, match.index));
+        const span = document.createElement('span');
+        span.className = 'wiki-text-link';
+        span.dataset.wikiLink = 'item';
+        span.dataset.wikiRef = textLinkTargets.get(match[1]);
+        span.textContent = match[1];
+        frag.append(span);
+        last = match.index + match[1].length;
+      }
+      if (last < text.length) frag.append(text.slice(last));
+      node.replaceWith(frag);
+    }
+  }
+
+  function activateWikiLink(chip) {
+    const target = resolveWikiLink(chip.dataset.wikiLink, chip.dataset.wikiRef, chip.dataset.wikiTier);
+    if (!target) return;
+    if (target.kind === 'page' && navCurrent?.kind === 'page' && target.key === navCurrent.key) return;
+    // An item never links to its own page.
+    if (target.kind === 'item' && navCurrent?.kind === 'item' && findIndexItem(navCurrent.ref)?.key === target.ref) return;
+    chip.classList.add('is-wiki-link');
+    chip.tabIndex = 0;
+    chip.setAttribute('role', 'link');
+    chip.title = target.kind === 'item'
+      ? `Open ${findIndexItem(target.ref).name}'s page`
+      : `Go to the ${PAGES[target.key].title} page`;
+  }
+
+  // For a piece of a page re-rendered after the page itself (calculator
+  // results): link item names in it and activate its chips. Link targets are
+  // already loaded by then.
+  function activateWikiLinksIn(root) {
+    if (!root) return;
+    linkItemNamesIn(root);
+    root.querySelectorAll('[data-wiki-link]').forEach(activateWikiLink);
+  }
+
   async function activateWikiLinks(token) {
-    const chips = [...pageBody.querySelectorAll('[data-wiki-link]')];
-    if (!chips.length) return;
     await loadLinkTargets();
     if (token !== pageToken) return;
-    for (const chip of chips) {
-      const target = resolveWikiLink(chip.dataset.wikiLink, chip.dataset.wikiRef, chip.dataset.wikiTier);
-      if (!target) continue;
-      if (target.kind === 'page' && navCurrent?.kind === 'page' && target.key === navCurrent.key) continue;
-      chip.classList.add('is-wiki-link');
-      chip.tabIndex = 0;
-      chip.setAttribute('role', 'link');
-      chip.title = target.kind === 'item'
-        ? `Open ${findIndexItem(target.ref).name}'s page`
-        : `Go to the ${PAGES[target.key].title} page`;
-    }
+    linkItemNamesIn(pageBody);
+    pageBody.querySelectorAll('[data-wiki-link]').forEach(activateWikiLink);
   }
 
   function followWikiLink(chip) {

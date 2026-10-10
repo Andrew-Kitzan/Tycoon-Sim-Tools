@@ -1104,6 +1104,10 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
    added by activateWikiLinks() only when the target actually exists. */
 .wiki-reward-chip.is-wiki-link { cursor: pointer; border-radius: 10px; margin: -3px -6px; padding: 3px 6px; transition: background .12s ease, color .12s ease; }
 .wiki-reward-chip.is-wiki-link:hover, .wiki-reward-chip.is-wiki-link:focus-visible { background: rgba(124,225,186,.12); color: var(--accent); outline: none; text-decoration: underline; text-underline-offset: 3px; }
+/* An item name in plain text (linkItemNamesIn) that resolved to a page. */
+.wiki-text-link.is-wiki-link { color: var(--accent); font-weight: 700; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; border-radius: 4px; }
+.wiki-text-link.is-wiki-link:hover, .wiki-text-link.is-wiki-link:focus-visible { text-decoration-style: solid; background: rgba(124,225,186,.12); outline: none; }
+.wiki-mech-chips li .wiki-text-link.is-wiki-link { font-weight: 700; }
 /* The row a link or search result jumped to. */
 @keyframes wiki-anchor-flash { from { background-color: rgba(124,225,186,.32); } to { background-color: transparent; } }
 .wiki-anchor-flash, .wiki-anchor-flash > td { animation: wiki-anchor-flash 2.4s ease-out; }

@@ -120,6 +120,26 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-10, late (item names in plain text are links everywhere in the wiki):
+
+- Player rule: **if wiki text mentions another item, it must link to that
+  item's page** — whole wiki, including Stats for Nerds. Implemented once,
+  generically, in `wiki-tool.js` → `linkItemNamesIn(root)`: after every page
+  render (`activateWikiLinks`) it walks `pageBody`'s text nodes and wraps any
+  Index item name (exact, case-sensitive, whole word, longest first) in a
+  `.wiki-text-link[data-wiki-link=item]` span, which the existing chip
+  activation then makes clickable (with Back history). Short names are in
+  `TEXT_LINK_ALIASES` (Lambda(s), Tiki(s), Throne, Dual Plasma, Pillars,
+  Sugarbomb, Kunzite, Corium, Dragon → Dragon's Breath, Ore Washer → Ore
+  Wash, Wind-Up) — **add an alias there when new text uses a nickname**.
+  Skips formulas (pre/code), inputs, buttons, headings/summary, existing
+  chips, tags, Index cards/popover. An item never links to its own page
+  (`activateWikiLink` self-check, applies to chips too). Calculator results
+  re-rendered on input call `activateWikiLinksIn(result)` so their names
+  (e.g. Mischievous Furnace's not-worth list) link too.
+- Not covered: the home page's update-log preview (outside `pageBody`) and
+  the Index hover popover (rendered on hover, not on page render).
+
 2026-10-10, evening (Stats for Nerds sections on wiki item pages):
 
 - New `wiki-item-mechanics.js` (loaded right before `wiki-tool.js` in
