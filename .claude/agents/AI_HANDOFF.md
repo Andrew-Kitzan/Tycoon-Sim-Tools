@@ -128,19 +128,19 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   `extraItems` data is untouched — to reveal it, just remove the name from
   `hiddenItems`.
 - In `wiki-tool.js`, a hidden item keeps its icon, name and variant chips;
-  the card uses the neutral Common border instead of its rarity color, and
-  the hover popover, item page (rarity, type, stat tiles, effect, How to
-  Get) and search-result subtitle all show "???". It only matches Index
-  filters its icons/name already give away (search, variants); picking a
-  type/rarity/stat/source/uses/effect filter hides it so the filter can't
-  leak the info. Rarity sorts put it last.
+  the hover popover, item page (type, stat tiles, effect, How to Get, odds)
+  and search-result subtitle show "???". Its RARITY (Secret) is shown
+  normally everywhere — the player said it's already known (follow-up the
+  same day; the first version hid it too). It only matches Index filters
+  its icons/name/rarity already give away (search, variants, rarity);
+  picking a type/stat/source/uses/effect filter hides it so the filter
+  can't leak the info.
 - Luck Simulator (follow-up the same day, player asked "hide its info but
   leave the assumed odds"): `scripts/build-crate-luck-data.mjs` now copies
   `hiddenItems` into the generated data as `item.hidden = true` (regenerated
   `crate-luck-data.generated.js`; diffed — nothing else changed besides
-  `generatedAt`). `luck-crate-generator.js` gives a hidden item the neutral
-  border, and its popup shows ??? for rarity, main stat, other stats and
-  effect, but KEEPS the odds, the "(assumed)" note and the roll-time
+  `generatedAt`). `luck-crate-generator.js` shows ??? in a hidden item's popup
+  for main stat, other stats and effect (rarity shown normally), but KEEPS the odds, the "(assumed)" note and the roll-time
   estimates. The wiki Index still shows ??? for its odds too (the player
   hasn't said to change that). The 2026-10-10 update-log entry still
   mentions Tornado Alley's assumed odds.

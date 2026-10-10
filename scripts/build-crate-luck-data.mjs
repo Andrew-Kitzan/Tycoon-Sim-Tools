@@ -259,7 +259,7 @@ for (const item of Object.values(items)) {
 }
 
 // index-data.json `hiddenItems` (Tornado Alley): the Luck Simulator shows
-// their name, icon and odds but "???" for rarity, stats and effect, same as
+// their name, icon, rarity and odds but "???" for stats and effect, same as
 // the wiki Index. The real data stays in the payload for when it's revealed.
 const hiddenNames = new Set((manualIndex.hiddenItems ?? []).map((n) => String(n).trim().toLowerCase()));
 for (const [name, item] of Object.entries(items)) {

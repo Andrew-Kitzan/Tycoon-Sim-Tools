@@ -1724,11 +1724,11 @@
 
   function indexItemMatches(item, f) {
     if (f.search && !item.name.toLowerCase().includes(f.search.trim().toLowerCase())) return false;
-    // A hidden item only shows under filters its icons and name already
-    // give away — otherwise the filter itself would leak its type/rarity/etc.
-    if (item.hidden) return !(f.type || f.rarity || f.statType || f.source || f.uses || f.effectOnly);
-    if (f.type && item.type !== f.type) return false;
     if (f.rarity && item.rarity !== f.rarity) return false;
+    // A hidden item only shows under filters its icons, name and rarity
+    // already give away — otherwise the filter itself would leak its type etc.
+    if (item.hidden) return !(f.type || f.statType || f.source || f.uses || f.effectOnly);
+    if (f.type && item.type !== f.type) return false;
     if (f.statType && item.statType !== f.statType) return false;
     if (f.source === 'none' ? item.crate : f.source && item.sourceGroup !== f.source) return false;
     if (f.variant === 'Base only' && item.variantList.length > 1) return false;
@@ -1744,7 +1744,7 @@
 
   function sortIndexItems(list, sort) {
     const byName = (a, b) => a.name.localeCompare(b.name);
-    const rank = (item) => (item.hidden ? INDEX_RARITIES.length : INDEX_RARITIES.indexOf(item.rarity));
+    const rank = (item) => INDEX_RARITIES.indexOf(item.rarity);
     const sorters = {
       name: byName,
       'name-desc': (a, b) => byName(b, a),
@@ -1761,7 +1761,7 @@
 
   const HIDDEN_TEXT = '???';
   function indexCardHtml(item) {
-    const color = item.hidden ? RARITY_COLORS.Common : RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
+    const color = RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
     return `
       <button type="button" class="wiki-index-card" data-index-key="${escapeHtml(item.key)}" style="--rarity-color: ${color}">
         <span class="wiki-index-dots">${indexVariantDots(item)}</span>
@@ -1799,7 +1799,7 @@
     return `
       <div class="wiki-index-popover-head">
         <strong>${escapeHtml(item.name)}</strong>
-        ${formatRarity(item.hidden ? HIDDEN_TEXT : item.rarity)}
+        ${formatRarity(item.rarity)}
       </div>
       <div class="wiki-index-variant-row">${indexVariantChips(item, variant)}</div>
       <div class="wiki-index-popover-preview">${indexPopoverPreview(item, variant)}</div>
@@ -1830,17 +1830,17 @@
 
   // The full item page (replaces the old Index side panel) — opened by
   // clicking a card, or from anywhere via openItemPage().
-  // A hidden item's page: icon, name and variant switcher only.
+  // A hidden item's page: icon, name, rarity and variant switcher only.
   function hiddenItemPageHtml(item, variant) {
     return `
       <div class="wiki-item-page">
         <div class="wiki-item-hero">
-          <div class="wiki-index-detail-art" style="--rarity-color: ${RARITY_COLORS.Common}">
+          <div class="wiki-index-detail-art" style="--rarity-color: ${RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common}">
             <img src="${indexIconSrc(item.name, variant)}" alt="" onerror="this.classList.add('is-missing')">
           </div>
           <div class="wiki-item-summary">
             <div class="wiki-index-detail-tags">
-              ${formatRarity(HIDDEN_TEXT)}
+              ${formatRarity(item.rarity)}
               <span class="wiki-index-tag">${HIDDEN_TEXT}</span>
             </div>
             <div class="wiki-index-variant-row" role="tablist" aria-label="Variant">${indexVariantChips(item, variant)}</div>
@@ -2437,7 +2437,7 @@
       for (const [key, pageDef] of Object.entries(PAGES)) add('Page', pageDef.title, 'Wiki page', SEARCH_PAGE_KEYWORDS[key], { kind: 'page', key });
       for (const item of indexItems) {
         if (item.hidden) {
-          add('Item', item.name, HIDDEN_TEXT, item.variantList.join(' '), { kind: 'item', ref: item.key, variant: 'Base' }, indexIconSrc(item.name, item.variantList[0]));
+          add('Item', item.name, `${item.rarity} ${HIDDEN_TEXT}`, item.variantList.join(' '), { kind: 'item', ref: item.key, variant: 'Base' }, indexIconSrc(item.name, item.variantList[0]));
           continue;
         }
         const effects = item.variantList.map((v) => `${item.variants[v].effect} ${item.variants[v].source ?? ''}`).join(' ');

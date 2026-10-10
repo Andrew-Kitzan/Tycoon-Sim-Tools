@@ -399,7 +399,7 @@
       .slice(0, 9);
 
     itemGridEl.innerHTML = cells.map(({ name, item, probability }) => {
-      const color = item.hidden ? RARITY_COLORS.Common : RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
+      const color = RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
       return `
         <button type="button" class="luck-item-cell" style="--rarity-color: ${color}" data-luck-item="${name}">
           ${itemIconHtml(name, variant)}
@@ -423,8 +423,8 @@
   function openItemDialog(name, item, variant, probability) {
     itemDialogTitle.textContent = `${name} — ${variant}`;
     // Hidden items (index-data.json `hiddenItems`): keep the odds and roll
-    // times, show "???" for rarity, stats and effect.
-    itemDialogRarity.textContent = item.hidden ? '???' : item.rarity ?? 'Unknown rarity';
+    // times and rarity, show "???" for stats and effect.
+    itemDialogRarity.textContent = item.rarity ?? 'Unknown rarity';
     const variantData = item.hidden ? { mainStat: '???', otherStats: '???', effects: '???' } : item.variants[variant] ?? {};
     const timings = [0.5, 0.75, 0.9].map((confidence) => {
       const seconds = timeToConfidence(probability, confidence, state.rollSpeed, state.unboxSlots);
