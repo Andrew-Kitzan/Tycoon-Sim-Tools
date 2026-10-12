@@ -868,7 +868,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .mpa-chop-button { background: #8f2a2a; border-color: #a84d56; }
 .mpa-chop-button:hover, .mpa-chop-button:focus-visible { background: #a3312f; border-color: #ffb5bc; }
 
-/* ---- Wiki (WIP) ------------------------------------------------------- */
+/* ---- Wiki ------------------------------------------------------------- */
 /* Deliberately its own full page look rather than the shared app-shell
    header/panels — the hamburger tool-nav toggle (fixed, outside <header>)
    still works to switch away from it; see applyActiveToolUi() in app.js,
