@@ -258,6 +258,14 @@ for (const item of Object.values(items)) {
   }
 }
 
+// index-data.json `hiddenItems` (Tornado Alley): the Luck Simulator shows
+// their name, icon, rarity and odds but "???" for stats and effect, same as
+// the wiki Index. The real data stays in the payload for when it's revealed.
+const hiddenNames = new Set((manualIndex.hiddenItems ?? []).map((n) => String(n).trim().toLowerCase()));
+for (const [name, item] of Object.entries(items)) {
+  if (hiddenNames.has(name.toLowerCase())) item.hidden = true;
+}
+
 const payload = { generatedAt: new Date().toISOString(), sourceWorkbook: 'data/Tycoon Sim Database.xlsx', crates, items };
 await fs.writeFile(outputPath, `globalThis.CrateLuckData = ${JSON.stringify(payload)};\n`);
 console.log(`Wrote ${crates.length} crates and ${Object.keys(items).length} items to ${path.relative(root, outputPath)}.`);

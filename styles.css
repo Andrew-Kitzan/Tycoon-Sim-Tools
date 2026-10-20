@@ -887,7 +887,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .mpa-chop-button { background: #8f2a2a; border-color: #a84d56; }
 .mpa-chop-button:hover, .mpa-chop-button:focus-visible { background: #a3312f; border-color: #ffb5bc; }
 
-/* ---- Wiki (WIP) ------------------------------------------------------- */
+/* ---- Wiki ------------------------------------------------------------- */
 /* Deliberately its own full page look rather than the shared app-shell
    header/panels — the hamburger tool-nav toggle (fixed, outside <header>)
    still works to switch away from it; see applyActiveToolUi() in app.js,
@@ -1123,6 +1123,10 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
    added by activateWikiLinks() only when the target actually exists. */
 .wiki-reward-chip.is-wiki-link { cursor: pointer; border-radius: 10px; margin: -3px -6px; padding: 3px 6px; transition: background .12s ease, color .12s ease; }
 .wiki-reward-chip.is-wiki-link:hover, .wiki-reward-chip.is-wiki-link:focus-visible { background: rgba(124,225,186,.12); color: var(--accent); outline: none; text-decoration: underline; text-underline-offset: 3px; }
+/* An item name in plain text (linkItemNamesIn) that resolved to a page. */
+.wiki-text-link.is-wiki-link { color: var(--accent); font-weight: 700; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; border-radius: 4px; }
+.wiki-text-link.is-wiki-link:hover, .wiki-text-link.is-wiki-link:focus-visible { text-decoration-style: solid; background: rgba(124,225,186,.12); outline: none; }
+.wiki-mech-chips li .wiki-text-link.is-wiki-link { font-weight: 700; }
 /* The row a link or search result jumped to. */
 @keyframes wiki-anchor-flash { from { background-color: rgba(124,225,186,.32); } to { background-color: transparent; } }
 .wiki-anchor-flash, .wiki-anchor-flash > td { animation: wiki-anchor-flash 2.4s ease-out; }
@@ -1218,6 +1222,35 @@ button.wiki-notes-link { cursor: pointer; font-family: inherit; }
 .wiki-index-stat strong { font-size: .9rem; overflow-wrap: anywhere; }
 .wiki-index-effect { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.03); font-size: .86rem; white-space: pre-line; }
 .wiki-index-lie { padding: 8px 10px; border: 1px solid #f0a93a; border-radius: 8px; background: color-mix(in srgb, #f0a93a 14%, var(--surface)); font-size: .84rem; }
+.wiki-scanner-input { display: inline-flex; align-items: center; gap: 8px; margin: 10px 0 8px; font-weight: 700; font-size: .9rem; }
+.wiki-scanner-input input { width: 90px; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: inherit; font: inherit; }
+.wiki-scanner-table { margin-top: 12px; }
+/* width: 0 + min-width: 100% keeps the wide table/formula from stretching
+   the page on phones (it scrolls sideways inside its own box instead). */
+.wiki-scanner-scroll { width: 0; min-width: 100%; overflow-x: auto; }
+.wiki-scanner-subheading { margin: 14px 0 6px; font-size: .95rem; }
+.wiki-scanner-formula { margin: 0 0 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: .8rem; line-height: 1.5; white-space: pre; }
+.wiki-scanner-input select { padding: 5px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: inherit; font: inherit; }
+.wiki-mech > p, .wiki-mech .wiki-mech-steps { margin: 0 0 10px; }
+.wiki-mech-steps { padding-left: 22px; }
+.wiki-mech-steps li { margin-bottom: 6px; }
+.wiki-mech-inputs { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.wiki-mech-calc { margin: 6px 0 4px; }
+.wiki-mech-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; padding: 0; list-style: none; }
+.wiki-mech-chips li { padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: .8rem; font-weight: 700; }
+.wiki-mech-chips li span { color: var(--muted); font-weight: 600; }
+.wiki-mech-details { margin: 0; }
+.wiki-item-page > .wiki-mech-details > .wiki-mech-summary { margin-top: 24px; }
+.wiki-mech-summary { display: flex; align-items: baseline; gap: 10px; cursor: pointer; list-style: none; user-select: none; }
+.wiki-mech-summary::-webkit-details-marker { display: none; }
+.wiki-mech-summary::before { content: '▸'; display: inline-block; width: 12px; transition: transform .15s; }
+.wiki-mech-details[open] > .wiki-mech-summary::before { transform: rotate(90deg); }
+.wiki-mech-summary:hover, .wiki-mech-summary:focus-visible { outline: none; text-decoration: underline; }
+.wiki-mech-hint { font-size: .78rem; font-weight: 600; color: var(--muted); }
+.wiki-mech-details > .wiki-mech { margin-top: 8px; }
+.wiki-mech-figure { margin: 10px 0 14px; }
+.wiki-mech-figure img { display: block; max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
+.wiki-mech-figure figcaption { margin-top: 6px; font-size: .82rem; color: var(--muted, #9fb3c0); }
 .wiki-index-compare { margin-top: 0; font-size: .82rem; }
 .wiki-index-compare th, .wiki-index-compare td { padding: 6px 8px; }
 .wiki-index-compare tbody tr { cursor: pointer; }

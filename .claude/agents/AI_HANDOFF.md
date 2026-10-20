@@ -121,8 +121,10 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 ## Last worked on
 
 2026-10-20 (Capgrader Generator: speed/distance toggles + ore limit, three-column
-layout, variant count styling, plus a Wiki & Tools Updates entry; committed and
-pushed as one commit with the 2026-10-19 progression data):
+layout, variant count styling, plus a Wiki & Tools Updates entry; committed as one
+commit with the 2026-10-19 progression data, then merged with 15 remote
+commits from the 2026-10-10–12 sessions below (only this file conflicted,
+and both sides were kept) and pushed):
 
 - **New "What matters to you" panel** (`index.html`, `styles.css`,
   `capgrader-generator.js` `priorities` + `makeScorers()`). Speed and
@@ -181,6 +183,155 @@ themselves up (they fly to the player), so AFK at max mastery gets the full
 20 drops/min, about 7,855 potions per 24h. That isn't on the Furnace Loot
 page yet.
 
+
+2026-10-10, late (item names in plain text are links everywhere in the wiki):
+
+- Player rule: **if wiki text mentions another item, it must link to that
+  item's page** — whole wiki, including Stats for Nerds. Implemented once,
+  generically, in `wiki-tool.js` → `linkItemNamesIn(root)`: after every page
+  render (`activateWikiLinks`) it walks `pageBody`'s text nodes and wraps any
+  Index item name (exact, case-sensitive, whole word, longest first) in a
+  `.wiki-text-link[data-wiki-link=item]` span, which the existing chip
+  activation then makes clickable (with Back history). Short names are in
+  `TEXT_LINK_ALIASES` (Lambda(s), Tiki(s), Throne, Dual Plasma, Pillars,
+  Sugarbomb, Kunzite, Corium, Dragon → Dragon's Breath, Ore Washer → Ore
+  Wash, Wind-Up) — **add an alias there when new text uses a nickname**.
+  Skips formulas (pre/code), inputs, buttons, headings/summary, existing
+  chips, tags, Index cards/popover. An item never links to its own page
+  (`activateWikiLink` self-check, applies to chips too). Calculator results
+  re-rendered on input call `activateWikiLinksIn(result)` so their names
+  (e.g. Mischievous Furnace's not-worth list) link too.
+- Not covered: the home page's update-log preview (outside `pageBody`) and
+  the Index hover popover (rendered on hover, not on page render).
+
+2026-10-10, evening (Stats for Nerds sections on wiki item pages):
+
+- New `wiki-item-mechanics.js` (loaded right before `wiki-tool.js` in
+  `index.html`) defines `globalThis.TycoonItemMechanics.entries`, keyed by
+  exact item name. `wiki-tool.js` renders an entry as a **Stats for Nerds**
+  section on that item's page (`mechanicsSectionHtml`): intro/formula,
+  optional calculator (inputs → live result tiles via `pageBody.oninput`,
+  values remembered per item in `mechanicsValues`), then tables and Q&A.
+- Content comes from the workbook's "Stats for Nerds" sheet (formulas,
+  base-stat tables, "Is it worth it?" notes, reworded) plus
+  `docs/BUILD_RULES.md` (Crimson 1–15 s trigger window / 30 s zones,
+  chained Tikis share a phase, Lambda fling/explosion = destroyed).
+- Formula items: Periastron's Throne, Runic Array, Sugarbomb Dropper,
+  Parasitic Fiend, Raceway Accelerator, Mischievous Furnace.
+- Explanation items: Crimson Pillars (secondary-dropper side track + how
+  many marked ore combust before the furnace), Lambda Upgrader (per-use
+  destruction 1 − 1.5/k, the 19-slot outcome table scaled by variant, and
+  n-Lambda functions incl. "survives with all good" = survival × (16/19)^n
+  — that last one is derived, not in the sheet), Ore Replicator + Dual
+  Plasma Upgrader (same duplication section on both), Corium Dropper,
+  Tiki Evaluator (chained vs spread-apart survival), Dream Machine,
+  Wind-Up Dropper.
+- Judgment calls: Parasitic Fiend uses the sheet's Custom-calculator
+  formula `1 + (v − 1000)(30·vm − 1)/374000` (the item text's
+  `(…)·vm` version differs slightly for non-Base variants). Sugarbomb's
+  65 s survival is shown as 66.67% (sheet's 0.6767 was a typo). Corium's
+  size growth isn't stated as capped, so the page only shows 0–8 eats and
+  flags size ≥ 2.4 (a fully fed Corium from 1.25 is 2.68).
+- Diagrams copied from the workbook's embedded images into
+  `icons/wiki/mechanics/` (converted to JPG): crimson-side-track,
+  ore-duplication, dream-machine-line.
+- Not added to the Wiki & Tools update log (player said not to).
+- Follow-up: the section is now a collapsed `<details>` dropdown
+  ("Stats for Nerds" summary styled as a section heading with a ▸ chevron),
+  closed by default. Open state is remembered per item in `mechanicsOpen`
+  (one capture-phase `toggle` listener on `pageBody`) so switching variants
+  doesn't close it. The scanner Hit Chance section is now the same kind of
+  dropdown too (player asked), open state keyed `<name>::hit-chance`.
+- Follow-up: Mischievous Furnace's "Is it worth it?" note was replaced (at
+  the player's request) by how much each upgrade costs the furnace per
+  variant (flat (100·vm − 1)/75: 1.32x / 1.453x / 1.653x / 1.987x) and a
+  calculator that, for a given upgrade count n, shows the break-even
+  multiplier F(n)/F(n+1) and lists every multiplier upgrader whose Base
+  mainStat is below it. The list comes from `ctx.upgraders` (built in
+  `mechanicsContext()` from `indexItems`: Multiplicative upgraders with a
+  numeric Base mainStat > 1 — 1x ones like Dream Machine/Runic Array/Ore
+  Replicator are effect-based and excluded; additive ones too).
+- Follow-up: everything follows the **form (variant) selected** on the
+  page. `ctx.upgraders` now carries each upgrader's multiplier per form
+  (`variants: { Base, Shiny, ... }`); the Mischievous list compares the
+  selected form of each upgrader, falling back to the strongest form below
+  it that the upgrader has (`upgraderForm()` — most have no Mythic), shown
+  as e.g. "1.21x (Shiny)". The intros of Throne / Runic / Parasitic /
+  Raceway / Mischievous and Throne's 45 s average now state the selected
+  form's numbers, and every formula's variantMulti line reads
+  `variantMulti = 1.5 for Shiny Mythic (…)` via `variantLine(ctx)`.
+- Follow-up: the Mischievous list now shows **every form of every
+  upgrader** below the break-even (grouped per item, e.g. "Ore Wash Base
+  1.1x · Shiny 1.21x · Mythic 1.375x"), not just the selected/best form —
+  the player wants all unusable variants listed. `upgraderForm()` was
+  removed. Added a "Furnace Loses" tile (flat amount + % of current multi)
+  and a "Why the break-even goes up when the loss is flat" explanation: the
+  loss per upgrade IS flat ((100·vm − 1)/75), but upgraders multiply, so
+  what matters is the fraction F(n+1)/F(n), which shrinks as F shrinks.
+- Follow-up: the per-upgrade loss is now written as a subtracted amount
+  ("−1.32", `minus()` helper), never "1.32x" — the player read "costs the
+  furnace 1.32x" as a multiplier and asked why break-even was only 1.051x.
+  The calculator also shows a worked check with 100-value ore (without vs
+  with a break-even upgrader sell for the same).
+
+2026-10-10, later still (scanner Hit Chance on wiki item pages):
+
+- All 4 scanners' item pages (Ancient, Star, Precision Ore, Azure) now have
+  a **Hit Chance** section: how the beam moves, a "Your ore size" box
+  (live result tiles), a sample table by ore size, and the formula with
+  that scanner's constants. Sweep scanners show Center vs Side of belt
+  (side = laneFrac 0.25, one of the simulator's tested lanes) plus avg
+  multiplier (`hit * mainStat + (1 - hit)`). Azure shows one column (lane
+  doesn't matter) plus its phase-lock caveat.
+- Formulas are NOT duplicated: `capgrader-generator.js` now exposes
+  `globalThis.TycoonScanners = { geometry, hitChance, constants }`, and
+  Star Scanner was added to its `SCANNER_GEOMETRY` (copied from
+  `scripts/scanner-hit-simulator.mjs`; Star isn't in `SCANNER_NAMES`, so
+  the Capgrader Generator still doesn't offer it). `scannerHitChance` took
+  an optional `laneFrac` (default 0.5 = old behavior).
+- The sheet's bare "Scanner" effect line is stripped in
+  `splitIndexEffect()` (it only meant "the beam moves"), so scanners no
+  longer show an Effect section or count for "Has a special effect".
+- Player asked for a note on the 3 sine-wave scanners (not Azure) that
+  hitting the ore on the sides beats the center — shown as a Tip box.
+  Caveat told to the player: by the formula that's true for small/medium
+  ore, but for very large ore (~2+ raw) the center wins (2.5 raw is 100%
+  center vs ~70% side on Ancient/Precision). The tip wasn't changed; ask
+  the player if it comes up.
+- Not added to the Wiki & Tools update log (player said not to update the
+  log).
+- Follow-up: the player said the scanner formulas have been proven by
+  in-game testing, so the "not yet checked against in-game testing" /
+  "checked against one in-game test so far" notes under the formula were
+  removed from the wiki pages.
+
+2026-10-10, later (Tornado Alley hidden as ??? in the Index):
+
+- The player asked to hide Tornado Alley's info until someone actually gets
+  it or the next Halloween update comes out. New `hiddenItems` list in
+  `data/manual/index-data.json` (currently `["Tornado Alley"]`). Its real
+  `extraItems` data is untouched — to reveal it, just remove the name from
+  `hiddenItems`.
+- In `wiki-tool.js`, a hidden item keeps its icon, name and variant chips;
+  the hover popover, item page (type, stat tiles, effect, How to Get text)
+  and search-result subtitle show "???". Its assumed odds (and the
+  assumed-odds note) DO show on the popover and item page — player asked
+  for that in a follow-up. Its RARITY (Secret) is shown
+  normally everywhere — the player said it's already known (follow-up the
+  same day; the first version hid it too). It only matches Index filters
+  its icons/name/rarity already give away (search, variants, rarity);
+  picking a type/stat/source/uses/effect filter hides it so the filter
+  can't leak the info.
+- Luck Simulator (follow-up the same day, player asked "hide its info but
+  leave the assumed odds"): `scripts/build-crate-luck-data.mjs` now copies
+  `hiddenItems` into the generated data as `item.hidden = true` (regenerated
+  `crate-luck-data.generated.js`; diffed — nothing else changed besides
+  `generatedAt`). `luck-crate-generator.js` shows ??? in a hidden item's popup
+  for main stat, other stats and effect (rarity shown normally), but KEEPS the odds, the "(assumed)" note and the roll-time
+  estimates. The wiki Index now shows the assumed odds too. Player said
+  NOT to add any of this Tornado Alley hiding work to the Wiki & Tools
+  update log — don't add an entry for it. The 2026-10-10 update-log entry still
+  mentions Tornado Alley's assumed odds.
 
 2026-10-10 (Index page + item pages, wiki-wide links and search, effect/material
 tags; committed and pushed as one commit with the Merchant answers):

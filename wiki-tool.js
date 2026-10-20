@@ -1453,6 +1453,9 @@
     // A bare "Centered" line (Alien Helper, Fine Point, Prismatic) is the
     // sheet's shorthand for "only upgrades ore that's centered on it".
     rest = rest.replace(/^centered$/gim, 'Ore must be centered on the upgrader for it to work.');
+    // A bare "Scanner" line only documented that the beam moves — the
+    // scanner's own Hit Chance section covers that now.
+    rest = rest.replace(/^scanner$/gim, '').trim();
     return { tags, effect: isBlankIndexValue(rest) ? '' : rest };
   }
 
@@ -1548,6 +1551,10 @@
     const extras = (manual.extraItems ?? []).map((r) => ({ ...r, isManual: true }));
     const modifiers = (manual.oreModifiers?.list ?? []).map((m) => ({ ...m, pattern: new RegExp(m.match, 'i') }));
     oreModifierNotes = manual.oreModifiers?.notes ?? [];
+    // index-data.json `hiddenItems`: items nobody has properly obtained yet
+    // (Tornado Alley) — the Index shows their icon and name, everything else
+    // as "???". Their real data stays in the file for when they're revealed.
+    const hiddenNames = new Set((manual.hiddenItems ?? []).map((n) => String(n).trim().toLowerCase()));
     const items = new Map();
     for (const rec of [...records, ...extras]) {
       const name = String(rec.name ?? '').trim();
@@ -1607,6 +1614,7 @@
       item.modifiers = [...new Map(item.variantList.flatMap((v) => item.variants[v].modifiers).map((m) => [m.name, m])).values()];
       item.p2wProducts = productsFor(item.name);
       item.sourceGroup = indexSourceGroup(base, item.p2wProducts.length > 0);
+      item.hidden = hiddenNames.has(item.name.toLowerCase());
     }
     return [...items.values()];
   }
@@ -1719,8 +1727,11 @@
 
   function indexItemMatches(item, f) {
     if (f.search && !item.name.toLowerCase().includes(f.search.trim().toLowerCase())) return false;
-    if (f.type && item.type !== f.type) return false;
     if (f.rarity && item.rarity !== f.rarity) return false;
+    // A hidden item only shows under filters its icons, name and rarity
+    // already give away — otherwise the filter itself would leak its type etc.
+    if (item.hidden) return !(f.type || f.statType || f.source || f.uses || f.effectOnly);
+    if (f.type && item.type !== f.type) return false;
     if (f.statType && item.statType !== f.statType) return false;
     if (f.source === 'none' ? item.crate : f.source && item.sourceGroup !== f.source) return false;
     if (f.variant === 'Base only' && item.variantList.length > 1) return false;
@@ -1751,6 +1762,7 @@
       .map((v) => `<span class="wiki-index-dot is-${v.toLowerCase().replace(' ', '-')}" title="${escapeHtml(v)}"></span>`).join('');
   }
 
+  const HIDDEN_TEXT = '???';
   function indexCardHtml(item) {
     const color = RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
     return `
@@ -1768,6 +1780,15 @@
 
   function indexPopoverPreview(item, variant) {
     const v = item.variants[variant];
+    if (item.hidden) {
+      return `
+      <img class="wiki-index-popover-icon" src="${indexIconSrc(item.name, variant)}" alt="" onerror="this.classList.add('is-missing')">
+      <div class="wiki-index-popover-stats">
+        <div><span>${HIDDEN_TEXT}</span> <strong>${HIDDEN_TEXT}</strong></div>
+        ${v.odds ? `<div><span>Odds</span> <strong>${escapeHtml(indexOddsText(v))}</strong></div>` : ''}
+        <p>${HIDDEN_TEXT}</p>
+      </div>`;
+    }
     const stat = indexMainStat(item, v);
     return `
       <img class="wiki-index-popover-icon" src="${indexIconSrc(item.name, variant)}" alt="" onerror="this.classList.add('is-missing')">
@@ -1811,9 +1832,223 @@
       </div>`;
   }
 
+  // ---- Scanner hit chance (item pages) ----------------------------------------
+  // The formulas and beam geometry come from capgrader-generator.js
+  // (globalThis.TycoonScanners), fit against scripts/scanner-hit-simulator.mjs
+  // — see AI_DECISIONS.md "Scanner hit-chance formulas". Ore sizes are raw
+  // database units, the same as a dropper's Ore Size stat.
+  const SCANNER_SAMPLE_SIZES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5];
+  const SCANNER_SIDE_LANE = 0.25; // a quarter of the way in from either edge
+  let scannerOreSize = 1;
+
+  function scannerPercent(chance) {
+    return `${Number((chance * 100).toFixed(1))}%`;
+  }
+
+  function scannerAvgMultiplier(chance, mainStat) {
+    return `${Number((chance * mainStat + (1 - chance)).toFixed(3))}x`;
+  }
+
+  function scannerFormulaHtml(geometry) {
+    const k = globalThis.TycoonScanners.constants;
+    if (geometry.kind === 'azure') {
+      const when = `if oreSize ≥ ${geometry.guaranteedHitAtOrAboveRaw}:`;
+      return `
+        <pre class="wiki-scanner-formula">${when}  hit chance = 100%
+${'otherwise:'.padEnd(when.length)}  hit chance = (${k.AZURE_EXPECTED_INTERCEPT} + ${k.AZURE_EXPECTED_SLOPE} × oreSize) %</pre>`;
+    }
+    const n = (value) => Number(value.toFixed(4));
+    return `
+      <pre class="wiki-scanner-formula">oreTiles      = oreSize / 2.5
+dwell         = (oreTiles + ${geometry.beamLenY}) / ${n(geometry.conveyorSpeed)}
+beamSpeed     = π × ${geometry.speedCyc} × ${geometry.convWidth}
+reach         = oreTiles / 2 + ${n(geometry.beamWidthX / 2)} + ${k.SWEEP_DWELL_K} × dwell × beamSpeed
+lo, hi        = ore's lane ∓ reach, clipped to the belt
+u             = the same lo, hi rescaled so the belt runs from -1 to 1
+hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
+  }
+
+  function scannerCalcResultHtml(item, v, geometry) {
+    const hit = globalThis.TycoonScanners.hitChance;
+    const size = scannerOreSize;
+    if (!(size > 0)) return '<p class="wiki-index-muted">Enter an ore size above 0.</p>';
+    if (geometry.kind === 'azure') {
+      const chance = hit(item.name, size);
+      return `<div class="wiki-index-stats">${indexStatTile('Hit Chance', scannerPercent(chance))}${indexStatTile('Avg Multiplier', scannerAvgMultiplier(chance, v.mainStat))}</div>`;
+    }
+    const center = hit(item.name, size, 0.5);
+    const side = hit(item.name, size, SCANNER_SIDE_LANE);
+    return `<div class="wiki-index-stats">
+      ${indexStatTile('Center of Belt', scannerPercent(center))}
+      ${indexStatTile('Side of Belt', scannerPercent(side))}
+      ${indexStatTile('Avg Multiplier (Center)', scannerAvgMultiplier(center, v.mainStat))}
+      ${indexStatTile('Avg Multiplier (Side)', scannerAvgMultiplier(side, v.mainStat))}
+    </div>`;
+  }
+
+  function scannerSectionHtml(item, v) {
+    const geometry = globalThis.TycoonScanners?.geometry?.[item.name];
+    if (!geometry || typeof v.mainStat !== 'number') return '';
+    const hit = globalThis.TycoonScanners.hitChance;
+    const sweep = geometry.kind === 'sweep';
+    const rows = SCANNER_SAMPLE_SIZES.map((size) => {
+      if (!sweep) {
+        const chance = hit(item.name, size);
+        return `<tr><td>${size}</td><td>${scannerPercent(chance)}</td><td>${scannerAvgMultiplier(chance, v.mainStat)}</td></tr>`;
+      }
+      const center = hit(item.name, size, 0.5);
+      const side = hit(item.name, size, SCANNER_SIDE_LANE);
+      return `<tr><td>${size}</td><td>${scannerPercent(center)}</td><td>${scannerPercent(side)}</td><td>${scannerAvgMultiplier(center, v.mainStat)}</td><td>${scannerAvgMultiplier(side, v.mainStat)}</td></tr>`;
+    }).join('');
+    const head = sweep
+      ? '<tr><th>Ore Size</th><th>Center</th><th>Side</th><th>Avg Mult. (Center)</th><th>Avg Mult. (Side)</th></tr>'
+      : '<tr><th>Ore Size</th><th>Hit Chance</th><th>Avg Multiplier</th></tr>';
+    const movement = sweep
+      ? `<p>The beam sweeps side to side across the belt in a sine wave (${geometry.speedCyc} sweeps per second), slowing down at each edge and moving fastest through the middle. It only upgrades ore the beam touches as the ore passes under it.</p>
+        <p class="wiki-index-lie"><strong>Tip:</strong> it's better to hit the ore on the sides of the belt instead of the center — the beam spends more of its time near the edges.</p>`
+      : `<p>The beam spins in a full circle (180° per second) standing up across the belt, like a fan blade. Any ore with an Ore Size of ${geometry.guaranteedHitAtOrAboveRaw} or more is tall enough to always get hit. Smaller ore can miss, and where the ore is on the belt doesn't matter.</p>
+        <p class="wiki-index-lie">For ore smaller than ${geometry.guaranteedHitAtOrAboveRaw}, the hit chance is an average, not a promise: the same ore and drop speed can hit almost every time or almost never, depending on when your base started running. Drop speeds that line up with the beam's 2-second spin (0.25, 1, 1.5, 2, 3, 4) are the most likely to get stuck that way; 1.2 avoids it best.</p>`;
+    // Same collapsed dropdown as Stats for Nerds (open state shares
+    // mechanicsOpen, keyed separately so the two remember their own state).
+    const openKey = `${item.name}::hit-chance`;
+    return `
+      <details class="wiki-mech-details" data-mech-item="${escapeHtml(openKey)}"${mechanicsOpen.has(openKey) ? ' open' : ''}>
+      <summary class="wiki-section-heading wiki-mech-summary">Hit Chance <span class="wiki-mech-hint">how the beam moves, calculator &amp; formula</span></summary>
+      <div class="wiki-mech">
+      ${movement}
+      <label class="wiki-scanner-input">Your ore size
+        <input type="number" min="0" step="0.05" value="${scannerOreSize}" data-scanner-ore-size aria-label="Ore size">
+      </label>
+      <div class="wiki-scanner-result">${scannerCalcResultHtml(item, v, geometry)}</div>
+      <div class="wiki-scanner-scroll">
+        <table class="wiki-data-table wiki-scanner-table">
+          <thead>${head}</thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <p class="wiki-index-muted">Avg multiplier counts a miss as 1x (the ore just isn't upgraded)${sweep ? '. "Side" is ore a quarter of the way in from either edge' : ''}. Ore Size is the same number as a dropper's Ore Size stat.</p>
+      <h4 class="wiki-scanner-subheading">Formula</h4>
+      <div class="wiki-scanner-scroll">${scannerFormulaHtml(geometry)}</div>
+      </div>
+      </details>`;
+  }
+
+  // ---- Stats for Nerds (item pages) -------------------------------------------
+  // Formulas, calculators, tables and how-to notes from the database's
+  // "Stats for Nerds" sheet, defined per item in wiki-item-mechanics.js
+  // (globalThis.TycoonItemMechanics). Calculator values are remembered per
+  // item for the session, so switching variants keeps what was typed.
+  const mechanicsValues = new Map();
+  // The section is a collapsed dropdown by default; once opened it stays
+  // open for that item while switching variants (which re-renders the page).
+  const mechanicsOpen = new Set();
+
+  // 'toggle' doesn't bubble, so listen in the capture phase (registered once).
+  pageBody?.addEventListener('toggle', (event) => {
+    const details = event.target;
+    if (!details.classList?.contains('wiki-mech-details')) return;
+    if (details.open) mechanicsOpen.add(details.dataset.mechItem);
+    else mechanicsOpen.delete(details.dataset.mechItem);
+  }, true);
+
+  function mechanicsContext(item, variant) {
+    const vm = globalThis.TycoonItemMechanics?.variantMulti?.[variant] ?? 1;
+    // Every multiplier upgrader's multiplier in each form, for entries that compare
+    // against them (Mischievous Furnace's "not worth using" list). A listed
+    // 1x means the real multiplier comes from the item's effect (Dream
+    // Machine, Runic Array, Ore Replicator), so those are left out.
+    const upgraders = indexItems
+      .filter((u) => u.type === 'upgrader' && !u.hidden && u.base.mainStatType === 'Multiplicative' && typeof u.base.mainStat === 'number' && u.base.mainStat > 1)
+      .map((u) => ({
+        name: u.name,
+        variants: Object.fromEntries(u.variantList
+          .filter((name) => typeof u.variants[name].mainStat === 'number')
+          .map((name) => [name, u.variants[name].mainStat])),
+      }));
+    return { name: item.name, variant, vm, v: item.variants[variant], upgraders };
+  }
+
+  function mechanicsCalcValues(item, entry) {
+    const saved = mechanicsValues.get(item.name) ?? {};
+    return Object.fromEntries(entry.calc.inputs.map((input) => [input.key, saved[input.key] ?? input.value]));
+  }
+
+  function mechanicsInputHtml(input, value) {
+    if (input.type === 'select') {
+      return `<label class="wiki-scanner-input">${escapeHtml(input.label)}
+        <select data-mech-input="${escapeHtml(input.key)}">${input.options.map(([v, label]) => `<option value="${escapeHtml(v)}"${v === value ? ' selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select>
+      </label>`;
+    }
+    return `<label class="wiki-scanner-input">${escapeHtml(input.label)}
+      <input type="number" step="${input.step ?? 'any'}"${input.min != null ? ` min="${input.min}"` : ''} value="${escapeHtml(value)}" data-mech-input="${escapeHtml(input.key)}">
+    </label>`;
+  }
+
+  function mechanicsResultHtml(item, variant) {
+    const entry = globalThis.TycoonItemMechanics?.entries?.[item.name];
+    if (!entry?.calc) return '';
+    const values = mechanicsCalcValues(item, entry);
+    const bad = entry.calc.inputs.some((input) => input.type !== 'select' && !Number.isFinite(Number(values[input.key])));
+    if (bad) return '<p class="wiki-index-muted">Enter a number to see the result.</p>';
+    const numeric = Object.fromEntries(entry.calc.inputs.map((input) => [input.key, input.type === 'select' ? values[input.key] : Number(values[input.key])]));
+    return entry.calc.result(numeric, mechanicsContext(item, variant));
+  }
+
+  function mechanicsSectionHtml(item, variant) {
+    const entry = globalThis.TycoonItemMechanics?.entries?.[item.name];
+    if (!entry) return '';
+    const ctx = mechanicsContext(item, variant);
+    let calc = '';
+    if (entry.calc) {
+      const values = mechanicsCalcValues(item, entry);
+      calc = `
+        <div class="wiki-mech-calc">
+          <div class="wiki-mech-inputs">${entry.calc.inputs.map((input) => mechanicsInputHtml(input, values[input.key])).join('')}</div>
+          <div class="wiki-mech-result">${mechanicsResultHtml(item, variant)}</div>
+        </div>`;
+    }
+    return `
+      <details class="wiki-mech-details" data-mech-item="${escapeHtml(item.name)}"${mechanicsOpen.has(item.name) ? ' open' : ''}>
+        <summary class="wiki-section-heading wiki-mech-summary">Stats for Nerds <span class="wiki-mech-hint">formulas, calculator &amp; how it works</span></summary>
+        <div class="wiki-mech">
+          ${entry.intro ? entry.intro(ctx) : ''}
+          ${calc}
+          ${entry.after ? entry.after(ctx) : ''}
+        </div>
+      </details>`;
+  }
+
   // The full item page (replaces the old Index side panel) — opened by
   // clicking a card, or from anywhere via openItemPage().
+  // A hidden item's page: icon, name, rarity, variant switcher and odds only.
+  function hiddenItemPageHtml(item, variant) {
+    const v = item.variants[variant];
+    return `
+      <div class="wiki-item-page">
+        <div class="wiki-item-hero">
+          <div class="wiki-index-detail-art" style="--rarity-color: ${RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common}">
+            <img src="${indexIconSrc(item.name, variant)}" alt="" onerror="this.classList.add('is-missing')">
+          </div>
+          <div class="wiki-item-summary">
+            <div class="wiki-index-detail-tags">
+              ${formatRarity(item.rarity)}
+              <span class="wiki-index-tag">${HIDDEN_TEXT}</span>
+            </div>
+            <div class="wiki-index-variant-row" role="tablist" aria-label="Variant">${indexVariantChips(item, variant)}</div>
+            <div class="wiki-index-stats">${[1, 2, 3, 4].map(() => indexStatTile(HIDDEN_TEXT, HIDDEN_TEXT)).join('')}</div>
+          </div>
+        </div>
+        <h3 class="wiki-section-heading">Effect</h3>
+        <p class="wiki-index-effect">${HIDDEN_TEXT}</p>
+        <h3 class="wiki-section-heading">How to Get</h3>
+        <p>${HIDDEN_TEXT}</p>
+        ${v.odds ? `<div class="wiki-index-stats">${indexStatTile('Odds (Base Luck)', escapeHtml(indexOddsText(v)))}</div>` : ''}
+        ${v.oddsNote ? `<p class="wiki-index-lie">${escapeHtml(v.oddsNote)}</p>` : ''}
+      </div>`;
+  }
+
   function itemPageHtml(item, variant) {
+    if (item.hidden) return hiddenItemPageHtml(item, variant);
     const v = item.variants[variant];
     const color = RARITY_COLORS[item.rarity] ?? RARITY_COLORS.Common;
     const stat = indexMainStat(item, v);
@@ -1870,6 +2105,8 @@
           </div>
         </div>
         ${v.effect ? `<h3 class="wiki-section-heading">${effectHeading(v.modifiers)}</h3>${modifierTagsHtml(v.modifiers)}<p class="wiki-index-effect">${escapeHtml(v.effect)}</p>` : ''}
+        ${scannerSectionHtml(item, v)}
+        ${mechanicsSectionHtml(item, variant)}
         <h3 class="wiki-section-heading">How to Get</h3>
         ${howToGet.join('') || (p2w ? '' : '<p>—</p>')}
         ${p2w}
@@ -2039,6 +2276,7 @@
     const token = ++pageToken;
     pageBody.onclick = null;
     pageBody.onkeydown = null;
+    pageBody.oninput = null;
     homeView.hidden = true;
     pageView.hidden = false;
     await ensureIndexItems();
@@ -2079,6 +2317,31 @@
       if (!pick || pick.dataset.indexVariant === current) return;
       current = pick.dataset.indexVariant;
       render();
+    };
+    // Scanner pages: the "Your ore size" box updates just its result tiles
+    // (re-rendering the whole page would steal focus from the input).
+    pageBody.oninput = (event) => {
+      const mechInput = event.target.closest?.('[data-mech-input]');
+      if (mechInput) {
+        const saved = mechanicsValues.get(item.name) ?? {};
+        saved[mechInput.dataset.mechInput] = mechInput.value;
+        mechanicsValues.set(item.name, saved);
+        const result = pageBody.querySelector('.wiki-mech-result');
+        if (result) {
+          result.innerHTML = mechanicsResultHtml(item, current);
+          activateWikiLinksIn(result);
+        }
+        return;
+      }
+      const input = event.target.closest?.('[data-scanner-ore-size]');
+      if (!input) return;
+      scannerOreSize = Number(input.value);
+      const geometry = globalThis.TycoonScanners?.geometry?.[item.name];
+      const result = pageBody.querySelector('.wiki-scanner-result');
+      if (geometry && result) {
+        result.innerHTML = scannerCalcResultHtml(item, item.variants[current], geometry);
+        activateWikiLinksIn(result);
+      }
     };
     pageBody.onkeydown = (event) => {
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
@@ -2132,22 +2395,101 @@
   // resolves somewhere into a clickable link. A chip that would just link
   // to the page it's already on (a decoration on the Decoration page) is
   // left alone.
+  // ---- Item names in plain text --------------------------------------------
+  // Any Index item named in a page's ordinary text (effects, Stats for Nerds,
+  // notes, update logs…) becomes a link too. Full names match exactly
+  // (case-sensitive, whole words, longest first so "Godly Stone Dropper"
+  // beats "Stone Dropper"); TEXT_LINK_ALIASES covers the short names the
+  // wiki and database use for some items. Formulas, inputs, buttons,
+  // headings and existing chips are left alone.
+  const TEXT_LINK_ALIASES = {
+    Lambdas: 'Lambda Upgrader',
+    Lambda: 'Lambda Upgrader',
+    Tikis: 'Tiki Evaluator',
+    Tiki: 'Tiki Evaluator',
+    Throne: "Periastron's Throne",
+    'Dual Plasma': 'Dual Plasma Upgrader',
+    Pillars: 'Crimson Pillars',
+    Sugarbomb: 'Sugarbomb Dropper',
+    Kunzite: 'Kunzite Dropper',
+    Corium: 'Corium Dropper',
+    Dragon: "Dragon's Breath",
+    'Ore Washer': 'Ore Wash',
+    'Wind-Up': 'Wind-Up Dropper',
+  };
+  const TEXT_LINK_SKIP = 'a, button, input, select, textarea, option, pre, code, summary, h1, h2, h3, h4, script, style, [data-wiki-link], .wiki-index-variant-chip, .wiki-modifier-tag, .wiki-index-tag, .wiki-rarity-pill, .wiki-index-card, .wiki-index-popover';
+  let textLinkPattern = null;
+  let textLinkTargets = null;
+
+  function buildTextLinkPattern() {
+    textLinkTargets = new Map(indexItems.map((item) => [item.name, item.name]));
+    for (const [alias, name] of Object.entries(TEXT_LINK_ALIASES)) {
+      if (findIndexItem(name)) textLinkTargets.set(alias, name);
+    }
+    const names = [...textLinkTargets.keys()].sort((a, b) => b.length - a.length)
+      .map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    textLinkPattern = names.length ? new RegExp(`(?<![\\w'-])(${names.join('|')})(?![\\w-])`, 'g') : null;
+  }
+
+  function linkItemNamesIn(root) {
+    if (!indexItems.length) return;
+    if (!textLinkPattern) buildTextLinkPattern();
+    if (!textLinkPattern) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node) => (node.parentElement?.closest(TEXT_LINK_SKIP) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (const node of nodes) {
+      const text = node.nodeValue;
+      textLinkPattern.lastIndex = 0;
+      if (!textLinkPattern.test(text)) continue;
+      textLinkPattern.lastIndex = 0;
+      const frag = document.createDocumentFragment();
+      let last = 0;
+      for (const match of text.matchAll(textLinkPattern)) {
+        if (match.index > last) frag.append(text.slice(last, match.index));
+        const span = document.createElement('span');
+        span.className = 'wiki-text-link';
+        span.dataset.wikiLink = 'item';
+        span.dataset.wikiRef = textLinkTargets.get(match[1]);
+        span.textContent = match[1];
+        frag.append(span);
+        last = match.index + match[1].length;
+      }
+      if (last < text.length) frag.append(text.slice(last));
+      node.replaceWith(frag);
+    }
+  }
+
+  function activateWikiLink(chip) {
+    const target = resolveWikiLink(chip.dataset.wikiLink, chip.dataset.wikiRef, chip.dataset.wikiTier);
+    if (!target) return;
+    if (target.kind === 'page' && navCurrent?.kind === 'page' && target.key === navCurrent.key) return;
+    // An item never links to its own page.
+    if (target.kind === 'item' && navCurrent?.kind === 'item' && findIndexItem(navCurrent.ref)?.key === target.ref) return;
+    chip.classList.add('is-wiki-link');
+    chip.tabIndex = 0;
+    chip.setAttribute('role', 'link');
+    chip.title = target.kind === 'item'
+      ? `Open ${findIndexItem(target.ref).name}'s page`
+      : `Go to the ${PAGES[target.key].title} page`;
+  }
+
+  // For a piece of a page re-rendered after the page itself (calculator
+  // results): link item names in it and activate its chips. Link targets are
+  // already loaded by then.
+  function activateWikiLinksIn(root) {
+    if (!root) return;
+    linkItemNamesIn(root);
+    root.querySelectorAll('[data-wiki-link]').forEach(activateWikiLink);
+  }
+
   async function activateWikiLinks(token) {
-    const chips = [...pageBody.querySelectorAll('[data-wiki-link]')];
-    if (!chips.length) return;
     await loadLinkTargets();
     if (token !== pageToken) return;
-    for (const chip of chips) {
-      const target = resolveWikiLink(chip.dataset.wikiLink, chip.dataset.wikiRef, chip.dataset.wikiTier);
-      if (!target) continue;
-      if (target.kind === 'page' && navCurrent?.kind === 'page' && target.key === navCurrent.key) continue;
-      chip.classList.add('is-wiki-link');
-      chip.tabIndex = 0;
-      chip.setAttribute('role', 'link');
-      chip.title = target.kind === 'item'
-        ? `Open ${findIndexItem(target.ref).name}'s page`
-        : `Go to the ${PAGES[target.key].title} page`;
-    }
+    linkItemNamesIn(pageBody);
+    pageBody.querySelectorAll('[data-wiki-link]').forEach(activateWikiLink);
   }
 
   function followWikiLink(chip) {
@@ -2290,6 +2632,7 @@
     const token = ++pageToken;
     pageBody.onclick = null;
     pageBody.onkeydown = null;
+    pageBody.oninput = null;
     pageTitle.textContent = page.title;
     homeView.hidden = true;
     pageView.hidden = false;
@@ -2394,6 +2737,10 @@
 
       for (const [key, pageDef] of Object.entries(PAGES)) add('Page', pageDef.title, 'Wiki page', SEARCH_PAGE_KEYWORDS[key], { kind: 'page', key });
       for (const item of indexItems) {
+        if (item.hidden) {
+          add('Item', item.name, `${item.rarity} ${HIDDEN_TEXT}`, item.variantList.join(' '), { kind: 'item', ref: item.key, variant: 'Base' }, indexIconSrc(item.name, item.variantList[0]));
+          continue;
+        }
         const effects = item.variantList.map((v) => `${item.variants[v].effect} ${item.variants[v].source ?? ''}`).join(' ');
         add('Item', item.name, `${item.rarity} ${INDEX_TYPES[item.type]}${item.crate ? ` · ${indexSourceLabel(item.crate)}` : ''}`,
           `${item.variantList.join(' ')} ${item.tags.join(' ')} ${item.statType ?? ''} ${effects}`,

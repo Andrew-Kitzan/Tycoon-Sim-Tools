@@ -422,8 +422,10 @@
 
   function openItemDialog(name, item, variant, probability) {
     itemDialogTitle.textContent = `${name} — ${variant}`;
+    // Hidden items (index-data.json `hiddenItems`): keep the odds and roll
+    // times and rarity, show "???" for stats and effect.
     itemDialogRarity.textContent = item.rarity ?? 'Unknown rarity';
-    const variantData = item.variants[variant] ?? {};
+    const variantData = item.hidden ? { mainStat: '???', otherStats: '???', effects: '???' } : item.variants[variant] ?? {};
     const timings = [0.5, 0.75, 0.9].map((confidence) => {
       const seconds = timeToConfidence(probability, confidence, state.rollSpeed, state.unboxSlots);
       return `<div class="luck-time-row"><span>${Math.round(confidence * 100)}% chance by</span><strong>${formatDuration(seconds)}</strong></div>`;

@@ -99,6 +99,9 @@
 
   const SCANNER_GEOMETRY = {
     'Ancient Scanner': { kind: 'sweep', convX: 1, convWidth: 2, beamY: 1.4, beamLenY: 0.125, beamWidthX: 0.2, speedCyc: 1.0345, conveyorSpeed: 15 / STUDS_PER_TILE },
+    // Not a capgrader (not in SCANNER_NAMES), only here so the wiki's item
+    // page can show its hit chance from the same formula.
+    'Star Scanner': { kind: 'sweep', convX: 1, convWidth: 2, beamY: 1.3, beamLenY: 0.125, beamWidthX: 0.2, speedCyc: 0.159, conveyorSpeed: 12 / STUDS_PER_TILE },
     'Precision Ore Scanner': { kind: 'sweep', convX: 2, convWidth: 2, beamY: 1, beamLenY: 0.125, beamWidthX: 0.1, speedCyc: 1.0345, conveyorSpeed: 12 / STUDS_PER_TILE },
     'Azure Scanner': { kind: 'azure', guaranteedHitAtOrAboveRaw: 1.25 },
   };
@@ -123,11 +126,19 @@
     return Math.min(1, Math.max(0, (AZURE_EXPECTED_INTERCEPT + AZURE_EXPECTED_SLOPE * oreSizeRaw) / 100));
   }
 
-  function scannerHitChance(name, oreSizeRaw) {
+  function scannerHitChance(name, oreSizeRaw, laneFrac = 0.5) {
     const geometry = SCANNER_GEOMETRY[name];
     if (!geometry) return 0;
-    return geometry.kind === 'azure' ? predictAzureHitChance(oreSizeRaw) : predictSweepHitChance(geometry, oreSizeRaw);
+    return geometry.kind === 'azure' ? predictAzureHitChance(oreSizeRaw) : predictSweepHitChance(geometry, oreSizeRaw, laneFrac);
   }
+
+  // Shared with the wiki's scanner item pages (wiki-tool.js), so both tools
+  // show the same hit chances from one copy of the formulas.
+  globalThis.TycoonScanners = {
+    geometry: SCANNER_GEOMETRY,
+    hitChance: scannerHitChance,
+    constants: { SWEEP_DWELL_K, AZURE_EXPECTED_INTERCEPT, AZURE_EXPECTED_SLOPE, ORE_TO_TILE, STUDS_PER_TILE },
+  };
 
   // A blended expected-value multiplier (hitChance * mainStat + (1-hitChance))
   // is mathematically correct on average, but it's a fake number no single

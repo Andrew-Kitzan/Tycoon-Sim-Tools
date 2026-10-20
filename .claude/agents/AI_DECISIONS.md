@@ -162,7 +162,9 @@ section exists so a future session can find and use it without re-deriving it.**
   Scanner 1.2320x, Azure 1.3084x. Star has the lowest hit chance of the four but
   the highest expected multiplier, since its 2.8x payoff outweighs missing 70%
   of the time.
-- **Validation status:** the sweep-scanner model has not been checked against a
+- **Validation status (updated 2026-10-10):** the player says the scanner
+  formulas have now been proven by in-game testing. Original note, kept for
+  history: the sweep-scanner model had not been checked against a
   real in-game measurement yet. The Azure model WAS corrected against one real
   data point (oreSize raw 1, dropSpeed 1, center lane → user observed 62/85 =
   72.9% hits) but that data point is itself confounded by the drop-speed-1
