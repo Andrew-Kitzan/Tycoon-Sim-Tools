@@ -6,6 +6,49 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
 
 ## In progress
 
+- **Progression income mapping (player-measured cash/min per crate tier).**
+  The player is measuring cash/min for every crate tier, using items from
+  that crate and the ones before it, and recording each result in
+  `data/manual/progression-income-data.json`. **Rules for every
+  measurement: no codes, no achievement items, no secret items.** Masteries
+  are just part of each setup; the player said not to track or analyze
+  them, so don't ask which mastery caused a stat change. Done so
+  far: Basic (19x19 build area, ~40K/min; end-of-tier luck stats 6.83
+  unbox luck, 0.57 unbox speed, 1/2048 shiny and mythic); Advanced (21x21,
+  ~16M/min, 9.9 luck, 0.5 speed, 1/512 shiny and mythic, R1 done here);
+  Factory (24x24, ~747M/min, 15.81 luck, 0.44 speed, 1/512, no rebirth);
+  Quarry (28x28, ~3.4B/min, 19.39 luck, 0.44 speed, 1/512, R2 done here);
+  Futuristic (28x28, ~370B/min, 24.38 luck, 0.4 speed, 1/256, no rebirth);
+  Toxic (28x28, ~2.65T/min, 25.31 luck, 0.4 speed, 1/256, no rebirth);
+  Desert (28x28, ~8.74T/min, 25.31 luck, 0.4 speed, 1/256, no rebirth);
+  Fantasy (28x28, ~13T/min without Castle Fortress, 32.2 luck, 0.4 speed,
+  1/256, 2 unbox slots, R3 done here). With Castle Fortress it was only 9T:
+  its slow conveyor (speed 6) plus the longer route cut furnace entries/min,
+  most likely because of the 100-ore cap. Worth remembering when picking
+  slow or long items for these progression bases. The player calls
+  Basic → Fantasy "early game"; an "Early Game Progression Guide" Claude
+  Docs doc (https://claude.ai/code/artifact/a4e00ccf-36fa-4da9-a111-2e616bd377e3)
+  covers it, with a cash/min chart, a stats table, stage notes and rebirth
+  placement. Update it, or start a mid-game guide, as later crates come in.
+  **Mid game starts at Space** and adds two assumptions (also stored under
+  `stages.mid.assumptions` in the data file): enough AFK/offline enchanting
+  time that Epic and Legendary items can be Shiny, Mythic and Shiny Mythic,
+  and the player can AFK for rare items like Moonstone Dropper and Dyson
+  Module. **From Periastron onward, also assume access to Star Scanner and
+  World Eater** (`stages.mid.additionalAssumptions`). Space: 30x30, ~16.46Qd/min, 37.2 luck, 0.4 speed, 2 slots,
+  shiny 1/20 and mythic 1/100 (shiny and mythic odds now differ), R4 done
+  here. Periastron: 34x34, ~48.8Qn/min, 43.2 luck, 0.4 speed, 3 slots,
+  1/20 shiny, 1/100 mythic, R5 done here.
+  Each entry also
+  records the luck stats at the end of that tier. Goal: once every tier has a
+  number, combine it with crate prices (`data/crate-luck-data.generated.js`)
+  and rebirth costs (`data/manual/rebirth-data.json`) to chart how long each
+  next unlock takes and where the real walls are. Analysis so far (chat
+  only, 2026-10-19): crate prices go from about ×12 per crate early to
+  about ×1,000 late; rebirths mostly sit just before a new crate; the
+  R7 → R8 cost jump (1Sp → 1Ud, ×10^12) is a suspected typo or missing
+  rebirths and needs checking.
+
 - **Auditing `data/manual/item-geometry-worksheet.json`'s `upgraders` section.**
   Droppers and furnaces are fully audited and fixed. Upgraders: every item has
   been bulk pre-filled with best-guess defaults (conveyor centered per

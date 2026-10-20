@@ -179,6 +179,39 @@
             </div>
 
             <div class="capgrader-panel">
+              <h3>What matters to you</h3>
+              <p id="capgrader-priority-note" class="capgrader-panel-note"></p>
+              <div class="capgrader-priority-list">
+                <div class="capgrader-toggle-item is-owned">
+                  <span class="capgrader-toggle-name">Speed <small>— how long ore takes to cross the chain, and the 100-ore limit</small></span>
+                  <button type="button" id="capgrader-priority-speed" class="capgrader-toggle-pill" aria-pressed="true">On</button>
+                </div>
+                <div id="capgrader-ore-limit-fields" class="capgrader-ore-limit-fields">
+                  <label>Rest of route <small>(seconds)</small> <input type="number" id="capgrader-rest-seconds" min="0" step="any" value="15" inputmode="decimal" /></label>
+                  <p class="capgrader-panel-note">Travel time outside this section: dropper to chain, later upgraders, and into the furnace. Together with your dropper counts, it estimates how close you are to the 100-ore limit and whether a slow conveyor (like Castle Fortress) is choking a fast-drop setup.</p>
+                </div>
+                <div class="capgrader-toggle-item is-owned">
+                  <span class="capgrader-toggle-name">Distance <small>— how many tiles the chain takes</small></span>
+                  <button type="button" id="capgrader-priority-distance" class="capgrader-toggle-pill" aria-pressed="true">On</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="capgrader-panel">
+              <h3>Capgrader scanners</h3>
+              <p class="capgrader-panel-note">These only get used when they're the only way to bridge to the next capgrader (or the final one) — their multiplier isn't guaranteed, so the generator avoids them otherwise.</p>
+              <div class="capgrader-toggle-controls">
+                <button type="button" id="capgrader-scanner-select-all" class="capgrader-bulk-button">Select all</button>
+                <button type="button" id="capgrader-scanner-select-none" class="capgrader-bulk-button">Deselect all</button>
+              </div>
+              <div id="capgrader-scanner-list" class="capgrader-toggle-list"></div>
+            </div>
+
+            <div id="capgrader-results" class="capgrader-results" aria-live="polite" hidden></div>
+          </div>
+
+          <div class="capgrader-column">
+            <div class="capgrader-panel">
               <h3>Capgraders</h3>
               <p class="capgrader-panel-note">Click to toggle what you own — red means off, green means on. Owning it assumes you have as many copies as the game allows unless you set a specific count or variant below.</p>
               <div class="capgrader-toggle-controls">
@@ -192,8 +225,6 @@
               <div id="capgrader-toggle-list" class="capgrader-toggle-list"></div>
               <p id="capgrader-toggle-empty" class="capgrader-empty-note" hidden>No items match that search.</p>
             </div>
-
-            <div id="capgrader-results" class="capgrader-results" aria-live="polite" hidden></div>
           </div>
 
           <aside class="capgrader-sidebar">
@@ -213,17 +244,6 @@
             </div>
           </aside>
 
-          <aside class="capgrader-sidebar">
-            <div class="capgrader-panel">
-              <h3>Capgrader scanners</h3>
-              <p class="capgrader-panel-note">These only get used when they're the only way to bridge to the next capgrader (or the final one) — their multiplier isn't guaranteed, so the generator avoids them otherwise.</p>
-              <div class="capgrader-toggle-controls">
-                <button type="button" id="capgrader-scanner-select-all" class="capgrader-bulk-button">Select all</button>
-                <button type="button" id="capgrader-scanner-select-none" class="capgrader-bulk-button">Deselect all</button>
-              </div>
-              <div id="capgrader-scanner-list" class="capgrader-toggle-list"></div>
-            </div>
-          </aside>
         </div>
       </section>
 
@@ -625,7 +645,12 @@
             <p>Additive upgraders and Lunar Landing are only ever used as a single opening move before the capgrader chain starts. Scanners are a last resort — since a scan isn't a guaranteed hit, the generator only reaches for one when it's the only way to bridge to the next capgrader.</p>
           </details>
           <details class="help-section">
-            <summary>3. Generate</summary>
+            <summary>3. Choose what matters</summary>
+            <p>In <strong>What matters to you</strong>, turn <strong>Speed</strong> off if you don't care how long ore takes to cross the chain, or <strong>Distance</strong> off if you don't care how many tiles it takes. With both off, the chain just ends with as much ore value as possible.</p>
+            <p>With Speed on, set how many of each dropper you run (the count box beside each dropper) and the <strong>Rest of route</strong> time. The generator then accounts for the 100-ore limit and slow conveyors like Castle Fortress. In a fast-drop base, a slower chain means fewer ores reach the furnace each minute.</p>
+          </details>
+          <details class="help-section">
+            <summary>4. Generate</summary>
             <p>Click <strong>Generate capgrader section</strong>. For each dropper you added, you'll get a table of the exact chain to build: which upgrader, which variant, the value before and after each step, and the running time/length so far. Click <strong>&larr; Edit setup</strong> to go back and adjust anything.</p>
           </details>
         </div>

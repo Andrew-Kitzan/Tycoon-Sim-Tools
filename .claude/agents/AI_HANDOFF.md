@@ -120,6 +120,68 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-20 (Capgrader Generator: speed/distance toggles + ore limit, three-column
+layout, variant count styling, plus a Wiki & Tools Updates entry; committed and
+pushed as one commit with the 2026-10-19 progression data):
+
+- **New "What matters to you" panel** (`index.html`, `styles.css`,
+  `capgrader-generator.js` `priorities` + `makeScorers()`). Speed and
+  Distance toggles, both on by default. Both on keeps the original
+  time/length penalties. Speed off drops the time penalty AND the ore-limit
+  model. Distance off drops the length penalty. Both off = pure maximum
+  final ore value (the player's explicit definition). Saved in localStorage
+  as `priorities` in the existing v2 save.
+- **Ore-limit model** (`oreFlow()` / `beltCapacity()`). Only used with
+  Speed on. Entries/sec = min(total drop rate, 100 ÷ (rest-of-route +
+  chain time), slowest conveyor's belt flow), and chains are scored on
+  log(value) + log(entries/sec). Belt flow = conveyor speed ÷ (ore size ×
+  1.2 studs), i.e. ores back to back. That's an **unvalidated estimate,
+  probably optimistic**. Inputs: a per-dropper-row count (× box) and a
+  "Rest of route (seconds)" field (default 15). The count defaults to 1 and is
+  only shown while Speed is on. The result card shows ores
+  on base, entries/sec and what limits them. Motivated by the player's
+  Fantasy measurement: Castle Fortress (speed 6) gave 9T/min vs 13T without.
+  **The model only explains part of that drop** (Castle crossing is 1.5s,
+  only a few % of throughput at the cap), so real bunching on slow belts
+  is likely worse than modeled. Calibrate if the player gives dropper
+  count and route time for that base.
+- **Search-quality fix in `prune()`**: keeps at most 2 states per value
+  level (`PER_VALUE_LEVEL`), beam width 2000 → 600. The "own everything"
+  benchmark went from ~$3.43T to ~$28.6T. Verified legal step by step (in
+  range, limitedUses respected, exact math); the old beam was crowded with
+  near-duplicates and never reached the Sunflower/Fungal tiers. The test
+  band is now $27T–$30T. Also faster (~0.8s vs ~1.2s per dropper).
+- Layout: column 1 = Droppers, What matters, Capgrader scanners (+ results);
+  column 2 = Capgraders (`.capgrader-column`); column 3 = Additives.
+  Per-variant count inputs now stack name over input, two per row with
+  `minmax(0, 1fr)` so they fit the narrower columns; variant names are
+  colored (`label.is-shiny` / `.is-mythic` / `.is-shiny-mythic`).
+- Tests: new toggle, ore-limit and belt-flow tests in
+  `tests/capgrader-generator.test.mjs`. `__cgDebug` now also exposes
+  `beltCapacity`, `oreFlow`, `variantsFor`. Note
+  `tests/validate-planner.js` counts `&times;` in index.html (exactly 8),
+  so don't write `&times;` in help text.
+
+**Left untracked on purpose** (still, same as the 2026-10-10 entry):
+`scripts/scanner-kunzite-check*.mjs`, `scripts/scanner-spacing-*.mjs`,
+`scripts/star-scanner-chain.mjs`.
+
+**Next steps the player named:** keep logging progression income per crate
+(Candy is next; see AI_TASKS.md "Progression income mapping"). If they give
+dropper count + route time for the Castle Fortress Fantasy base (13T vs 9T),
+calibrate the belt-flow estimate in `capgrader-generator.js`.
+
+2026-10-19 (progression mapping; committed with the 2026-10-20 push): added
+`data/manual/progression-income-data.json` to hold player-measured cash/min
+per crate tier. No codes, no achievement items, no secret items. First
+entry: Basic crate only, 19x19, ~40K/min. The player will add the rest
+of the crates. See AI_TASKS.md "Progression income mapping" for the goal and
+the analysis so far. Also confirmed by the player: furnace loot drops pick
+themselves up (they fly to the player), so AFK at max mastery gets the full
+20 drops/min, about 7,855 potions per 24h. That isn't on the Furnace Loot
+page yet.
+
+
 2026-10-10 (Index page + item pages, wiki-wide links and search, effect/material
 tags; committed and pushed as one commit with the Merchant answers):
 

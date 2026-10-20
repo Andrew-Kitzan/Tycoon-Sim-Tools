@@ -74,7 +74,7 @@ async function loadCapgraderTool() {
   return debugHook;
 }
 
-const { legalPool, optimizeCapgraderChain, getToggle, capgraderNames, additiveNames, scannerNames, lunarName } = await loadCapgraderTool();
+const { legalPool, optimizeCapgraderChain, getToggle, capgraderNames, additiveNames, scannerNames, lunarName, beltCapacity, oreFlow, variantsFor } = await loadCapgraderTool();
 
 const allItemNames = [...capgraderNames, ...additiveNames, ...scannerNames, lunarName].filter(Boolean);
 function ownEverything() {
@@ -252,6 +252,15 @@ function ownNothing() {
 // dramatic jump the buggy number suggested. **If this number is ever "too
 // high" again, suspect a finisher/limited-use variant being double-counted
 // before suspecting the search itself.**
+//
+// Band raised to $27T-$30T on 2026-10-20 by a real search-quality fix, not a
+// counting bug: prune() now keeps at most 2 states per value level, so the
+// beam stops filling up with near-duplicates that differ only in which
+// copies they used. The old search stopped at ~$472B before the finishers
+// and never reached the Sunflower Fields (500B-1T) / Fungal Enhancer (1T-3T)
+// tiers. The new ~$28.6T chain was checked step by step: every capgrader in
+// range, every limitedUses respected (Rubik's/Toybox once each), every
+// multiplication exact.
 
 {
   ownEverything();
@@ -259,8 +268,8 @@ function ownNothing() {
   const result = optimizeCapgraderChain(10, 1, pool, false);
   assert(result.chain.length > 0, 'a fully-owned pool must produce a non-empty chain');
   assert(
-    result.finalValue >= 3.3e12 && result.finalValue <= 3.6e12,
-    `expected final value in the $3.3T-$3.6T regression band, got ${result.finalValue}`,
+    result.finalValue >= 2.7e13 && result.finalValue <= 3.0e13,
+    `expected final value in the $27T-$30T regression band, got ${result.finalValue}`,
   );
 
   // Every step must be legal: value must move the expected direction (up for
@@ -311,7 +320,68 @@ function ownNothing() {
 {
   ownNothing();
   const emptyResult = optimizeCapgraderChain(10, 1, legalPool(), false);
-  assert.deepEqual(emptyResult, { chain: [], finalValue: 10 }, 'an empty legal pool must return the starting value unchanged');
+  assert.deepEqual(emptyResult.chain, [], 'an empty legal pool must produce no chain');
+  assert.equal(emptyResult.finalValue, 10, 'an empty legal pool must return the starting value unchanged');
+}
+
+// ---- Speed / distance toggles (2026-10-20) --------------------------------
+// Both on (the default) is the original scoring. Turning a toggle off only
+// removes a penalty, so it can never end on a LOWER value; both off is pure
+// maximum final value.
+
+{
+  ownEverything();
+  const pool = legalPool();
+  const both = optimizeCapgraderChain(10, 1, pool, false);
+  const explicitBoth = optimizeCapgraderChain(10, 1, pool, false, { considerSpeed: true, considerDistance: true });
+  assert.equal(explicitBoth.finalValue, both.finalValue, 'both toggles on must match the default scoring exactly');
+  const noDistance = optimizeCapgraderChain(10, 1, pool, false, { considerDistance: false });
+  const noSpeed = optimizeCapgraderChain(10, 1, pool, false, { considerSpeed: false });
+  const neither = optimizeCapgraderChain(10, 1, pool, false, { considerSpeed: false, considerDistance: false });
+  assert(noDistance.finalValue >= both.finalValue * 0.999, 'distance off must not end on a lower value than both on');
+  assert(noSpeed.finalValue >= both.finalValue * 0.999, 'speed off must not end on a lower value than both on');
+  // Beam search is a heuristic, so allow a 0.1% wobble between modes.
+  assert(neither.finalValue >= Math.max(noDistance.finalValue, noSpeed.finalValue) * 0.999, 'both off must end on the highest value');
+  assert.equal(neither.flow, null, 'speed off must ignore the ore limit entirely');
+}
+
+// ---- Ore limit / belt flow (2026-10-20) -------------------------------------
+// Player-measured: Castle Fortress (additive, conveyor speed 6) cut a
+// fast-drop Fantasy base from 13T to 9T/min. In this Fantasy-era pool, both
+// openings (Castle Fortress or Enforced Upgrader) end near the same capgrader
+// ceiling, so with 20 ores/sec and the base at the 100-ore limit, the
+// slower Castle opening must lose; at 2 ores/sec (no limit) it may win.
+
+{
+  ownNothing();
+  for (const name of ['Castle Fortress', 'Enforced Upgrader', 'Oasis Cleanser', 'Waste Refiner', 'Fine Point Upgrader', 'Quad Rays Upgrader', 'Oil Well', 'Desert Remains', 'Fairy Forest', 'Observatory Refiner']) {
+    getToggle(name).owned = true;
+  }
+  const pool = legalPool();
+  const usesCastle = (result) => result.chain.some((entry) => entry.record.name === 'Castle Fortress');
+  const fast = optimizeCapgraderChain(350, 1, pool, false, { flow: { dropRate: 20, restSeconds: 15 } });
+  assert(!usesCastle(fast), 'a fast-drop setup at the ore limit must not route ore through Castle Fortress');
+  assert.equal(fast.flow.limitedBy, 'ore limit', '20 ores/sec over a ~25s route must be ore-limit bound');
+  assert(fast.flow.entriesPerSecond <= 100 / 15, 'entries/sec can never beat 100 ores over the route time');
+  const slow = optimizeCapgraderChain(350, 1, pool, false, { flow: { dropRate: 2, restSeconds: 15 } });
+  assert.equal(slow.flow.limitedBy, 'drop rate', '2 ores/sec must stay under the ore limit');
+  const valueOnly = optimizeCapgraderChain(350, 1, pool, false, { considerSpeed: false, considerDistance: false });
+  assert(valueOnly.finalValue >= Math.max(fast.finalValue, slow.finalValue), 'value-only mode must end on the most value');
+}
+
+// Belt flow: a speed-6 conveyor (Castle Fortress) carrying size-1 ore moves
+// at most 6 / 1.2 = 5 ores/sec back to back, so it caps a 20 ores/sec setup
+// even when the 100-ore limit isn't the tighter constraint.
+{
+  const castle = variantsFor('Castle Fortress').find((record) => record.variant === 'Base');
+  assert(Math.abs(beltCapacity(castle, 1) - 5) < 1e-9, 'speed 6 / (size 1 x 1.2 studs) = 5 ores/sec');
+  const state = { timeSeconds: 1.5, beltLimit: beltCapacity(castle, 1) };
+  const flow = oreFlow(state, { dropRate: 20, restSeconds: 2 });
+  assert.equal(flow.limitedBy, 'belt speed');
+  assert.equal(flow.entriesPerSecond, 5);
+  const unchoked = oreFlow({ timeSeconds: 1.5, beltLimit: Infinity }, { dropRate: 3, restSeconds: 2 });
+  assert.equal(unchoked.limitedBy, 'drop rate');
+  assert.equal(unchoked.entriesPerSecond, 3);
 }
 
 console.log('Validated capgrader-generator.js legalPool()/optimizeCapgraderChain() search logic.');

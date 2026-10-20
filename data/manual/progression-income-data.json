@@ -1,0 +1,166 @@
+{
+  "notes": "Player-measured cash/min at each crate tier, used to map progression (time to afford the next crate/rebirth). Each entry uses only items from that crate and the crates before it. Rules for every measurement: no code rewards, no achievement items, no secret items. Plot size is the build area actually used, not necessarily the player's full plot.",
+  "rules": {
+    "codes": false,
+    "achievementItems": false,
+    "secretItems": false
+  },
+  "entries": [
+    {
+      "highestCrate": "Basic",
+      "plotSize": "19x19",
+      "cashPerMin": "40K",
+      "unboxLuck": 6.83,
+      "unboxSpeed": 0.57,
+      "shinyOdds": "1/2048",
+      "mythicOdds": "1/2048",
+      "notes": "Built to avoid long AFK time.",
+      "stage": "early"
+    },
+    {
+      "highestCrate": "Advanced",
+      "plotSize": "21x21",
+      "cashPerMin": "16M",
+      "unboxLuck": 9.9,
+      "unboxSpeed": 0.5,
+      "shinyOdds": "1/512",
+      "mythicOdds": "1/512",
+      "rebirthsReached": [
+        1
+      ],
+      "notes": "Rebirth 1 (1M) was done during this tier. Its +2 plot size reward explains 19x19 -> 21x21, and its +1 luck is part of the luck increase.",
+      "stage": "early"
+    },
+    {
+      "highestCrate": "Factory",
+      "plotSize": "24x24",
+      "cashPerMin": "747M",
+      "unboxLuck": 15.81,
+      "unboxSpeed": 0.44,
+      "shinyOdds": "1/512",
+      "mythicOdds": "1/512",
+      "rebirthsReached": [],
+      "notes": "No rebirth during this tier. The +3 plot size (21x21 -> 24x24) came from mastery.",
+      "stage": "early"
+    },
+    {
+      "highestCrate": "Quarry",
+      "plotSize": "28x28",
+      "cashPerMin": "3.4B",
+      "unboxLuck": 19.39,
+      "unboxSpeed": 0.44,
+      "shinyOdds": "1/512",
+      "mythicOdds": "1/512",
+      "rebirthsReached": [
+        2
+      ],
+      "notes": "Rebirth 2 (10B) was done during this tier. Its +4 plot size reward explains 24x24 -> 28x28, and its +1 luck is part of the luck increase.",
+      "stage": "early"
+    },
+    {
+      "highestCrate": "Futuristic",
+      "plotSize": "28x28",
+      "cashPerMin": "370B",
+      "unboxLuck": 24.38,
+      "unboxSpeed": 0.4,
+      "shinyOdds": "1/256",
+      "mythicOdds": "1/256",
+      "rebirthsReached": [],
+      "stage": "early"
+    },
+    {
+      "highestCrate": "Toxic",
+      "plotSize": "28x28",
+      "cashPerMin": "2.65T",
+      "unboxLuck": 25.31,
+      "unboxSpeed": 0.4,
+      "shinyOdds": "1/256",
+      "mythicOdds": "1/256",
+      "rebirthsReached": [],
+      "stage": "early"
+    },
+    {
+      "highestCrate": "Desert",
+      "plotSize": "28x28",
+      "cashPerMin": "8.74T",
+      "unboxLuck": 25.31,
+      "unboxSpeed": 0.4,
+      "shinyOdds": "1/256",
+      "mythicOdds": "1/256",
+      "rebirthsReached": [],
+      "stage": "early"
+    },
+    {
+      "highestCrate": "Fantasy",
+      "plotSize": "28x28",
+      "cashPerMin": "13T",
+      "unboxLuck": 32.2,
+      "unboxSpeed": 0.4,
+      "shinyOdds": "1/256",
+      "mythicOdds": "1/256",
+      "unboxSlots": 2,
+      "rebirthsReached": [
+        3
+      ],
+      "notes": "Retested without Castle Fortress: 13T/min (first test with Castle Fortress was 9T). Castle Fortress's slow conveyor (speed 6) plus the longer route was costing throughput, most likely because the base is at the 100-ore cap. Rebirth 3 (50T) was done during this tier; its +1 unbox slot reward explains 1 -> 2 unbox slots (earlier tiers all had 1).",
+      "stage": "early"
+    },
+    {
+      "highestCrate": "Space",
+      "stage": "mid",
+      "plotSize": "30x30",
+      "cashPerMin": "16.46Qd",
+      "unboxLuck": 37.2,
+      "unboxSpeed": 0.4,
+      "shinyOdds": "1/20",
+      "mythicOdds": "1/100",
+      "unboxSlots": 2,
+      "rebirthsReached": [
+        4
+      ],
+      "notes": "Rebirth 4 (10Qd) was done during this tier. Its +2 plot size reward explains 28x28 -> 30x30, and its +1 luck is part of the luck increase."
+    },
+    {
+      "highestCrate": "Periastron",
+      "stage": "mid",
+      "plotSize": "34x34",
+      "cashPerMin": "48.8Qn",
+      "unboxLuck": 43.2,
+      "unboxSpeed": 0.4,
+      "shinyOdds": "1/20",
+      "mythicOdds": "1/100",
+      "unboxSlots": 3,
+      "rebirthsReached": [
+        5
+      ],
+      "notes": "Rebirth 5 (25Qn) was done during this tier. Its +4 plot size reward explains 30x30 -> 34x34, and its +1 luck is part of the luck increase. First tier with Star Scanner and World Eater available."
+    }
+  ],
+  "stages": {
+    "early": {
+      "crates": [
+        "Basic",
+        "Advanced",
+        "Factory",
+        "Quarry",
+        "Futuristic",
+        "Toxic",
+        "Desert",
+        "Fantasy"
+      ]
+    },
+    "mid": {
+      "startsAt": "Space",
+      "assumptions": [
+        "Player has enough AFK/offline enchanting time that Epic and Legendary items can be Shiny, Mythic and Shiny Mythic.",
+        "Player can AFK for rare items such as Moonstone Dropper and Dyson Module."
+      ],
+      "additionalAssumptions": [
+        {
+          "startsAt": "Periastron",
+          "assumption": "Player has access to Star Scanner and World Eater."
+        }
+      ]
+    }
+  }
+}

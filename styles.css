@@ -566,7 +566,8 @@ body.mode-generation .live-ore-tracker { display: none; }
 
 .capgrader-generate-bar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 10px; padding: 10px 0; background: linear-gradient(var(--page) 70%, transparent); }
 .capgrader-layout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
-.capgrader-main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.capgrader-main,
+.capgrader-column { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .capgrader-sidebar { position: sticky; top: 56px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 @media (max-width: 900px) {
   .capgrader-layout { grid-template-columns: 1fr; }
@@ -577,7 +578,8 @@ body.mode-generation .live-ore-tracker { display: none; }
    its own, centered — "Edit setup" (in the generate bar) brings them back. */
 .capgrader-layout.is-results-only { grid-template-columns: 1fr; justify-items: center; }
 .capgrader-layout.is-results-only .capgrader-panel,
-.capgrader-layout.is-results-only .capgrader-sidebar { display: none; }
+.capgrader-layout.is-results-only .capgrader-sidebar,
+.capgrader-layout.is-results-only .capgrader-column { display: none; }
 .capgrader-layout.is-results-only .capgrader-main { width: 100%; max-width: 1040px; align-items: center; }
 .capgrader-layout.is-results-only .capgrader-results { width: 100%; }
 .capgrader-intro { margin: 0; color: var(--muted); font-size: .86rem; max-width: 70ch; }
@@ -600,6 +602,16 @@ body.mode-generation .live-ore-tracker { display: none; }
 
 .capgrader-dropper-rows { display: flex; flex-direction: column; gap: 8px; }
 .capgrader-dropper-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.capgrader-dropper-count { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: .8rem; }
+.capgrader-dropper-count input { width: 56px; padding: 7px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-raised); color: var(--text); }
+.capgrader-priority-list { display: flex; flex-direction: column; gap: 8px; }
+.capgrader-priority-list small { color: var(--muted); font-size: .74rem; }
+.capgrader-ore-limit-fields { display: flex; flex-direction: column; gap: 6px; padding: 4px 10px 0 18px; }
+.capgrader-ore-limit-fields[hidden] { display: none; }
+.capgrader-ore-limit-fields label { display: flex; align-items: center; gap: 8px; font-size: .82rem; }
+.capgrader-ore-limit-fields input { width: 80px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-raised); color: var(--text); }
+.capgrader-ore-limit-fields .capgrader-panel-note { margin: 0; }
+.capgrader-flow-note { margin: 0; padding: 8px 18px; color: var(--muted); font-size: .78rem; border-bottom: 1px solid var(--line); }
 .capgrader-dropper-row select { padding: 7px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-raised); color: var(--text); }
 .capgrader-dropper-row button { padding: 6px 8px; border: 1px solid #a84d56; border-radius: 7px; background: #4a242b; color: #ffd8dc; font-size: .72rem; font-weight: 700; cursor: pointer; }
 .capgrader-add-dropper { margin-top: 10px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-raised); color: var(--text); font-size: .78rem; cursor: pointer; }
@@ -612,10 +624,17 @@ body.mode-generation .live-ore-tracker { display: none; }
 .capgrader-toggle-item .capgrader-toggle-range { color: var(--muted); font-size: .72rem; }
 .capgrader-toggle-pill { padding: 6px 14px; border: 1px solid #a84d56; border-radius: 999px; background: #4a242b; color: #ffd8dc; font-size: .72rem; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; cursor: pointer; }
 .capgrader-toggle-pill[aria-pressed="true"] { border-color: #4a9a79; background: #17372d; color: var(--accent); }
-.capgrader-toggle-options { display: none; grid-template-columns: 1fr 1fr; align-items: center; gap: 8px 10px; width: 100%; margin-top: 4px; padding-top: 8px; border-top: 1px dashed var(--line); }
+/* Per-variant owned counts: name stacked over its input, two per row, and
+   allowed to shrink so they always fit the (now narrower) column. */
+.capgrader-toggle-options { display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 10px; width: 100%; margin-top: 2px; padding-top: 10px; border-top: 1px dashed var(--line); }
 .capgrader-toggle-item.is-owned .capgrader-toggle-options { display: grid; }
-.capgrader-toggle-options label { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: .74rem; }
-.capgrader-toggle-options input[type="number"] { flex: 1 1 auto; min-width: 0; padding: 5px 7px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-raised); color: var(--text); }
+.capgrader-toggle-options label { display: flex; flex-direction: column; gap: 4px; min-width: 0; color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.capgrader-toggle-options label.is-shiny { color: #ffd94a; }
+.capgrader-toggle-options label.is-mythic { color: #c9a6ff; }
+.capgrader-toggle-options label.is-shiny-mythic { color: #ff9ad5; }
+.capgrader-toggle-options input[type="number"] { width: 100%; min-width: 0; box-sizing: border-box; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-raised); color: var(--text); font-size: .82rem; font-weight: 600; letter-spacing: normal; text-transform: none; }
+.capgrader-toggle-options input[type="number"]::placeholder { color: var(--muted); font-weight: 400; }
+.capgrader-toggle-options input[type="number"]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 .capgrader-generate { align-self: flex-start; padding: 10px 18px; font-size: .88rem; font-weight: 800; border: 1px solid #4a9a79; border-radius: 8px; background: #1c8f5c; color: #eafff2; cursor: pointer; box-shadow: 0 4px 14px rgba(28,143,92,.28); }
 .capgrader-generate:hover, .capgrader-generate:focus-visible { background: #229c65; border-color: var(--accent); outline: none; }

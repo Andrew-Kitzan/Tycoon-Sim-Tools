@@ -53,6 +53,40 @@
     return speed > 0 ? item.size.length * 3 / speed : 0;
   }
 
+  // ---- Ore-limit throughput model (docs/BUILD_RULES.md "Expected cash per
+  // minute") --------------------------------------------------------------
+  // Cash/min = ore value × ores reaching the furnace per second. Two things
+  // cap that second number, and both get worse when the chain is slow:
+  //  1. The 100-ore base limit: with total drop rate D and total route time T,
+  //     about D×T ores are on the base at once. Past 100, droppers pause and
+  //     entries/sec become 100 ÷ T — so every extra second of chain directly
+  //     costs throughput. Below 100, chain time costs nothing.
+  //  2. Belt flow: a slow conveyor can only move so many ores per second.
+  //     Estimated as conveyor speed (studs/s) ÷ ore diameter (studs), i.e.
+  //     ores travelling back to back — optimistic, so real bunching is worse.
+  //     This is what made Castle Fortress (speed 6) cut a fast-drop Fantasy
+  //     base from 13T to 9T/min (2026-10-20, player-measured).
+  // The chain is scored on log(value) + log(entries/sec) when speed matters,
+  // so a slow item only wins if its value gain beats the throughput it costs.
+  const ORE_CAP = 100;
+  const STUDS_PER_ORE_SIZE = 1.2; // ore size × (1/2.5 tile) × 3 studs per tile
+
+  function beltCapacity(record, oreSize) {
+    const speed = Number(record.conveyorSpeed);
+    return speed > 0 ? speed / (Math.max(0.1, oreSize) * STUDS_PER_ORE_SIZE) : Infinity;
+  }
+
+  function oreFlow(state, flow) {
+    const routeSeconds = flow.restSeconds + state.timeSeconds;
+    const capLimit = routeSeconds > 0 ? ORE_CAP / routeSeconds : Infinity;
+    const entriesPerSecond = Math.min(flow.dropRate, capLimit, state.beltLimit);
+    return {
+      entriesPerSecond,
+      activeOres: flow.dropRate * routeSeconds,
+      limitedBy: entriesPerSecond === flow.dropRate ? 'drop rate' : entriesPerSecond === state.beltLimit ? 'belt speed' : 'ore limit',
+    };
+  }
+
   // ---- Scanner hit-chance formulas (see AI_DECISIONS.md "Scanner hit-chance
   // formulas" / scripts/scanner-hit-simulator.mjs — validated against
   // simulation, not the engine's old flat oreSize/4 fallback) -----------------
@@ -181,6 +215,11 @@
   // land precisely in a later capgrader's range, then a stronger one to
   // finish — impossible to find if only one variant is ever considered).
 
+  // The player's "what matters" choices — see makeScorers(). restSeconds is
+  // the travel time outside this capgrader section (dropper to chain, later
+  // upgraders, into the furnace), needed for the 100-ore limit estimate.
+  const priorities = { considerSpeed: true, considerDistance: true, restSeconds: 15 };
+
   const toggleState = new Map();
   function getToggle(name) {
     if (!toggleState.has(name)) toggleState.set(name, { owned: false, variantCounts: null });
@@ -198,7 +237,7 @@
         owned: toggle.owned,
         variantCounts: toggle.variantCounts,
       }]);
-      localStorage.setItem(CAPGRADER_STORAGE_KEY, JSON.stringify({ version: 2, dropperRows, nextRowId, toggles }));
+      localStorage.setItem(CAPGRADER_STORAGE_KEY, JSON.stringify({ version: 2, dropperRows, nextRowId, toggles, priorities }));
     } catch {
       // Storage unavailable (private browsing, quota, etc.) — settings just won't persist.
     }
@@ -211,6 +250,12 @@
       if (Array.isArray(saved.dropperRows) && saved.dropperRows.length) {
         dropperRows = saved.dropperRows;
         nextRowId = Number.isFinite(saved.nextRowId) ? saved.nextRowId : Math.max(...dropperRows.map((row) => row.id)) + 1;
+      }
+      if (saved.priorities && typeof saved.priorities === 'object') {
+        priorities.considerSpeed = saved.priorities.considerSpeed !== false;
+        priorities.considerDistance = saved.priorities.considerDistance !== false;
+        const rest = Number(saved.priorities.restSeconds);
+        if (Number.isFinite(rest) && rest >= 0) priorities.restSeconds = rest;
       }
       if (Array.isArray(saved.toggles)) {
         for (const [name, toggle] of saved.toggles) {
@@ -317,12 +362,16 @@
     const timeSeconds = state.timeSeconds + crossingSeconds(record) * count;
     const length = state.length + record.size.length * count;
     const key = usageKey(record);
+    const capacity = beltCapacity(record, state.oreSize);
+    const slower = capacity < state.beltLimit;
     return {
       value,
       oreSize: state.oreSize,
       hasFire,
       timeSeconds,
       length,
+      beltLimit: slower ? capacity : state.beltLimit,
+      beltBottleneck: slower ? record : state.beltBottleneck,
       // Two separate counters: `uses` (per name+variant) enforces "you only
       // own N copies of THIS variant"; `nameUses` (per name only) enforces
       // the shared, base-game limitedUses cap across all variants combined
@@ -408,8 +457,25 @@
       const prior = best.get(key);
       if (!prior || score(state) > score(prior)) best.set(key, state);
     }
-    return [...best.values()].sort((a, b) => score(b) - score(a)).slice(0, width);
+    // Many survivors share the same value level and differ only in which
+    // copies they used, so they crowd out other branches. Keeping just the
+    // best few per value level leaves room in the beam for chains that are
+    // lower at this depth but can climb more capgrader tiers later. Without
+    // this, an "own everything" search missed a chain worth ~8x more
+    // (2026-10-20).
+    const perLevel = new Map();
+    const diverse = [];
+    for (const state of [...best.values()].sort((a, b) => score(b) - score(a))) {
+      const level = Math.round(Math.log10(Math.max(1, state.value)) * 100);
+      const kept = perLevel.get(level) ?? 0;
+      if (kept >= PER_VALUE_LEVEL) continue;
+      perLevel.set(level, kept + 1);
+      diverse.push(state);
+      if (diverse.length >= width) break;
+    }
+    return diverse;
   }
+  const PER_VALUE_LEVEL = 2;
 
   const OASIS_NAME = 'Oasis Cleanser';
   const OIL_WELL_NAME = 'Oil Well';
@@ -467,8 +533,31 @@
     return moves;
   }
 
-  function optimizeCapgraderChain(initialValue, initialOreSize, pool, initialHasFire) {
-    const initial = { value: initialValue, oreSize: initialOreSize, hasFire: initialHasFire, timeSeconds: 0, length: 0, uses: {}, nameUses: {}, chain: [] };
+  // `options.considerSpeed` / `options.considerDistance` (both default true)
+  // are the player's "do I care about chain time / chain length" toggles.
+  // Both on = the original scoring (small time/length penalties keep chains
+  // tidy) plus the ore-limit model above when `options.flow` is given. Speed
+  // off drops the time penalty AND the ore-limit model; distance off drops
+  // the length penalty. Both off = pure maximum final ore value.
+  function makeScorers(options) {
+    const considerSpeed = options.considerSpeed !== false;
+    const considerDistance = options.considerDistance !== false;
+    const flow = considerSpeed ? options.flow ?? null : null;
+    const timeWeight = considerSpeed ? 1 : 0;
+    const lengthWeight = considerDistance ? 1 : 0;
+    // Tie-break only: among chains of equal value, prefer the shorter one.
+    const tieBreak = (s) => (considerSpeed || considerDistance ? 0 : s.length * 1e-9);
+    const throughput = (s) => (flow ? Math.log(Math.max(1e-9, oreFlow(s, flow).entriesPerSecond)) : 0);
+    return {
+      flow,
+      search: (s) => Math.log(Math.max(1, s.value)) + throughput(s) - s.timeSeconds * 0.002 * timeWeight - s.length * 0.0002 * lengthWeight - tieBreak(s),
+      terminal: (s) => (Math.log(Math.max(1, s.value)) + throughput(s)) * 100 - s.timeSeconds * 2 * timeWeight - s.length * 0.3 * lengthWeight - tieBreak(s),
+    };
+  }
+
+  function optimizeCapgraderChain(initialValue, initialOreSize, pool, initialHasFire, options = {}) {
+    const scorers = makeScorers(options);
+    const initial = { value: initialValue, oreSize: initialOreSize, hasFire: initialHasFire, timeSeconds: 0, length: 0, beltLimit: Infinity, beltBottleneck: null, uses: {}, nameUses: {}, chain: [] };
     let openingStates = [initial];
 
     if (pool.lunar) {
@@ -494,12 +583,12 @@
       }
       if (!next.length) break;
       openingStates.push(...next);
-      additiveFrontier = prune(next, 60, (s) => Math.log(Math.max(1, s.value)) - s.timeSeconds * 0.002 - s.length * 0.0002);
+      additiveFrontier = prune(next, 60, scorers.search);
     }
 
     let frontier = openingStates;
     const terminals = [];
-    const score = (s) => Math.log(Math.max(1, s.value)) - s.timeSeconds * 0.002 - s.length * 0.0002;
+    const score = scorers.search;
     // Depth/width were originally 12/400 — too shallow once several
     // unlimited-use normal capgraders are all owned, since the truly best
     // chain often reuses 3-4 of them in a row before switching range tiers.
@@ -521,10 +610,10 @@
         }
       }
       if (!next.length) break;
-      frontier = prune(next, 2000, score);
+      frontier = prune(next, options.beamWidth ?? 600, score);
     }
 
-    if (!terminals.length) return { chain: [], finalValue: initialValue };
+    if (!terminals.length) return { chain: [], finalValue: initialValue, flow: scorers.flow ? oreFlow(initial, scorers.flow) : null, bottleneck: null };
     // Finishers (see isFinisherRecord above) never appear in `terminals` — they're
     // excluded from candidateMoves entirely — so picking the highest-value terminal
     // here (lightly discounted for time/length, same reasoning as the tuning above)
@@ -538,7 +627,9 @@
     // original sub-1%-gain case correctly rejected (extra cost still dwarfs
     // the log-value gain there) while letting genuinely worthwhile extra
     // steps win instead of being discarded for a minor space/time cost.
-    const terminalScore = (s) => Math.log(Math.max(1, s.value)) * 100 - s.timeSeconds * 2 - s.length * 0.3;
+    // When speed and/or distance are toggled off (makeScorers), the matching
+    // penalty below is zeroed, so the pick leans fully on value (+ throughput).
+    const terminalScore = scorers.terminal;
     let best = terminals.sort((a, b) => terminalScore(b) - terminalScore(a))[0];
     // Cascade every owned, still-eligible finisher on top, in ascending mainStat
     // order — order among finisher NAMES never affects the total (each has
@@ -567,7 +658,12 @@
         best = applyItem(finisher, best);
       }
     }
-    return { chain: best.chain, finalValue: best.value };
+    return {
+      chain: best.chain,
+      finalValue: best.value,
+      flow: scorers.flow ? oreFlow(best, scorers.flow) : null,
+      bottleneck: best.beltBottleneck,
+    };
   }
 
   // Exposes the search internals for tests/capgrader-generator.test.mjs to
@@ -576,7 +672,7 @@
   // algorithm than the one that actually runs) — see AI_HANDOFF.md "How this
   // was debugged" under the 2026-08-26 Capgrader Generator entry. No-op in
   // the browser beyond this one property assignment.
-  globalThis.__cgDebug = { legalPool, optimizeCapgraderChain, getToggle, capgraderNames, additiveNames, scannerNames, lunarName };
+  globalThis.__cgDebug = { legalPool, optimizeCapgraderChain, getToggle, capgraderNames, additiveNames, scannerNames, lunarName, beltCapacity, oreFlow, variantsFor };
 
   // ---- UI: dropper rows -----------------------------------------------------
 
@@ -668,6 +764,7 @@
       wrap.innerHTML = `
         <select data-row-id="${row.id}" data-field="name" aria-label="Dropper">${dropperOptionsHtml(row.name)}</select>
         <select data-row-id="${row.id}" data-field="variant" aria-label="Dropper variant">${variantOptionsHtml(row.name, row.variant)}</select>
+        ${priorities.considerSpeed ? `<label class="capgrader-dropper-count">&times; <input type="number" min="1" step="1" data-row-id="${row.id}" data-field="count" value="${dropperCount(row)}" aria-label="How many of this dropper" /></label>` : ''}
         ${dropperRows.length > 1 ? `<button type="button" data-remove-row="${row.id}">Remove</button>` : ''}
       `;
       dropperRowsEl.appendChild(wrap);
@@ -690,6 +787,14 @@
         persistCapgraderState();
       });
     });
+    dropperRowsEl.querySelectorAll('input[data-field="count"]').forEach((input) => {
+      input.addEventListener('input', () => {
+        const row = dropperRows.find((r) => r.id === Number(input.dataset.rowId));
+        const count = Math.floor(Number(input.value));
+        row.count = Number.isFinite(count) && count >= 1 ? count : 1;
+        persistCapgraderState();
+      });
+    });
     dropperRowsEl.querySelectorAll('[data-remove-row]').forEach((button) => {
       button.addEventListener('click', () => {
         dropperRows = dropperRows.filter((r) => r.id !== Number(button.dataset.removeRow));
@@ -698,6 +803,21 @@
         persistCapgraderState();
       });
     });
+  }
+
+  // How many copies of this dropper feed the line — only used for the
+  // 100-ore limit / belt-flow estimate (total drop rate), not the chain itself.
+  function dropperCount(row) {
+    const count = Math.floor(Number(row.count));
+    return Number.isFinite(count) && count >= 1 ? count : 1;
+  }
+
+  function totalDropRate(rows) {
+    return rows.reduce((total, row) => {
+      const record = variantsFor(row.name).find((r) => r.variant === row.variant);
+      const dropSpeed = Number(record?.dropSpeed);
+      return total + (Number.isFinite(dropSpeed) && dropSpeed > 0 ? dropSpeed : 0) * dropperCount(row);
+    }, 0);
   }
 
   function dropperStartingValue(row) {
@@ -727,6 +847,51 @@
     nextRowId += 1;
     renderDropperRows();
     updateSpreadWarning();
+    persistCapgraderState();
+  });
+
+  // ---- UI: "what matters" priorities ---------------------------------------
+
+  const priorityButtons = {
+    considerSpeed: document.querySelector('#capgrader-priority-speed'),
+    considerDistance: document.querySelector('#capgrader-priority-distance'),
+  };
+  const oreLimitFieldsEl = document.querySelector('#capgrader-ore-limit-fields');
+  const restSecondsInput = document.querySelector('#capgrader-rest-seconds');
+  const priorityNoteEl = document.querySelector('#capgrader-priority-note');
+
+  function priorityNoteText() {
+    const { considerSpeed, considerDistance } = priorities;
+    if (considerSpeed && considerDistance) return 'Balances ore value against chain time, length, and the 100-ore limit.';
+    if (considerSpeed) return "Length is ignored — a longer chain is fine as long as it isn't slower or bad for the 100-ore limit.";
+    if (considerDistance) return "Time is ignored — slow items and the 100-ore limit don't count against a chain, only its length.";
+    return 'Time, length, and the 100-ore limit are all ignored — the chain just ends with as much ore value as possible.';
+  }
+
+  function syncPriorityDom() {
+    for (const [key, button] of Object.entries(priorityButtons)) {
+      if (!button) continue;
+      button.setAttribute('aria-pressed', String(priorities[key]));
+      button.textContent = priorities[key] ? 'On' : 'Off';
+    }
+    if (oreLimitFieldsEl) oreLimitFieldsEl.hidden = !priorities.considerSpeed;
+    if (restSecondsInput) restSecondsInput.value = String(priorities.restSeconds);
+    if (priorityNoteEl) priorityNoteEl.textContent = priorityNoteText();
+  }
+
+  for (const [key, button] of Object.entries(priorityButtons)) {
+    button?.addEventListener('click', () => {
+      priorities[key] = !priorities[key];
+      syncPriorityDom();
+      // The dropper count only feeds the ore-limit estimate, so it's only
+      // shown (and asked for) while Speed is on.
+      if (key === 'considerSpeed') renderDropperRows();
+      persistCapgraderState();
+    });
+  }
+  restSecondsInput?.addEventListener('input', () => {
+    const rest = Number(restSecondsInput.value);
+    priorities.restSeconds = Number.isFinite(rest) && rest >= 0 ? rest : 0;
     persistCapgraderState();
   });
 
@@ -871,7 +1036,7 @@
     const toggle = getToggle(name);
     const variants = variantsFor(name).map((r) => r.variant);
     container.innerHTML = variants.map((variant) => `
-      <label>${variant} <input type="number" min="0" step="1" placeholder="unlimited"
+      <label class="is-${variant.toLowerCase().replace(/\s+/g, '-')}">${variant} <input type="number" min="0" step="1" placeholder="unlimited"
         data-variant-count-name="${name}" data-variant-count-variant="${variant}"
         value="${variantCount(toggle, variant) ?? ''}" /></label>
     `).join('');
@@ -912,7 +1077,17 @@
     root.querySelectorAll('.capgrader-sparkle').forEach(scheduleSparkle);
   }
 
-  function renderResultTable(dropperLabel, chain, startingValue) {
+  function flowSummaryHtml(result) {
+    if (!result.flow) return '';
+    const { entriesPerSecond, activeOres, limitedBy } = result.flow;
+    const oresText = `about ${Math.round(activeOres)} ores on your base${activeOres > ORE_CAP ? ` (capped at ${ORE_CAP})` : ''}`;
+    let note = `${oresText} · ~${entriesPerSecond.toFixed(2)} ores/sec reach the furnace`;
+    if (limitedBy === 'ore limit') note += ' — limited by the 100-ore limit, so a slower chain costs cash/min here';
+    if (limitedBy === 'belt speed' && result.bottleneck) note += ` — limited by ${result.bottleneck.name}'s slow conveyor (speed ${result.bottleneck.conveyorSpeed})`;
+    return `<p class="capgrader-flow-note">${note}</p>`;
+  }
+
+  function renderResultTable(dropperLabel, chain, startingValue, result = {}) {
     const wrap = document.createElement('div');
     wrap.className = 'capgrader-result-table-wrap';
     const rows = chain.map((entry) => `
@@ -927,6 +1102,7 @@
     `).join('');
     wrap.innerHTML = `
       <p class="capgrader-result-heading">${dropperLabel} — starting at ${compactNumber(startingValue)}</p>
+      ${flowSummaryHtml(result)}
       <div class="capgrader-result-table-scroll">
         <table class="capgrader-result-table">
           <thead><tr><th>Upgrader</th><th>Variant</th><th>Value before</th><th>Value after</th><th>Time</th><th>Length</th></tr></thead>
@@ -948,13 +1124,20 @@
       return;
     }
     setResultsMode(true);
+    // Every dropper row feeds the same line, so the ore limit and belt flow
+    // use the combined drop rate of all of them.
+    const options = {
+      considerSpeed: priorities.considerSpeed,
+      considerDistance: priorities.considerDistance,
+      flow: { dropRate: totalDropRate(validRows), restSeconds: priorities.restSeconds },
+    };
     for (const row of validRows) {
       const record = variantsFor(row.name).find((r) => r.variant === row.variant);
       const startingValue = Number(record.mainStat);
       const oreSize = Number(record.oreSize ?? 1);
       const startsOnFire = row.name === 'Fire Crystal Dropper';
-      const result = optimizeCapgraderChain(startingValue, oreSize, pool, startsOnFire);
-      resultsEl.appendChild(renderResultTable(`${row.name} (${row.variant})`, result.chain, startingValue));
+      const result = optimizeCapgraderChain(startingValue, oreSize, pool, startsOnFire, options);
+      resultsEl.appendChild(renderResultTable(`${row.name} (${row.variant})`, result.chain, startingValue, result));
     }
   }
 
@@ -970,6 +1153,7 @@
     renderDropperRows();
     renderToggleLists();
     syncToggleDomToState();
+    syncPriorityDom();
     applyAllSearches();
     updateSpreadWarning();
   }

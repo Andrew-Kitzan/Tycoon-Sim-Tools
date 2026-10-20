@@ -1,5 +1,9 @@
 [
   {
+    "date": "2026-10-20",
+    "summary": "Capgrader Generator update: new Speed and Distance toggles let you choose what matters (turn both off to just end with the most money). With Speed on, it now accounts for the 100-ore limit and slow conveyors like Castle Fortress, using your dropper counts and route time. It also finds much better chains than before. The panels are rearranged into three columns, and the variant count boxes fit and read better."
+  },
+  {
     "date": "2026-10-10",
     "summary": "Built the Index page: every Dropper, Upgrader, and Furnace as one card with its variants grouped together, lots of filters, and a full page per item (stats, odds, how to get it, and effect/material tags you can hover for info). Index Tiers are up top. Items, potions, and decorations across the wiki now link to their own pages, and the search bar works. Also added Tornado Alley (with assumed odds) and fixed a batch of odds and wording issues, including Neon being a material, not an effect."
   },
