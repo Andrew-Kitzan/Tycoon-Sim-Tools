@@ -120,6 +120,14 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-20, last (committed and pushed): **Wiki & Tools Updates now look like Game
+Updates.** `data/wiki-updates-data.json` entries are `{date, title,
+highlights}` (`formatUpdateEntries()` in wiki-tool.js still falls back to
+`summary`). Every older entry was rewritten into that shape. **Player rule:
+one entry per day.** Same-day work becomes more bullets on that entry, 2-4
+headline bullets. Also removed the five Sept 13 scanner experiment scripts
+(moved to the Recycle Bin).
+
 2026-10-20, latest (committed and pushed as one commit with the two scanner
 entries below and a Wiki & Tools Updates entry): wiki "Scanner distance" Stats for Nerds
 sections for Precision, Azure, Ancient and Star Scanner (ore size + lane
@@ -201,9 +209,12 @@ and both sides were kept) and pushed):
   `tests/validate-planner.js` counts `&times;` in index.html (exactly 8),
   so don't write `&times;` in help text.
 
-**Left untracked on purpose** (still, same as the 2026-10-10 entry):
-`scripts/scanner-kunzite-check*.mjs`, `scripts/scanner-spacing-*.mjs`,
-`scripts/star-scanner-chain.mjs`.
+**Removed (2026-10-20, player's request):** the five never-committed Sept 13
+experiment scripts (`scripts/scanner-kunzite-check*.mjs`,
+`scripts/scanner-spacing-*.mjs`, `scripts/star-scanner-chain.mjs`). They
+were moved to the Windows Recycle Bin. The synced-beam spacing model in
+`capgrader-generator.js` (`syncedScannerPlan()`) replaced them.
+`scripts/scanner-hit-simulator.mjs` is tracked and stays.
 
 **Next steps the player named:** keep logging progression income per crate
 (Candy is next; see AI_TASKS.md "Progression income mapping"). If they give

@@ -2907,15 +2907,21 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
   // release/work session — don't split one release into several.
   //
   // "Wiki & Tools Updates" — a changelog of THIS companion site/tools, not
-  // the actual game. data/wiki-updates-data.json, {date, summary} entries.
-  // Lives in data/ rather than data/manual/ — unlike the manual/ files,
-  // this one isn't meant for the player to hand-edit, it's maintained by
-  // whoever's doing the wiki/tools work each session.
+  // the actual game. data/wiki-updates-data.json, {date, title, highlights}
+  // entries, drawn the same way as Game Updates (date line, bold title,
+  // bullets). Player rule (2026-10-20): ONE entry per day — work done on the
+  // same day goes in as more bullets on that day's entry, never a second
+  // entry. Lives in data/ rather than data/manual/ — unlike the manual/
+  // files, this one isn't meant for the player to hand-edit, it's maintained
+  // by whoever's doing the wiki/tools work each session.
   function formatUpdateEntries(updates) {
     return updates.map((entry) => `
       <div class="wiki-update-entry">
-        <div class="wiki-update-date">${escapeHtml(entry.date)}</div>
-        <p class="wiki-update-summary">${escapeHtml(entry.summary)}</p>
+        <div class="wiki-update-version">${escapeHtml(entry.date)}</div>
+        ${entry.title ? `<p class="wiki-update-title">${escapeHtml(entry.title)}</p>` : ''}
+        ${entry.highlights?.length
+          ? `<ul class="wiki-update-highlights">${entry.highlights.map((h) => `<li>${escapeHtml(h)}</li>`).join('')}</ul>`
+          : `<p class="wiki-update-summary">${escapeHtml(entry.summary ?? '')}</p>`}
       </div>`).join('');
   }
 

@@ -1,62 +1,128 @@
 [
   {
     "date": "2026-10-20",
-    "summary": "Scanner update: every scanner of the same type sweeps in sync, so stacking them back to back misses the same ore. Precision, Azure, Ancient and Star Scanner pages now have a Scanner distance section where you type your ore size and get how many scanners you need and how far apart to place them (tested in game at ore size 1). The Capgrader Generator uses the same spacing, and Azure's hit chances were corrected."
-  },
-  {
-    "date": "2026-10-20",
-    "summary": "Capgrader Generator update: new Speed and Distance toggles let you choose what matters (turn both off to just end with the most money). With Speed on, it now accounts for the 100-ore limit and slow conveyors like Castle Fortress, using your dropper counts and route time. It also finds much better chains than before. The panels are rearranged into three columns, and the variant count boxes fit and read better."
+    "title": "Capgrader Generator and scanner update",
+    "highlights": [
+      "Capgrader Generator: new Speed and Distance toggles (turn both off to just end with the most money), and it now accounts for the 100-ore limit and slow conveyors like Castle Fortress",
+      "Capgrader Generator finds much better chains, with a new three-column layout",
+      "Scanners of the same type sweep in sync, so the generator now spaces them out, and every scanner page has a Scanner distance calculator (tested in game at ore size 1)",
+      "Azure Scanner hit chances corrected"
+    ]
   },
   {
     "date": "2026-10-10",
-    "summary": "Built the Index page: every Dropper, Upgrader, and Furnace as one card with its variants grouped together, lots of filters, and a full page per item (stats, odds, how to get it, and effect/material tags you can hover for info). Index Tiers are up top. Items, potions, and decorations across the wiki now link to their own pages, and the search bar works. Also added Tornado Alley (with assumed odds) and fixed a batch of odds and wording issues, including Neon being a material, not an effect."
+    "title": "Index page, item pages and search",
+    "highlights": [
+      "Built the Index page: every Dropper, Upgrader, and Furnace as one card with its variants grouped together, plus lots of filters",
+      "Every item has its own page: stats, odds, how to get it, and effect/material tags you can hover for info",
+      "Index Tiers are up top",
+      "Items, potions, and decorations across the wiki link to their own pages, and the search bar works",
+      "Added Tornado Alley (with assumed odds)",
+      "Fixed a batch of odds and wording issues, including Neon being a material, not an effect"
+    ]
   },
   {
     "date": "2026-10-09",
-    "summary": "Built the Merchant page: how the Traveling Merchant's personal stock works and everything he can sell, with odds and prices. Also finished Ore Processor on the Achievements page. The Base Builder and the Base Design page are hidden for now while the builder gets redesigned."
+    "title": "Merchant page",
+    "highlights": [
+      "Built the Merchant page: how the Traveling Merchant's personal stock works and everything he can sell, with odds and prices",
+      "Finished Ore Processor on the Achievements page",
+      "The Base Builder and the Base Design page are hidden for now while the builder gets redesigned"
+    ]
   },
   {
     "date": "2026-09-21",
-    "summary": "Built the Events page (how the 15-minute event cycle works, every event's effect and weight, and its real chance of coming up), and filled in Unbox Luck and Friend Luck on the Mastery page. The Crystals Farming tile is gone since it isn't planned."
+    "title": "Events page",
+    "highlights": [
+      "Built the Events page: how the 15-minute event cycle works, every event's effect and weight, and its real chance of coming up",
+      "Filled in Unbox Luck and Friend Luck on the Mastery page",
+      "Removed the Crystals Farming tile since it isn't planned"
+    ]
   },
   {
     "date": "2026-09-16",
-    "summary": "Rewrote the README to cover the whole site instead of just the Base Builder, and added a real skip-pricing section to the Enchanter page (spend Crystals or Robux to skip an item's remaining enchant time) — now with a real Robux icon too, reused on the P2W page's costs. Built out the Mastery page too, with icons for the masteries that have one so far. Also a batch of Achievements data fixes as the real data gets filled in."
+    "title": "Mastery page and Enchanter skip pricing",
+    "highlights": [
+      "Rewrote the README to cover the whole site instead of just the Base Builder",
+      "Added skip pricing to the Enchanter page (spend Crystals or Robux to skip an item's remaining enchant time), with a real Robux icon also used on the P2W page",
+      "Built out the Mastery page, with icons for the masteries that have one so far",
+      "A batch of Achievements data fixes as the real data gets filled in"
+    ]
   },
   {
     "date": "2026-09-15",
-    "summary": "Built out the P2W, Enchanter, Furnace Loot, and Achievements pages, plus the home page's update-log panels you're reading right now (with a full Game Updates history sourced from the dev's real patch notes). Added Crystals Farming and Base Design tiles too. Also a round of smaller fixes and polish: broken/missing icons, stale data caching, a real favicon, and clearer section headings across a few pages."
+    "title": "P2W, Enchanter, Furnace Loot and Achievements pages",
+    "highlights": [
+      "Built out the P2W, Enchanter, Furnace Loot, and Achievements pages",
+      "Added the home page's update-log panels you're reading now, with a full Game Updates history from the dev's real patch notes",
+      "Added Crystals Farming and Base Design tiles",
+      "Smaller fixes and polish: broken/missing icons, stale data caching, a real favicon, and clearer section headings"
+    ]
   },
   {
     "date": "2026-09-14",
-    "summary": "Wiki content build-out: real page navigation across the home page (all 13 sections, each with its own background art), then full pages built for Rebirth, Codes, Conveyor, Decoration, and Brewer — every reward, code, conveyor piece, decoration, and potion upcraft now has real data and its own icon."
+    "title": "Wiki content build-out",
+    "highlights": [
+      "Real page navigation across the home page: all 13 sections, each with its own background art",
+      "Full pages for Rebirth, Codes, Conveyor, Decoration, and Brewer",
+      "Every reward, code, conveyor piece, decoration, and potion upcraft has real data and its own icon"
+    ]
   },
   {
     "date": "2026-09-13",
-    "summary": "The Wiki tool itself was added and made the site's default landing page. Capgrader Generator results now show colored Base/Shiny variant badges with a twinkling sparkle effect on Shiny rows."
+    "title": "The Wiki goes live",
+    "highlights": [
+      "Added the Wiki tool and made it the site's default landing page",
+      "Capgrader Generator results show colored Base/Shiny variant badges, with a twinkling sparkle on Shiny rows"
+    ]
   },
   {
     "date": "2026-09-11",
-    "summary": "Capgrader Generator chains can now mix Base and Shiny copies of the same item within one chain (previously it only ever used the single \"best\" owned variant), plus dependency/ordering fixes. The MPA / Chopping Block tool was also added."
+    "title": "Variant mixing and MPA / Chopping Block",
+    "highlights": [
+      "Capgrader Generator chains can mix Base and Shiny copies of the same item (before, it only used the single best owned variant)",
+      "Dependency and ordering fixes",
+      "Added the MPA / Chopping Block tool"
+    ]
   },
   {
     "date": "2026-09-10",
-    "summary": "MPA / Chopping Block graduated out of WIP status, a real rotation bug affecting the Base Portable Upgrader was fixed, and 5 new capgraders were added to the database."
+    "title": "MPA / Chopping Block out of WIP",
+    "highlights": [
+      "MPA / Chopping Block graduated out of WIP",
+      "Fixed a rotation bug affecting the Base Portable Upgrader",
+      "Added 5 new capgraders to the database"
+    ]
   },
   {
     "date": "2026-09-09",
-    "summary": "Bug fixes: the Calculator tool no longer bleeds into other tools, and stale Capgrader Generator results are properly cleared after editing your setup."
+    "title": "Bug fixes",
+    "highlights": [
+      "The Calculator tool no longer bleeds into other tools",
+      "Stale Capgrader Generator results are cleared after editing your setup"
+    ]
   },
   {
     "date": "2026-09-08",
-    "summary": "Added the Calculator tool — a scientific calculator that understands the game's own number abbreviations (K, M, B, T, and beyond)."
+    "title": "Calculator tool",
+    "highlights": [
+      "Added a scientific calculator that understands the game's number abbreviations (K, M, B, T, and beyond)"
+    ]
   },
   {
     "date": "2026-08-28",
-    "summary": "Added the Luck / Crate Simulator tool, plus a shared help widget for Capgrader Generator and Luck Simulator."
+    "title": "Luck / Crate Simulator",
+    "highlights": [
+      "Added the Luck / Crate Simulator tool",
+      "Added a shared help widget for Capgrader Generator and Luck Simulator"
+    ]
   },
   {
     "date": "2026-08-27",
-    "summary": "Site bring-up: Capgrader Generator and the feedback widget (bug reports and suggestions, with image/video attachments) went live."
+    "title": "Site launch",
+    "highlights": [
+      "Capgrader Generator went live",
+      "Feedback widget went live: bug reports and suggestions, with image/video attachments"
+    ]
   }
 ]
