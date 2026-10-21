@@ -200,6 +200,7 @@
             <div class="capgrader-panel">
               <h3>Capgrader scanners</h3>
               <p class="capgrader-panel-note">These only get used when they're the only way to bridge to the next capgrader (or the final one) — their multiplier isn't guaranteed, so the generator avoids them otherwise.</p>
+              <p class="capgrader-panel-note">Every scanner of the same type sweeps in sync with the others, so copies placed back to back tend to miss the same ore. The generator accounts for this and, when it helps, puts a gap of plain conveyor between copies. The copies and gap it shows are what it takes for about 99% of ore to get hit.</p>
               <div class="capgrader-toggle-controls">
                 <button type="button" id="capgrader-scanner-select-all" class="capgrader-bulk-button">Select all</button>
                 <button type="button" id="capgrader-scanner-select-none" class="capgrader-bulk-button">Deselect all</button>

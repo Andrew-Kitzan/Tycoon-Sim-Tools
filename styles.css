@@ -611,6 +611,7 @@ body.mode-generation .live-ore-tracker { display: none; }
 .capgrader-ore-limit-fields label { display: flex; align-items: center; gap: 8px; font-size: .82rem; }
 .capgrader-ore-limit-fields input { width: 80px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-raised); color: var(--text); }
 .capgrader-ore-limit-fields .capgrader-panel-note { margin: 0; }
+.capgrader-scanner-note { color: var(--muted); font-size: .74rem; }
 .capgrader-flow-note { margin: 0; padding: 8px 18px; color: var(--muted); font-size: .78rem; border-bottom: 1px solid var(--line); }
 .capgrader-dropper-row select { padding: 7px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-raised); color: var(--text); }
 .capgrader-dropper-row button { padding: 6px 8px; border: 1px solid #a84d56; border-radius: 7px; background: #4a242b; color: #ffd8dc; font-size: .72rem; font-weight: 700; cursor: pointer; }

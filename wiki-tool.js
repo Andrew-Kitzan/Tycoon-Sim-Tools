@@ -1906,7 +1906,7 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
     const movement = sweep
       ? `<p>The beam sweeps side to side across the belt in a sine wave (${geometry.speedCyc} sweeps per second), slowing down at each edge and moving fastest through the middle. It only upgrades ore the beam touches as the ore passes under it.</p>
         <p class="wiki-index-lie"><strong>Tip:</strong> it's better to hit the ore on the sides of the belt instead of the center — the beam spends more of its time near the edges.</p>`
-      : `<p>The beam spins in a full circle (180° per second) standing up across the belt, like a fan blade. Any ore with an Ore Size of ${geometry.guaranteedHitAtOrAboveRaw} or more is tall enough to always get hit. Smaller ore can miss, and where the ore is on the belt doesn't matter.</p>
+      : `<p>The beam spins in a full circle (180° per second) standing up across the belt, like a fan blade. Any ore with an Ore Size of ${geometry.guaranteedHitAtOrAboveRaw} or more is tall enough to always get hit. Smaller ore can miss, and ore down the center of the belt gets hit more often than ore near the sides (at size 1, about 66% vs 40%). The hit chance below is the average across the belt.</p>
         <p class="wiki-index-lie">For ore smaller than ${geometry.guaranteedHitAtOrAboveRaw}, the hit chance is an average, not a promise: the same ore and drop speed can hit almost every time or almost never, depending on when your base started running. Drop speeds that line up with the beam's 2-second spin (0.25, 1, 1.5, 2, 3, 4) are the most likely to get stuck that way; 1.2 avoids it best.</p>`;
     // Same collapsed dropdown as Stats for Nerds (open state shares
     // mechanicsOpen, keyed separately so the two remember their own state).

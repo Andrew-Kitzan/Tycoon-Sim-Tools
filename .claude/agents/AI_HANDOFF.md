@@ -120,6 +120,43 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-20, latest (committed and pushed as one commit with the two scanner
+entries below and a Wiki & Tools Updates entry): wiki "Scanner distance" Stats for Nerds
+sections for Precision, Azure, Ancient and Star Scanner (ore size + lane
+calculator → scanners needed, gap, beam to beam, total length, and what back
+to back would need; plus a size table), backed by the new
+`TycoonScanners.spacing()` in capgrader-generator.js. Star Scanner's
+spacing (5 with 2-tile gaps at size 1) is now **confirmed in game** too, so
+all 4 scanners are verified at ore size 1. The Azure Hit Chance text now says centered ore gets hit more
+often (it used to say lane doesn't matter). The Capgrader Generator already
+uses the corrected, in-game-confirmed scanner plans (no change needed there
+this round).
+
+2026-10-20, later (in the same scanner commit): the Capgrader Generator's scanner copies
+now account for synced beams AND can use plain-conveyor gaps
+(`syncedUnitsNeeded()` / `syncedScannerPlan()`, validated against
+scripts/scanner-hit-simulator.mjs). Result rows show "×N, M-tile gap between
+each" or "back to back", and gap time/length are counted. Precision at ore
+size 1 went from 3 (old 1/p rule, too few) to 18 back to back, and now 3
+with a 3-tile gap. **Confirmed in game by the player:** 3 Precision
+with 3-tile gaps hit every ore from Stone, Iron and King Dropper (all size
+1, drop speeds 1–3), and Azure with 2-tile gaps also guarantees hits on
+size-1 ore, and 4 Ancient back to back is best for size 1. All are locked
+by tests. Still untested: other ore sizes and off-center ore. **Proposed
+in-game tests sent to the player** (model predictions, center lane):
+Diamond (0.6): Precision 7×1-gap = 100% but 3×3-gap = 69%; Ancient 4 back to back
+= 100% vs 3 = 77%. Sapphire (1.5): Precision 2×1-gap = 100% vs 1 = 58%.
+Anvil (2.7): a single Ancient, model 91%. Azure predictions were
+recalculated after the pivotHeight recalibration (the player needed only
+2 Azure with a 2-tile gap at size 1, while the model said 5; 4 back to back
+were never enough). New Azure
+predictions (pivotHeight 0.57): Diamond 3×3-gap, Hydro (0.9) 3×2-gap, size 1
+2×2-gap (confirmed), size 1.2+ a single Azure.
+The wiki's Azure single-hit formula was refit to (7.95 + 42.12 × size)%
+(was 1.81 + 28.47 × size) in capgrader-generator.js, the simulator and
+the geometry worksheet. Details in AI_DECISIONS.md
+"Scanner hit-chance formulas", last bullet.
+
 2026-10-20 (Capgrader Generator: speed/distance toggles + ore limit, three-column
 layout, variant count styling, plus a Wiki & Tools Updates entry; committed as one
 commit with the 2026-10-19 progression data, then merged with 15 remote

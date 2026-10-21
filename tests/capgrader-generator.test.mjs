@@ -74,7 +74,7 @@ async function loadCapgraderTool() {
   return debugHook;
 }
 
-const { legalPool, optimizeCapgraderChain, getToggle, capgraderNames, additiveNames, scannerNames, lunarName, beltCapacity, oreFlow, variantsFor } = await loadCapgraderTool();
+const { legalPool, optimizeCapgraderChain, getToggle, capgraderNames, additiveNames, scannerNames, lunarName, beltCapacity, oreFlow, variantsFor, syncedUnitsNeeded, syncedScannerPlan } = await loadCapgraderTool();
 
 const allItemNames = [...capgraderNames, ...additiveNames, ...scannerNames, lunarName].filter(Boolean);
 function ownEverything() {
@@ -382,6 +382,52 @@ function ownNothing() {
   const unchoked = oreFlow({ timeSeconds: 1.5, beltLimit: Infinity }, { dropRate: 3, restSeconds: 2 });
   assert.equal(unchoked.limitedBy, 'drop rate');
   assert.equal(unchoked.entriesPerSecond, 3);
+}
+
+// ---- Synced scanner beams, back to back (2026-10-20) ----------------------
+// Same-type scanners share one beam clock, so copies in a row are not
+// independent rolls. Player-measured: 4 Precision or 4 Azure back to back
+// were never enough. The count must come from simulating the copies as
+// placed (back to back) and reach ~99% of ore, not the old 1/hitChance rule.
+{
+  const base = (name) => variantsFor(name).find((record) => record.variant === 'Base');
+  const precision = syncedUnitsNeeded(base('Precision Ore Scanner'), 1);
+  assert(precision.units > 4, `4 Precision back to back must not be enough at ore size 1 (got ${precision.units})`);
+  assert(precision.coverage >= 0.99, 'the chosen Precision count must hit at least 99% of ore');
+  const azure = syncedUnitsNeeded(base('Azure Scanner'), 1);
+  assert(azure.units > 4, `in-game confirmed: 4 Azure back to back are not enough at ore size 1 (got ${azure.units})`);
+  assert.equal(syncedUnitsNeeded(base('Azure Scanner'), 1.25).units, 1, 'Azure always hits ore of size 1.25 or more');
+  const ancient = syncedUnitsNeeded(base('Ancient Scanner'), 1);
+  assert(ancient.units <= 5 && ancient.coverage >= 0.99, 'Ancient copies line up well back to back, so a few are enough');
+
+  // A plain conveyor gap breaks the near-mirror repeat, so the chosen plan
+  // must use a gap for Precision/Azure and be far shorter than back to back.
+  const precisionPlan = syncedScannerPlan(base('Precision Ore Scanner'), 1);
+  assert(precisionPlan.gapTiles > 0, 'Precision must use a gap between copies');
+  assert(precisionPlan.units <= 6, `Precision with a gap needs at most 6 copies at ore size 1 (got ${precisionPlan.units})`);
+  assert(precisionPlan.tiles < precision.units * 2, 'the gapped Precision layout must be shorter than back to back');
+  assert.equal(precisionPlan.tiles, precisionPlan.units * 2 + (precisionPlan.units - 1) * precisionPlan.gapTiles, 'tiles must count scanners and gaps');
+  const azurePlan = syncedScannerPlan(base('Azure Scanner'), 1);
+  assert(azurePlan.gapTiles > 0 && azurePlan.units < azure.units, 'Azure must need fewer copies with a gap');
+  assert.equal(syncedScannerPlan(base('Ancient Scanner'), 1).gapTiles, 0, 'Ancient is already best back to back');
+
+  // Confirmed in game (2026-10-20): 3 Precision with 3-tile gaps hit every
+  // ore from Stone, Iron and King Dropper (size 1, drop speeds 1-3).
+  assert.equal(precisionPlan.units, 3, 'in-game confirmed: 3 Precision are enough at ore size 1');
+  assert.equal(precisionPlan.gapTiles, 3, 'in-game confirmed: with 3-tile gaps between them');
+  // Confirmed in game (2026-10-20): 2 Azure with a 2-tile gap hit every
+  // size-1 ore. Azure's pivot height was recalibrated to match this.
+  assert.equal(azurePlan.gapTiles, 2, 'in-game confirmed: Azure uses a 2-tile gap at ore size 1');
+  assert.equal(azurePlan.units, 2, 'in-game confirmed: 2 Azure are enough at ore size 1');
+  // Confirmed in game: 4 Ancient back to back is best at ore size 1.
+  const ancientPlan = syncedScannerPlan(base('Ancient Scanner'), 1);
+  assert.equal(ancientPlan.units, 4, 'in-game confirmed: 4 Ancient back to back at ore size 1');
+  // Star Scanner isn't a capgrader, but the wiki shows its spacing from the
+  // same model. Confirmed in game (2026-10-20): 5 Stars with 2-tile gaps hit
+  // every size-1 ore.
+  const starPlan = syncedScannerPlan(base('Star Scanner'), 1);
+  assert.equal(starPlan.units, 5, 'in-game confirmed: 5 Star Scanners at ore size 1');
+  assert.equal(starPlan.gapTiles, 2, 'in-game confirmed: with 2-tile gaps');
 }
 
 console.log('Validated capgrader-generator.js legalPool()/optimizeCapgraderChain() search logic.');

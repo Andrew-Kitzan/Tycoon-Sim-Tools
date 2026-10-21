@@ -221,7 +221,7 @@ const SCANNERS = {
   },
   "Azure Scanner": {
     kind: "rotate",
-    pivotX: 2, pivotY: 1, pivotHeight: 1.1, // eyeballed from a screenshot against a known ore size (2.464 raw = 0.985 tiles); imprecise, needs a firmer number
+    pivotX: 2, pivotY: 1, pivotHeight: 0.57, // was 1.1 (eyeballed from a screenshot); recalibrated 2026-10-20 to in-game results at ore 1: 2 Azure with a 2-tile gap = 100%, 4 back to back not enough
     beamHalfLen: 1, beamWidth: 0.2, beamThicknessY: 0.125, // total beam length is 2 (edge to edge); halfLen is pivot-to-tip in each direction
     speedDeg: 180,
     conveyorSpeed: 10 / STUDS_PER_TILE,
@@ -273,8 +273,8 @@ function predictSweepHitChance(cfg, oreSizeRaw, laneFrac) {
 // phases, fit as a straight line against the simulated averages (R^2 = 0.98
 // over the tested range) — not a per-config exact answer the way the sweep
 // formula is. Always defer to guaranteedHitAtOrAboveRaw for size >= threshold.
-const AZURE_EXPECTED_INTERCEPT = 1.81; // percent
-const AZURE_EXPECTED_SLOPE = 28.47; // percent per raw ore-size unit
+const AZURE_EXPECTED_INTERCEPT = 7.95; // percent (refit 2026-10-20 for pivotHeight 0.57; was 1.81)
+const AZURE_EXPECTED_SLOPE = 42.12; // percent per raw ore-size unit (was 28.47)
 
 function predictAzureExpectedHitChance(cfg, oreSizeRaw) {
   if (cfg.guaranteedHitAtOrAboveRaw !== undefined && oreSizeRaw >= cfg.guaranteedHitAtOrAboveRaw) return 1;

@@ -1,6 +1,10 @@
 [
   {
     "date": "2026-10-20",
+    "summary": "Scanner update: every scanner of the same type sweeps in sync, so stacking them back to back misses the same ore. Precision, Azure, Ancient and Star Scanner pages now have a Scanner distance section where you type your ore size and get how many scanners you need and how far apart to place them (tested in game at ore size 1). The Capgrader Generator uses the same spacing, and Azure's hit chances were corrected."
+  },
+  {
+    "date": "2026-10-20",
     "summary": "Capgrader Generator update: new Speed and Distance toggles let you choose what matters (turn both off to just end with the most money). With Speed on, it now accounts for the 100-ore limit and slow conveyors like Castle Fortress, using your dropper counts and route time. It also finds much better chains than before. The panels are rearranged into three columns, and the variant count boxes fit and read better."
   },
   {

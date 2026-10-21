@@ -152,6 +152,12 @@ section exists so a future session can find and use it without re-deriving it.**
   P(hit) = 1                              if oreSizeRaw >= 1.25
   P(hit) = (1.81 + 28.47 * oreSizeRaw) / 100   otherwise (expected value across random session-start phase, NOT a per-base guarantee)
   ```
+  **Superseded 2026-10-20:** refit to `(7.95 + 42.12 * oreSizeRaw) / 100`
+  (R² 0.967, RMSE 2.4 points) after pivotHeight was recalibrated from 1.1 to
+  0.57 to match in-game results (see the synced-beams bullet below). Same
+  method: average over lanes 0.25/0.5/0.75 and all arrival phases. Lanes
+  differ a lot. At size 1 the center lane hits ~66% and the sides ~40%; the
+  formula gives the ~49% average.
 - **Overall average hit chance** (collapsing every tested ore size/drop
   speed/lane into one number per scanner — NOT weighted by real-play
   frequency): Ancient 44.5%, Star 29.7%, Precision Ore Scanner 46.4%, Azure
@@ -172,6 +178,59 @@ section exists so a future session can find and use it without re-deriving it.**
   direction, not its precision — a cleaner re-test at drop speed 1.2 (see
   above) was requested but not yet confirmed back. Treat all of this as a
   strong first-pass model, not ground truth, until more real data comes in.
+- **Same-type scanners have synced beams (player-confirmed).** Every
+  scanner of one type shares one beam clock, so copies in a row are not
+  independent rolls. Player's in-game evidence: 4 Precision or 4 Azure back
+  to back were never enough. The Capgrader Generator simulates the copies as
+  placed (copy k meets the ore later on the shared clock by its distance ÷
+  belt speed, with per-tick hit tests ported from
+  scripts/scanner-hit-simulator.mjs) and adds copies until 99% of arrival
+  phases are hit (`syncedUnitsNeeded()`). **Gaps (2026-10-20, player
+  reopened this the same day):** `syncedScannerPlan()` tries plain-conveyor
+  gaps of 0–12 tiles (12 studs/s, Normal/Half/Quarter Conveyor) and keeps
+  the shortest layout. Precision back to back shifts ~0.52 of a sweep per
+  copy, so a centered ore meets a mirrored beam and repeats its result
+  (about 18 copies needed). With gaps, at ore size 1 in the center lane:
+  Precision 3 copies with a 3-tile gap (a 1-tile gap gives 5), Azure 2 with
+  a 2-tile gap, Ancient 4 back to back. **Precision is CONFIRMED IN GAME
+  (2026-10-20):** 3 Precision with 3-tile gaps (5 tiles beam to beam, beams
+  centered in each 2-tile scanner, straight plain conveyor, all facing the
+  same way) hit every ore from Stone (size 1, drop 1), Iron (size 1, drop 2)
+  and King Dropper (size 1, drop 3). The model covers every arrival phase,
+  so drop speed shouldn't matter. **Azure is also CONFIRMED IN GAME
+  (2026-10-20):** 2 Azure with a 2-tile gap hit every size-1 ore. The model
+  first predicted 5, so Azure's beam pivotHeight was recalibrated from the
+  eyeballed 1.1 to 0.57 (in both capgrader-generator.js and
+  scripts/scanner-hit-simulator.mjs). That fits the in-game results: 2 with a
+  2-tile gap = 100%, 4 back to back never enough (model ~96%, 5 needed), and
+  1 Azure ~65% (the older 62/85 = 73% measurement is drop-speed-confounded).
+  0.55 matched the 73% better but made 4 back to back "enough", which the
+  player said never happened. It
+  also makes size 1.2+ hit with a single Azure, matching the simulator's
+  note. The wiki's Azure single-hit formula was refit to match (see the
+  Azure bullet above): (7.95 + 42.12 × size)%. **Ancient is also CONFIRMED IN GAME
+  (2026-10-20):** 4 back to back is best for size-1 ore, matching the
+  model. So all three scanners are verified at ore size 1. Not yet tested: off-center ore (the
+  model says up to ~6 Precision) and other ore sizes. Odd
+  Precision gaps (1, 3, 5) work well and even ones don't. Results hold for
+  beam speeds 0.98–1.07 sweeps/s, but at exactly 1.00 Precision, every
+  whole-tile gap fails for centered ore.
+
+- **Star Scanner spacing (2026-10-20). CONFIRMED IN GAME at ore size 1:** 5
+  Stars with 2-tile gaps hit every size-1 ore, matching the model. Other
+  sizes are still model-only.
+  Star is limited to 1 use per ore, so extra copies never double-upgrade.
+  Its beam is slow (0.159 sweeps/s), so its plans swing a lot with small
+  speed errors (ore size 1 center: at 0.15 → 8 copies, 0.159 → 5 with a 2-tile
+  gap, 0.17 → 7). Current predictions (center lane): size 0.6 = 13 back to
+  back, 1 = 5 with 2-tile gaps, 1.5 = 4 back to back, 2 = 3 with 1-tile gaps,
+  2.7 = 2 with 3-tile gaps. Star is in SYNC_GEOMETRY only for the wiki, and
+  the Capgrader Generator never uses it.
+- **Wiki scanner Stats for Nerds (2026-10-20):** all 4 scanners have a
+  "Scanner distance" Stats for Nerds section (`scannerSpacingEntry()` in
+  wiki-item-mechanics.js) with an ore size + lane calculator and a size
+  table. They read `globalThis.TycoonScanners.spacing()` from
+  capgrader-generator.js, so the wiki and the generator always agree.
 
 ## Known architecture debt
 

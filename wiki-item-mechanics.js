@@ -48,6 +48,59 @@
     </figure>`;
   const qa = (question, answer) => `${sub(question)}${p(answer)}`;
 
+// ---- Scanner spacing -----------------------------------------------------------
+  // Every scanner of the same type sweeps in sync (one shared beam clock), so
+  // copies in a row are not separate rolls. The layout math lives in
+  // capgrader-generator.js (globalThis.TycoonScanners.spacing): it simulates
+  // the copies as placed and adds copies until ~99% of ore is hit, trying
+  // plain-conveyor gaps of 0-12 tiles and keeping the shortest layout.
+  const SPACING_SIZES = [0.6, 1, 1.5, 2, 2.7];
+  const LANES = { center: 0.5, side: 0.25 };
+  const spacingPlan = (name, size, lane) => globalThis.TycoonScanners?.spacing?.(name, size, LANES[lane] ?? 0.5) ?? null;
+  const countText = (plan) => (Number.isFinite(plan.units) ? String(plan.units) : `more than ${plan.maxUnits}`);
+  const gapText = (plan) => (!Number.isFinite(plan.units) ? '—' : plan.gapTiles ? `${plan.gapTiles} tile${plan.gapTiles === 1 ? '' : 's'}` : 'Back to back');
+
+  function scannerSpacingEntry(name, { status }) {
+    return {
+      intro: () => [
+        sub('Scanner distance'),
+        p('Every scanner of the same type sweeps in sync: all their beams move together, on one shared clock. Placed back to back, the next copy often meets the ore at the same point in its sweep, so it misses the same ore the first one missed. Adding more copies right next to each other barely helps.'),
+        p('A gap of plain conveyor between copies changes when the ore reaches the next beam, so each copy catches ore the earlier ones missed. Type your ore size below to see how many copies you need and how far apart to place them.'),
+        tip(esc(status)),
+      ].join(''),
+      calc: {
+        inputs: [
+          { key: 'size', label: 'Your ore size', value: 1, step: 0.05, min: 0.05 },
+          { key: 'lane', label: 'Where the ore is', type: 'select', value: 'center', options: [['center', 'Center of belt'], ['side', 'Side of belt']] },
+        ],
+        result: ({ size, lane }) => {
+          const plan = size > 0 ? spacingPlan(name, size, lane) : null;
+          if (!plan) return '<p class="wiki-index-muted">Enter an ore size above 0.</p>';
+          if (!Number.isFinite(plan.units)) return `<p class="wiki-index-muted">Even ${plan.maxUnits} copies with up to a ${plan.maxGap}-tile gap can't reliably hit this ore. Try changing its size.</p>`;
+          return tiles([
+            ['Scanners Needed', countText(plan)],
+            ['Gap Between Each', gapText(plan)],
+            ['Beam to Beam', `${plan.beamToBeam} tiles`],
+            ['Total Length', `${plan.tiles} tiles`],
+            ['Back to Back Needs', Number.isFinite(plan.backToBackUnits) ? String(plan.backToBackUnits) : `${plan.maxUnits}+`],
+          ]);
+        },
+      },
+      after: () => {
+        const rows = SPACING_SIZES.map((size) => {
+          const plan = spacingPlan(name, size, 'center');
+          if (!plan) return [String(size), '—', '—', '—'];
+          return [String(size), countText(plan), gapText(plan), Number.isFinite(plan.units) ? `${plan.tiles} tiles` : '—'];
+        });
+        return [
+          table(['Ore Size', 'Scanners', 'Gap Between Each', 'Total Length'], rows),
+          p('"Gap" is the empty tiles between one scanner and the next, edge to edge. Fill it with straight Normal, Half or Quarter Conveyor (12 studs/s), with no turns and nothing faster, and point every copy the same way. A different speed or a turn changes the timing the gap depends on. "Beam to beam" is the scanner\'s length plus the gap.'),
+          p('"Needed" means enough copies that about 99% of ore get hit at least once. The table assumes ore down the center of the belt; ore on the sides can need a different number.'),
+        ].join('');
+      },
+    };
+  }
+
   // ---- Formulas ----------------------------------------------------------------
   const throne = (age, vm) => clamp(50 - ((age - 15) / 45) * 35, 15, 50) * vm;
   const runic = (age, vm) => Math.min(3, 3 ** (Math.max(0, age) / 120)) * vm;
@@ -431,6 +484,19 @@
         ].join('');
       },
     },
+    // ---- Scanner spacing (all 4 scanners) — see scannerSpacingEntry() ----------
+    'Precision Ore Scanner': scannerSpacingEntry('Precision Ore Scanner', {
+      status: 'Tested in game: 3 Precision with a 3-tile gap hit every size-1 ore from Stone, Iron and King Dropper. 4 back to back were never enough.',
+    }),
+    'Azure Scanner': scannerSpacingEntry('Azure Scanner', {
+      status: 'Tested in game: 2 Azure with a 2-tile gap hit every size-1 ore. 4 back to back were never enough.',
+    }),
+    'Ancient Scanner': scannerSpacingEntry('Ancient Scanner', {
+      status: 'Tested in game: 4 Ancient back to back is best for size-1 ore. A gap doesn\'t help Ancient.',
+    }),
+    'Star Scanner': scannerSpacingEntry('Star Scanner', {
+      status: 'Tested in game: 5 Star Scanners with a 2-tile gap hit every size-1 ore. Star can only upgrade an ore once, so extra copies never double-upgrade. Its beam is slow (one sweep about every 6.3 seconds), so other ore sizes are less certain than for the other scanners.',
+    }),
   };
 
   globalThis.TycoonItemMechanics = { entries: ENTRIES, variantMulti: VARIANT_MULTI };

@@ -93,8 +93,11 @@
 
   const ORE_TO_TILE = 1 / 2.5;
   const SWEEP_DWELL_K = 0.32;
-  const AZURE_EXPECTED_INTERCEPT = 1.81;
-  const AZURE_EXPECTED_SLOPE = 28.47;
+  // Refit 2026-10-20 after recalibrating Azure's pivotHeight to in-game
+  // results (was 1.81 / 28.47 from the old 1.1 pivot). Expected value over
+  // lanes 0.25/0.5/0.75 and all arrival phases, sizes below 1.25, R² 0.967.
+  const AZURE_EXPECTED_INTERCEPT = 7.95;
+  const AZURE_EXPECTED_SLOPE = 42.12;
   const STUDS_PER_TILE = 3;
 
   const SCANNER_GEOMETRY = {
@@ -150,15 +153,160 @@
   // hit is (for planning purposes) certain, then treat the chain as if that
   // one guaranteed hit happened — costing that many units' worth of
   // time/length, but producing a real, exact "before"/"after" pair for
-  // whatever comes next. Uses the simple 1/hitChance rule of thumb (e.g. a
-  // 30%-per-unit scanner needs 4 in a row) rather than a strict statistical
-  // confidence bound — good enough for planning, and matches how a player
-  // would actually reason about it in-game.
-  function scanUnitsForGuarantee(hitChance) {
-    if (hitChance >= 1) return 1;
-    if (hitChance <= 0) return Infinity;
-    return Math.ceil(1 / hitChance);
+  // whatever comes next.
+  //
+  // How many units: every scanner of the same type shares ONE beam clock
+  // (player-confirmed), so copies placed back to back are not independent
+  // rolls. The old 1/hitChance rule badly undercounted (the player always
+  // had to add more than 4 Precision or 4 Azure back to back). Instead, the
+  // copies are simulated exactly as placed: back to back, so copy k sits
+  // k × (its length) tiles further down the belt and meets the same ore
+  // k × length ÷ belt speed seconds later on the same shared clock. Units
+  // are added until at least SYNCED_COVERAGE_TARGET of all arrival phases
+  // get hit by some copy. A plain conveyor gap between copies shifts each
+  // copy's phase further, which breaks the near-mirror repeat (Precision back
+  // to back shifts ~0.52 of a sweep, so a centered ore meets a mirrored beam
+  // and gets the same result again). syncedScannerPlan() tries every gap from
+  // 0 to SYNCED_MAX_GAP tiles and keeps the shortest layout. The per-tick hit
+  // tests below are ported unchanged from scripts/scanner-hit-simulator.mjs.
+  const SYNC_TICK_DT = 1 / 60;
+  const SYNCED_COVERAGE_TARGET = 0.99;
+  const SYNCED_MAX_UNITS = 40;
+  const SYNCED_PHASE_SAMPLES = 240;
+  const SYNCED_MAX_GAP = 12;
+  // Gaps are plain Normal/Half/Quarter Conveyor (planner-core.js: 12 studs/s).
+  const GAP_CONVEYOR_SPEED = 12;
+  const SYNC_GEOMETRY = {
+    'Ancient Scanner': { ...SCANNER_GEOMETRY['Ancient Scanner'], period: 1 / 1.0345 },
+    'Precision Ore Scanner': { ...SCANNER_GEOMETRY['Precision Ore Scanner'], period: 1 / 1.0345 },
+    // Not a capgrader (never used by this tool's search), only here so the
+    // wiki's Star Scanner page can show its spacing from the same model.
+    // Confirmed in game at ore size 1 (5 copies, 2-tile gap, 2026-10-20), but
+    // very sensitive to its slow 0.159 sweeps/s at other sizes.
+    'Star Scanner': { ...SCANNER_GEOMETRY['Star Scanner'], period: 1 / 0.159 },
+    // Azure's beam is a full diameter rotating at 180°/s, so it repeats every
+    // half turn (1 s). Geometry from scripts/scanner-hit-simulator.mjs, except
+    // pivotHeight: the eyeballed 1.1 badly underpredicted hits. 0.57 was
+    // calibrated (2026-10-20) to in-game results at ore size 1: 2 Azure with
+    // a 2-tile gap hit every ore, 4 back to back were never enough (model
+    // ~96%), and one Azure hits ~65% (an older, drop-speed-confounded
+    // measurement said ~73%).
+    'Azure Scanner': { kind: 'rotate', pivotX: 2, pivotY: 1, pivotHeight: 0.57, beamHalfLen: 1, beamWidth: 0.2, beamThicknessY: 0.125, speedDeg: 180, conveyorSpeed: 10 / STUDS_PER_TILE, convX: 1, convWidth: 2, period: 1, guaranteedHitAtOrAboveRaw: 1.25 },
+  };
+
+  function syncedSweepHit(cfg, oreSizeTiles, laneX, phase0) {
+    const oreR = oreSizeTiles / 2;
+    const tStart = (cfg.beamY - oreR) / cfg.conveyorSpeed;
+    const tEnd = (cfg.beamY + cfg.beamLenY + oreR) / cfg.conveyorSpeed;
+    for (let k = Math.ceil((phase0 + tStart) / SYNC_TICK_DT); k <= Math.floor((phase0 + tEnd) / SYNC_TICK_DT); k += 1) {
+      const simTime = k * SYNC_TICK_DT;
+      const oreCenterY = (simTime - phase0) * cfg.conveyorSpeed;
+      if (oreCenterY + oreR < cfg.beamY || oreCenterY - oreR > cfg.beamY + cfg.beamLenY) continue;
+      const beamCenterX = cfg.convX + ((Math.sin(2 * Math.PI * cfg.speedCyc * simTime) + 1) / 2) * cfg.convWidth;
+      if (beamCenterX + cfg.beamWidthX / 2 >= laneX - oreR && beamCenterX - cfg.beamWidthX / 2 <= laneX + oreR) return true;
+    }
+    return false;
   }
+
+  function distanceToSegment(px, py, ax, ay, bx, by) {
+    const abx = bx - ax;
+    const aby = by - ay;
+    const lengthSquared = abx * abx + aby * aby;
+    const t = lengthSquared === 0 ? 0 : Math.max(0, Math.min(1, ((px - ax) * abx + (py - ay) * aby) / lengthSquared));
+    return Math.hypot(px - (ax + t * abx), py - (ay + t * aby));
+  }
+
+  function syncedRotateHit(cfg, oreSizeTiles, laneX, timeOffset) {
+    const oreR = oreSizeTiles / 2;
+    const threshold = oreR + cfg.beamWidth / 2;
+    const yWindowHalf = threshold + cfg.beamThicknessY / 2;
+    const tStart = (cfg.pivotY - yWindowHalf) / cfg.conveyorSpeed;
+    const tEnd = (cfg.pivotY + yWindowHalf) / cfg.conveyorSpeed;
+    for (let k = Math.ceil((timeOffset + tStart) / SYNC_TICK_DT); k <= Math.floor((timeOffset + tEnd) / SYNC_TICK_DT); k += 1) {
+      const globalT = k * SYNC_TICK_DT;
+      const dy = (globalT - timeOffset) * cfg.conveyorSpeed - cfg.pivotY;
+      if (Math.abs(dy) > yWindowHalf) continue;
+      const effectiveDy = Math.max(0, Math.abs(dy) - cfg.beamThicknessY / 2);
+      const theta = (cfg.speedDeg * globalT * Math.PI) / 180;
+      const cos = Math.cos(theta);
+      const sin = Math.sin(theta);
+      const distXZ = distanceToSegment(laneX, oreR, cfg.pivotX - cfg.beamHalfLen * cos, cfg.pivotHeight - cfg.beamHalfLen * sin, cfg.pivotX + cfg.beamHalfLen * cos, cfg.pivotHeight + cfg.beamHalfLen * sin);
+      if (Math.hypot(effectiveDy, distXZ) <= threshold) return true;
+    }
+    return false;
+  }
+
+  // Returns { units, coverage } for back-to-back placement. units is
+  // Infinity when even SYNCED_MAX_UNITS copies can't reach the target
+  // (a phase shift per copy that keeps re-hitting the same ores).
+  const syncedUnitsCache = new Map();
+  function syncedUnitsNeeded(record, oreSizeRaw, laneFrac = 0.5, gapTiles = 0) {
+    const key = `${record.name}|${record.size.length}|${oreSizeRaw}|${laneFrac}|${gapTiles}`;
+    if (syncedUnitsCache.has(key)) return syncedUnitsCache.get(key);
+    const cfg = SYNC_GEOMETRY[record.name];
+    let result = { units: Infinity, coverage: 0 };
+    if (cfg && cfg.guaranteedHitAtOrAboveRaw && oreSizeRaw >= cfg.guaranteedHitAtOrAboveRaw) {
+      result = { units: 1, coverage: 1 };
+    } else if (cfg) {
+      const oreSizeTiles = oreSizeRaw * ORE_TO_TILE;
+      const laneX = cfg.convX + laneFrac * cfg.convWidth;
+      const delayPerCopy = record.size.length / cfg.conveyorSpeed + gapTiles / (GAP_CONVEYOR_SPEED / STUDS_PER_TILE);
+      const hit = cfg.kind === 'rotate' ? syncedRotateHit : syncedSweepHit;
+      const covered = new Array(SYNCED_PHASE_SAMPLES).fill(false);
+      let coveredCount = 0;
+      for (let copy = 0; copy < SYNCED_MAX_UNITS; copy += 1) {
+        for (let i = 0; i < SYNCED_PHASE_SAMPLES; i += 1) {
+          if (covered[i]) continue;
+          // Offset by half a tick so samples don't all sit on the tick grid.
+          const arrival = ((i + 0.5) / SYNCED_PHASE_SAMPLES) * cfg.period + SYNC_TICK_DT / 2;
+          if (hit(cfg, oreSizeTiles, laneX, arrival + copy * delayPerCopy)) {
+            covered[i] = true;
+            coveredCount += 1;
+          }
+        }
+        const coverage = coveredCount / SYNCED_PHASE_SAMPLES;
+        result = coverage >= SYNCED_COVERAGE_TARGET ? { units: copy + 1, coverage } : { units: Infinity, coverage };
+        if (result.units !== Infinity) break;
+      }
+    }
+    syncedUnitsCache.set(key, result);
+    return result;
+  }
+
+  // Best layout over every gap: fewest total tiles (scanners + gaps), then
+  // fewest copies. Returns { units, gapTiles, coverage, tiles }.
+  const syncedPlanCache = new Map();
+  function syncedScannerPlan(record, oreSizeRaw, laneFrac = 0.5) {
+    const key = `${record.name}|${record.size.length}|${oreSizeRaw}|${laneFrac}`;
+    if (syncedPlanCache.has(key)) return syncedPlanCache.get(key);
+    let best = { units: Infinity, gapTiles: 0, coverage: 0, tiles: Infinity };
+    for (let gapTiles = 0; gapTiles <= SYNCED_MAX_GAP; gapTiles += 1) {
+      const { units, coverage } = syncedUnitsNeeded(record, oreSizeRaw, laneFrac, gapTiles);
+      if (!Number.isFinite(units)) continue;
+      const tiles = units * record.size.length + (units - 1) * gapTiles;
+      if (tiles < best.tiles || (tiles === best.tiles && units < best.units)) best = { units, gapTiles: units > 1 ? gapTiles : 0, coverage, tiles };
+      if (units === 1) break;
+    }
+    syncedPlanCache.set(key, best);
+    return best;
+  }
+
+  // Shared with the wiki's scanner Stats for Nerds calculators: the best
+  // layout for one ore size and lane, plus what back to back would need.
+  // Footprint length is the same in every variant, so any record works.
+  globalThis.TycoonScanners.spacing = (name, oreSizeRaw, laneFrac = 0.5) => {
+    const record = variantsFor(name)[0];
+    if (!record || !SYNC_GEOMETRY[name] || !(oreSizeRaw > 0)) return null;
+    const plan = syncedScannerPlan(record, oreSizeRaw, laneFrac);
+    return {
+      ...plan,
+      scannerLength: record.size.length,
+      beamToBeam: record.size.length + plan.gapTiles,
+      backToBackUnits: syncedUnitsNeeded(record, oreSizeRaw, laneFrac, 0).units,
+      maxUnits: SYNCED_MAX_UNITS,
+      maxGap: SYNCED_MAX_GAP,
+    };
+  };
 
   // ---- Item pools ---------------------------------------------------------
 
@@ -342,9 +490,9 @@
   // ---- Deterministic item application (trimmed applyDeterministicItem) -----
 
   // `count` is how many physical copies of `record` this one move represents
-  // — normally 1, but a scanner move places `scanUnitsForGuarantee(hitChance)`
+  // — normally 1, but a scanner move places `syncedUnitsNeeded(...).units`
   // units in a row so the single hit it then applies is a real, exact outcome
-  // (see scanUnitsForGuarantee above) rather than a blended average. Time,
+  // (see syncedUnitsNeeded above) rather than a blended average. Time,
   // length, and uses all scale with `count`; the value transformation itself
   // does not (a "hit" is a hit regardless of how many units it took to get
   // one), except that scanners always apply their full mainStat exactly once.
@@ -356,7 +504,7 @@
     return `${record.name}::${record.variant}`;
   }
 
-  function applyItem(record, state, count = 1) {
+  function applyItem(record, state, count = 1, gapTiles = 0) {
     const before = state.value;
     let value = before;
     if (SCANNER_NAMES.has(record.name)) {
@@ -370,8 +518,9 @@
     let hasFire = state.hasFire;
     if (record.name === 'Ore Flamethrower') hasFire = true;
     if (record.name === 'Oasis Cleanser') hasFire = false;
-    const timeSeconds = state.timeSeconds + crossingSeconds(record) * count;
-    const length = state.length + record.size.length * count;
+    const gapLength = gapTiles * Math.max(0, count - 1);
+    const timeSeconds = state.timeSeconds + crossingSeconds(record) * count + (gapLength * STUDS_PER_TILE) / GAP_CONVEYOR_SPEED;
+    const length = state.length + record.size.length * count + gapLength;
     const key = usageKey(record);
     const capacity = beltCapacity(record, state.oreSize);
     const slower = capacity < state.beltLimit;
@@ -389,7 +538,7 @@
       // — see ownedVariantCap()'s comment for why both are needed.
       uses: { ...state.uses, [key]: (state.uses[key] ?? 0) + count },
       nameUses: { ...state.nameUses, [record.name]: (state.nameUses[record.name] ?? 0) + count },
-      chain: [...state.chain, { record, before, after: value, count, timeAfter: timeSeconds, lengthAfter: length }],
+      chain: [...state.chain, { record, before, after: value, count, gapTiles, timeAfter: timeSeconds, lengthAfter: length }],
     };
   }
 
@@ -501,13 +650,13 @@
     for (const record of pool.scanners) {
       if (!withinRange(record, state.value)) continue;
       const toggle = getToggle(record.name);
-      const hitChance = scannerHitChance(record.name, state.oreSize);
-      const unitsNeeded = scanUnitsForGuarantee(hitChance);
+      const plan = syncedScannerPlan(record, state.oreSize);
+      const unitsNeeded = plan.units;
       // Not enough owned copies to guarantee a hit — this scanner can't be
       // used here at all (no partial/uncertain placement offered; see
-      // scanUnitsForGuarantee above for why an exact outcome matters).
+      // syncedUnitsNeeded above for why an exact outcome matters).
       if (!Number.isFinite(unitsNeeded) || !useAllowed(record, state, toggle, unitsNeeded)) continue;
-      moves.push(applyItem(record, state, unitsNeeded));
+      moves.push(applyItem(record, state, unitsNeeded, plan.gapTiles));
     }
     const items = pool.capgraders;
     for (const record of items) {
@@ -683,7 +832,7 @@
   // algorithm than the one that actually runs) — see AI_HANDOFF.md "How this
   // was debugged" under the 2026-08-26 Capgrader Generator entry. No-op in
   // the browser beyond this one property assignment.
-  globalThis.__cgDebug = { legalPool, optimizeCapgraderChain, getToggle, capgraderNames, additiveNames, scannerNames, lunarName, beltCapacity, oreFlow, variantsFor };
+  globalThis.__cgDebug = { legalPool, optimizeCapgraderChain, getToggle, capgraderNames, additiveNames, scannerNames, lunarName, beltCapacity, oreFlow, variantsFor, syncedUnitsNeeded, syncedScannerPlan };
 
   // ---- UI: dropper rows -----------------------------------------------------
 
@@ -1103,7 +1252,7 @@
     wrap.className = 'capgrader-result-table-wrap';
     const rows = chain.map((entry) => `
       <tr>
-        <td>${entry.record.name}${entry.count > 1 ? ` &times;${entry.count}` : ''}</td>
+        <td>${entry.record.name}${entry.count > 1 ? ` &times;${entry.count}` : ''}${SCANNER_NAMES.has(entry.record.name) && entry.count > 1 ? ` <span class="capgrader-scanner-note">${entry.gapTiles ? `${entry.gapTiles}-tile gap between each` : 'back to back'}</span>` : ''}</td>
         <td><span class="capgrader-variant-badge ${entry.record.variant.includes('Shiny') ? 'is-shiny' : 'is-base'}">${entry.record.variant}${entry.record.variant.includes('Shiny') ? '<span class="capgrader-sparkle"></span>' : ''}</span></td>
         <td>${compactNumber(entry.before)}</td>
         <td>${compactNumber(entry.after)}</td>

@@ -3205,7 +3205,7 @@
           "geometryOverrides": null,
           "formulaOverride": {
             "type": "scanner-hit-chance-azure-rotate",
-            "formula": "P(hit) = 1 if oreSizeRaw >= 1.25 (guaranteed); else expected value = (1.81 + 28.47 * oreSizeRaw) / 100",
+            "formula": "P(hit) = 1 if oreSizeRaw >= 1.25 (guaranteed); else expected value = (7.95 + 42.12 * oreSizeRaw) / 100",
             "params": {
               "pivotX": 2,
               "pivotY": 1,
@@ -3234,7 +3234,7 @@
           "geometryOverrides": null,
           "formulaOverride": {
             "type": "scanner-hit-chance-azure-rotate",
-            "formula": "P(hit) = 1 if oreSizeRaw >= 1.25 (guaranteed); else expected value = (1.81 + 28.47 * oreSizeRaw) / 100",
+            "formula": "P(hit) = 1 if oreSizeRaw >= 1.25 (guaranteed); else expected value = (7.95 + 42.12 * oreSizeRaw) / 100",
             "params": {
               "pivotX": 2,
               "pivotY": 1,
