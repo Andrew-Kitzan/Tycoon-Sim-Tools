@@ -120,6 +120,11 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-20, after the picture push (committed and pushed): the home page's Game
+Updates / Wiki & Tools Updates panels now show 3–6 entries each
+(`PREVIEW_MIN` / `PREVIEW_MAX` in wiki-tool.js), still height-balanced.
+Before, balancing could pick only 1 entry per side.
+
 2026-10-20, very last (committed and pushed): replaced the outdated ore duplication
 picture in the Ore Replicator / Dual Plasma Upgrader Stats for Nerds with the
 player's new screenshot. It's `icons/wiki/mechanics/ore-duplication-v2.jpg`

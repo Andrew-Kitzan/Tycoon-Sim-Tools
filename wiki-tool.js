@@ -2984,6 +2984,9 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
   // the other's by more than one entry — the finest granularity possible
   // without splitting an entry in half. Falls back to 1 entry per panel if
   // one side has no data at all.
+  const PREVIEW_MIN = 3;
+  const PREVIEW_MAX = 6;
+
   function measureEntryHeights(container, formatFn, data) {
     if (!data.length) return [];
     container.innerHTML = formatFn(data);
@@ -3025,12 +3028,19 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
     // whichever (i, j) pair anywhere across that whole search comes closest
     // overall — a real closest-fit instead of "first count that's tall
     // enough," which could overshoot by up to a whole entry's height.
-    let bestI = Math.min(1, dataA.length);
-    let bestJ = Math.min(1, dataB.length);
+    // Each panel shows between PREVIEW_MIN and PREVIEW_MAX entries (or all
+    // of them if it has fewer). Without the minimum, one long entry on each
+    // side made 1 + 1 the closest fit, so the home page only ever showed the
+    // single latest update (player-reported, 2026-10-20).
+    const range = (length) => [Math.min(PREVIEW_MIN, length), Math.min(PREVIEW_MAX, length)];
+    const [minA, maxA] = range(dataA.length);
+    const [minB, maxB] = range(dataB.length);
+    let bestI = minA;
+    let bestJ = minB;
     let bestDiff = Infinity;
-    for (let i = dataA.length ? 1 : 0; i <= dataA.length; i += 1) {
+    for (let i = minA; i <= maxA; i += 1) {
       const heightA = i === 0 ? 0 : cumA[i - 1];
-      for (let j = dataB.length ? 1 : 0; j <= dataB.length; j += 1) {
+      for (let j = minB; j <= maxB; j += 1) {
         const heightB = j === 0 ? 0 : cumB[j - 1];
         const diff = Math.abs(heightA - heightB);
         if (diff < bestDiff) {
