@@ -120,6 +120,13 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-20, very last (committed and pushed): replaced the outdated ore duplication
+picture in the Ore Replicator / Dual Plasma Upgrader Stats for Nerds with the
+player's new screenshot. It's `icons/wiki/mechanics/ore-duplication-v2.jpg`
+(new name so browsers don't show the cached old one); the old
+`ore-duplication.jpg` was git-removed. Dropped "(from the database)" from
+the caption.
+
 2026-10-20, last (committed and pushed): **Wiki & Tools Updates now look like Game
 Updates.** `data/wiki-updates-data.json` entries are `{date, title,
 highlights}` (`formatUpdateEntries()` in wiki-tool.js still falls back to

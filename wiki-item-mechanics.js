@@ -132,7 +132,7 @@
         'Let the <strong>clone</strong> continue straight on into the Dual Plasma Upgrader, which upgrades it.',
         'Nothing original ever touches the Dual Plasma, so nothing gets destroyed — you keep all of your original ore and get an upgraded clone on top.',
       ]),
-      figure('ore-duplication.jpg', 'The originals drop into the teleporter below the Ore Replicator, while the clones continue right through the Dual Plasma Upgrader (from the database).'),
+      figure('ore-duplication-v2.jpg', 'The originals drop into the teleporter below the Ore Replicator, while the clones continue right through the Dual Plasma Upgrader.'),
     ].join(''),
   });
 
