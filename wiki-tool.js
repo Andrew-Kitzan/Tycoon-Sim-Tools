@@ -1158,6 +1158,13 @@
         .filter((v) => item.variants?.[v]?.sheetOdds)
         .map((v) => `<span class="wiki-secret-odds-line"><span>${escapeHtml(v)}</span> ${escapeHtml(item.variants[v].sheetOdds)}</span>`)
         .join('') || '—';
+      // Hidden items (crate data `hidden`, e.g. Tornado Alley before its
+      // release) keep their odds and crate but show ??? for everything else,
+      // same as the Index and Luck Simulator.
+      if (item.hidden) {
+        rows.set(name, { name, type: HIDDEN_TEXT, how, odds, effect: HIDDEN_TEXT, record, hidden: true });
+        continue;
+      }
       rows.set(name, { name, type: secretTypeLabel(record?.type ?? (crate ? null : '')) || '—', how, odds, effect: secretEffectText(record, base), record });
     }
     for (const record of globalThis.TycoonDatabase?.records ?? []) {
@@ -1179,7 +1186,7 @@
     // Crate-only Secrets (e.g. Tornado Alley) may not be in the main database
     // yet; take their type from the Index data when that's the case.
     for (const row of rows.values()) {
-      if (row.type !== '—') continue;
+      if (row.hidden || row.type !== '—') continue;
       const indexItem = indexItems.find((i) => i.name === row.name);
       if (indexItem?.type) row.type = secretTypeLabel(indexItem.type);
     }
@@ -1191,9 +1198,15 @@
     await ensureIndexItems();
     const rows = buildSecretRows(merchant, furnaceLoot);
     const order = data?.order ?? [];
-    const orderList = order.map((entry) => `
-      <li><strong>${formatCodeRewards([entry.name])}</strong>
-        <span class="wiki-secret-why">${escapeHtml(entry.why ?? '')}</span></li>`).join('');
+    const typeOf = (name) => rows.find((row) => row.name === name)?.type ?? '—';
+    const isHidden = (name) => Boolean(rows.find((row) => row.name === name)?.hidden);
+    const orderRows = order.map((entry, i) => `
+      <tr>
+        <td class="wiki-secret-rank">#${i + 1}</td>
+        <td>${formatCodeRewards([entry.name])}</td>
+        <td>${escapeHtml(typeOf(entry.name))}</td>
+        <td>${isHidden(entry.name) ? HIDDEN_TEXT : escapeHtml(entry.why ?? '')}</td>
+      </tr>`).join('');
     const sorted = [...rows].sort((a, b) => {
       const ta = SECRET_TYPE_ORDER.indexOf(a.type);
       const tb = SECRET_TYPE_ORDER.indexOf(b.type);
@@ -1211,7 +1224,12 @@
       <p>${escapeHtml(data?.intro ?? 'Secrets are the rarest items in the game.')}</p>
       <h3 class="wiki-section-heading">Which Secret should I hunt first?</h3>
       <p>${escapeHtml(data?.huntRule ?? '')}</p>
-      <ol class="wiki-secret-order">${orderList}</ol>
+      <div class="wiki-scanner-scroll">
+        <table class="wiki-data-table wiki-secret-table">
+          <thead><tr><th>Rank</th><th>Secret</th><th>Type</th><th>Why</th></tr></thead>
+          <tbody>${orderRows}</tbody>
+        </table>
+      </div>
       <h3 class="wiki-section-heading">Every Secret and how to get it</h3>
       <p>Odds are base odds (Unbox Luck 1). More Unbox Luck improves crate odds, and the Luck Simulator shows your exact odds.</p>
       <div class="wiki-scanner-scroll">
@@ -2593,6 +2611,39 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
     }
   }
 
+  // "Derp is live" (Twitchium Dropper's obtainment) anywhere in wiki text
+  // links to Derp's Twitch, so players can check whether he's streaming.
+  const DERP_TWITCH_URL = 'https://www.twitch.tv/derpmonster83';
+  const DERP_LIVE_PATTERN = /Derp is live/gi;
+  function linkDerpLiveIn(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node) => (node.parentElement?.closest(TEXT_LINK_SKIP) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (const node of nodes) {
+      const text = node.nodeValue;
+      DERP_LIVE_PATTERN.lastIndex = 0;
+      if (!DERP_LIVE_PATTERN.test(text)) continue;
+      DERP_LIVE_PATTERN.lastIndex = 0; // matchAll copies lastIndex; test() moved it past the match
+      const frag = document.createDocumentFragment();
+      let last = 0;
+      for (const match of text.matchAll(DERP_LIVE_PATTERN)) {
+        if (match.index > last) frag.append(text.slice(last, match.index));
+        const link = document.createElement('a');
+        link.className = 'wiki-twitch-link';
+        link.href = DERP_TWITCH_URL;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = match[0];
+        frag.append(link);
+        last = match.index + match[0].length;
+      }
+      if (last < text.length) frag.append(text.slice(last));
+      node.replaceWith(frag);
+    }
+  }
+
   function activateWikiLink(chip) {
     const target = resolveWikiLink(chip.dataset.wikiLink, chip.dataset.wikiRef, chip.dataset.wikiTier);
     if (!target) return;
@@ -2612,6 +2663,7 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
   // already loaded by then.
   function activateWikiLinksIn(root) {
     if (!root) return;
+    linkDerpLiveIn(root);
     linkItemNamesIn(root);
     root.querySelectorAll('[data-wiki-link]').forEach(activateWikiLink);
   }
@@ -2619,6 +2671,7 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
   async function activateWikiLinks(token) {
     await loadLinkTargets();
     if (token !== pageToken) return;
+    linkDerpLiveIn(pageBody);
     linkItemNamesIn(pageBody);
     pageBody.querySelectorAll('[data-wiki-link]').forEach(activateWikiLink);
   }
@@ -3224,6 +3277,26 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
       });
     });
   }
+
+  // ---- "Derp is live" banner (home page) ----------------------------------------
+  // Twitchium Dropper can only drop while Derp is streaming, so the home
+  // page shows a banner when he's live. Twitch's own API needs a secret key,
+  // which a static site can't hold, so this asks DecAPI (a free public Twitch
+  // helper, CORS-enabled): it answers "<name> is offline" or an uptime like
+  // "2 hours, 5 minutes". Any failure just leaves the banner hidden.
+  const liveBanner = document.querySelector('#wiki-live-banner');
+  const DERP_LIVE_CHECK_URL = 'https://decapi.me/twitch/uptime/derpmonster83';
+  async function checkDerpLive() {
+    if (!liveBanner) return;
+    try {
+      const text = await fetch(DERP_LIVE_CHECK_URL, { cache: 'no-store' }).then((res) => (res.ok ? res.text() : ''));
+      liveBanner.hidden = !/\d+\s*(second|minute|hour|day)/i.test(text);
+    } catch {
+      liveBanner.hidden = true;
+    }
+  }
+  checkDerpLive();
+  setInterval(checkDerpLive, 5 * 60 * 1000);
 
   wireBalancedUpdatePanels(
     { containerId: '#wiki-tools-updates', dataUrl: 'data/wiki-updates-data.json', formatFn: formatUpdateEntries, pageKey: 'updates', buttonId: 'wiki-view-all-updates' },

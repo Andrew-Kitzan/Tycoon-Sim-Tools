@@ -968,6 +968,14 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-hero-title { margin: 0 0 14px; font-size: 2.4rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 24px rgba(124,225,186,.45); }
 .wiki-hero-sub { max-width: 640px; margin: 0 auto 22px; color: var(--text); font-size: .95rem; line-height: 1.5; }
 .wiki-hero-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.wiki-live-banner { display: flex; align-items: center; gap: 12px; margin-top: 16px; padding: 14px 18px; border: 1px solid #9146ff; border-radius: 12px; background: linear-gradient(90deg, rgba(145,70,255,.28), rgba(145,70,255,.08)); color: var(--text); text-decoration: none; font-size: .92rem; }
+.wiki-live-banner[hidden] { display: none; }
+.wiki-live-banner:hover, .wiki-live-banner:focus-visible { border-color: #bf94ff; background: linear-gradient(90deg, rgba(145,70,255,.4), rgba(145,70,255,.12)); outline: none; }
+.wiki-live-banner strong { color: #d4b8ff; }
+.wiki-live-dot { flex: 0 0 auto; width: 12px; height: 12px; border-radius: 50%; background: #ff3b3b; box-shadow: 0 0 0 0 rgba(255,59,59,.7); animation: wiki-live-pulse 1.6s ease-out infinite; }
+@keyframes wiki-live-pulse { 0% { box-shadow: 0 0 0 0 rgba(255,59,59,.7); } 70% { box-shadow: 0 0 0 10px rgba(255,59,59,0); } 100% { box-shadow: 0 0 0 0 rgba(255,59,59,0); } }
+.wiki-twitch-link { color: #bf94ff; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.wiki-twitch-link:hover, .wiki-twitch-link:focus-visible { color: #d4b8ff; }
 .wiki-hero-link {
   padding: 10px 18px;
   border: 1px solid var(--line);
@@ -1043,11 +1051,7 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-nav-tile-conveyor { --tile-accent: #b83fa0; --tile-accent-hover: #ff8fe0; background-image: url('icons/wiki/conveyor-bg.png'); }
 .wiki-nav-tile-codes { --tile-accent: #d6337a; --tile-accent-hover: #ff85c0; background-image: url('icons/wiki/codes-bg.png'); }
 .wiki-nav-tile-secrets { --tile-accent: #2fb8d6; --tile-accent-hover: #8fefff; background-image: url('icons/wiki/secrets-bg.png'); }
-.wiki-secret-order { margin: 0 0 6px; padding-left: 22px; }
-.wiki-secret-order li { margin-bottom: 10px; line-height: 1.5; }
-.wiki-secret-order li::marker { font-weight: 800; color: var(--accent); }
-.wiki-secret-order li > strong { display: inline-flex; vertical-align: middle; }
-.wiki-secret-why { display: block; color: var(--muted); font-size: .86rem; }
+.wiki-secret-rank { font-weight: 800; color: var(--accent); white-space: nowrap; }
 .wiki-secret-odds-line { display: block; white-space: nowrap; }
 .wiki-secret-odds-line > span { color: var(--muted); font-size: .78rem; }
 .wiki-secret-table td:last-child { min-width: 220px; }

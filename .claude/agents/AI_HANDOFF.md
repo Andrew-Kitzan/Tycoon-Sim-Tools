@@ -120,6 +120,30 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-20, Derp live links + banner (committed and pushed with the Secrets
+follow-up below; the updates-log Secrets bullet mentions the banner, NOT the
+Tornado Alley hiding, per the player's earlier rule): any "Derp is live" text in the wiki (Twitchium
+Dropper's obtainment) becomes a link to https://www.twitch.tv/derpmonster83
+(`linkDerpLiveIn()`, runs in the same pass as item-name links). The home
+page shows a purple "Derp is live on Twitch!" banner (`#wiki-live-banner`)
+while he's streaming. It's checked on load and every 5 minutes via DecAPI
+(`https://decapi.me/twitch/uptime/derpmonster83`, a free CORS-enabled
+public helper, because Twitch's own API needs a secret key a static site
+can't hold). An uptime reply means live and "is offline" means hidden. Any
+error also keeps it hidden. If DecAPI ever goes away, the banner just never
+shows; nothing else breaks.
+
+2026-10-20, Secrets page follow-up (committed and pushed): the hunt order is now a
+table (Rank, Secret, Type, Why) styled like the "Every Secret" table.
+**Tornado Alley's stats are hidden on the Secrets page** (player: "dont
+reveal tornado alley stats yet! ill let u know when u can"). Any crate item
+with `hidden` shows ??? for type, effect and its hunt-order reason, but
+keeps crate and odds, same as the Index. Its reason was also removed from
+the public `data/manual/secrets-data.json`. **When the player allows it**,
+restore the reason: "Another ×8, on a fast belt. It has a chance to fling
+your ore." and clear its `hidden` flag the same way the Index and Luck
+Simulator do.
+
 2026-10-20, Secrets page (committed and pushed): new **Secrets** wiki page and home
 tile (`secrets` page key, `renderSecretsPage()` in wiki-tool.js, tile
 `.wiki-nav-tile-secrets` with `icons/wiki/secrets-bg.png` from the player's
