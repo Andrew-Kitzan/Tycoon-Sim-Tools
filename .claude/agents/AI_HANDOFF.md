@@ -120,6 +120,11 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-21 (committed and pushed): player confirmed capgrader ranges include the top
+value (exactly 15K still gets a 15K-cap upgrade). The code was already
+inclusive; fixed the wording in docs/BUILD_RULES.md, added a regression test,
+and recorded it in AI_DECISIONS.md.
+
 2026-10-20, Derp live links + banner (committed and pushed with the Secrets
 follow-up below; the updates-log Secrets bullet mentions the banner, NOT the
 Tornado Alley hiding, per the player's earlier rule): any "Derp is live" text in the wiki (Twitchium

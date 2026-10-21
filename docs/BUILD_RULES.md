@@ -357,9 +357,14 @@ When the expected furnace cash-in value and furnace entry rate are known, report
   one legal Lunar Landing per dropper or a stronger legal additive start. Those
   exceptions do not permit normal multipliers inside the ranged chain.
 - Pick a final capgrader and keep every input inside its allowed range.
+- Capgrader ranges are **inclusive at both ends** (player-confirmed in game,
+  2026-10-21). An ore worth exactly the upper threshold still gets the
+  upgrade (15K on a 15K cap works), and only a value above it (15,001) is out
+  of range.
 - The first optimization priority is the ore value immediately **before** the
   final capgrader. Bring that input as close as practical to the final
-  capgrader's upper threshold without reaching or exceeding it.
+  capgrader's upper threshold, up to and including the threshold itself, but
+  never above it.
 - Measure and report the remaining gap between the planned input and the final
   capgrader's upper threshold. A faster or smaller chain must not be chosen when
   it leaves a meaningfully larger cap gap.
@@ -368,8 +373,8 @@ When the expected furnace cash-in value and furnace entry rate are known, report
   saved space enables a stronger later multiplier or otherwise improves expected
   cash/min. If space is not constrained, continue favoring the closer cap input.
 - Example: for a final capgrader with a 135K upper threshold, prefer an input
-  close to 134K–134.999K over an input near 101K, even when the 101K chain is
-  faster or shorter.
+  close to 134K–135K (exactly 135K is ideal) over an input near 101K, even when
+  the 101K chain is faster or shorter.
 - A high-cap item may appear later if its input is still within range.
 - Capgrader scanners such as Precision, Ancient, and Azure may only be the final
   capgrader because their upgrades are not guaranteed. This final-capgrader rule

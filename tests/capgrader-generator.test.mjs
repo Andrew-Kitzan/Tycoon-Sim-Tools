@@ -430,4 +430,19 @@ function ownNothing() {
   assert.equal(starPlan.gapTiles, 2, 'in-game confirmed: with 2-tile gaps');
 }
 
+// ---- Capgrader ranges include the top value (2026-10-21) --------------------
+// Confirmed in game: an ore worth exactly a capgrader's upper threshold still
+// gets the upgrade (15K into a 0-15K capgrader works); 15,001 does not.
+{
+  ownNothing();
+  getToggle('Fine Point Upgrader').owned = true;
+  const pool = legalPool();
+  const fine = pool.capgraders.find((record) => record.name === 'Fine Point Upgrader');
+  assert(fine && /15K/i.test(String(fine.range)), 'test setup: Fine Point Upgrader is the 0-15K capgrader');
+  const atCap = optimizeCapgraderChain(15000, 1, pool, false);
+  assert(atCap.chain.some((entry) => entry.record.name === 'Fine Point Upgrader' && entry.before === 15000), 'an ore worth exactly 15K must still get the 15K capgrader');
+  const overCap = optimizeCapgraderChain(15001, 1, pool, false);
+  assert(!overCap.chain.some((entry) => entry.record.name === 'Fine Point Upgrader'), 'an ore worth 15,001 is above the 15K cap and must not get it');
+}
+
 console.log('Validated capgrader-generator.js legalPool()/optimizeCapgraderChain() search logic.');

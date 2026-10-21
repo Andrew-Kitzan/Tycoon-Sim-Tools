@@ -232,6 +232,18 @@ section exists so a future session can find and use it without re-deriving it.**
   table. They read `globalThis.TycoonScanners.spacing()` from
   capgrader-generator.js, so the wiki and the generator always agree.
 
+## Capgrader ranges are inclusive (2026-10-21, player-confirmed in game)
+
+An ore worth **exactly** a capgrader's upper threshold still gets the
+upgrade (screenshots: $15K into a 15K-cap capgrader was upgraded). Only a
+value above the threshold is out of range. The code already used
+`value <= range.maximum` everywhere (capgrader-generator.js `withinRange`,
+engine/optimizer.mjs, engine/coordinate-map.mjs, planner-core.js, app.js), and
+the engine's near-cap score already treats ratio 1.0 (exactly at the cap) as
+best. Only docs/BUILD_RULES.md wrongly said "without reaching" and used a
+134.999K example; it was corrected. Never change these checks to `<`.
+A test in tests/capgrader-generator.test.mjs locks it (15K in, 15,001 out).
+
 ## Known architecture debt
 
 - **`planner-core.js` is a hand-maintained duplicate of `engine/*.mjs`** for
