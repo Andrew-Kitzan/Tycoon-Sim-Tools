@@ -120,6 +120,17 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-10-20, Secrets page (committed and pushed): new **Secrets** wiki page and home
+tile (`secrets` page key, `renderSecretsPage()` in wiki-tool.js, tile
+`.wiki-nav-tile-secrets` with `icons/wiki/secrets-bg.png` from the player's
+Secret Background screenshot, added after Codes as the 14th tile). The hunt
+order and reasons are the PLAYER'S list, in `data/manual/secrets-data.json`
+(edit there). Type, how to get it, odds and effect are read live from
+CrateLuckData, the Merchant data and the Furnace Loot data. Nav: home tile,
+search keywords, Back works, and every Secret item page has a "See which
+Secret to hunt first" link. Today's updates-log entry gained a Secrets
+bullet (still one entry, 4 bullets).
+
 2026-10-20, after the picture push (committed and pushed): the home page's Game
 Updates / Wiki & Tools Updates panels now show 3–6 entries each
 (`PREVIEW_MIN` / `PREVIEW_MAX` in wiki-tool.js), still height-balanced.

@@ -1092,6 +1092,136 @@
     return merchantDataPromise;
   }
 
+  // ---- Secrets page ------------------------------------------------------------
+  // data/manual/secrets-data.json holds only the player's hunt order and the
+  // reason for each pick. Everything else (type, how to get it, odds, what
+  // it does) is read live from the same sources the rest of the wiki uses:
+  // crate Secrets from globalThis.CrateLuckData, Godly Stone Dropper from the
+  // Merchant data, and Corium Dropper from the Furnace Loot data, so the
+  // page can't drift from those pages.
+  let secretsDataPromise = null;
+  function loadSecretsData() {
+    if (!secretsDataPromise) {
+      secretsDataPromise = fetch('data/manual/secrets-data.json', { cache: 'no-store' })
+        .then((res) => res.json())
+        .catch(() => null);
+    }
+    return secretsDataPromise;
+  }
+
+  const SECRET_VARIANTS = ['Base', 'Shiny', 'Mythic', 'Shiny Mythic'];
+  const SECRET_TYPE_ORDER = ['Upgrader', 'Furnace', 'Dropper'];
+
+  function secretDatabaseRecord(name) {
+    return (globalThis.TycoonDatabase?.records ?? []).find((r) => r.name === name && r.variant === 'Base') ?? null;
+  }
+
+  function secretTypeLabel(type) {
+    const t = String(type ?? '').toLowerCase();
+    if (t.startsWith('furna')) return 'Furnace'; // the database also spells it "furance"
+    return t ? t[0].toUpperCase() + t.slice(1) : '—';
+  }
+
+  function secretEffectText(record, crateVariant) {
+    const effects = String(crateVariant?.effects ?? record?.effects ?? '').replace(/\s+/g, ' ').trim();
+    const stat = crateVariant?.mainStat ?? record?.mainStat;
+    const statType = String(crateVariant?.mainStatType ?? record?.mainStatType ?? '');
+    const parts = [];
+    if (typeof stat === 'number') {
+      if (/multi/i.test(statType)) parts.push(`×${stat}`);
+      else if (/ore val/i.test(statType) || record?.type === 'dropper') parts.push(`${compactAmount(stat)} ore`);
+      else if (/additive/i.test(statType)) parts.push(`+${compactAmount(stat)}`);
+      else parts.push(`×${stat}`);
+    }
+    if (effects && effects.toLowerCase() !== 'n/a') parts.push(effects);
+    return parts.join('. ') || '—';
+  }
+
+  function compactAmount(value) {
+    const units = [[1e12, 'T'], [1e9, 'B'], [1e6, 'M'], [1e3, 'K']];
+    const [div, suffix] = units.find(([min]) => value >= min) ?? [1, ''];
+    return `${Number((value / div).toFixed(2))}${suffix}`;
+  }
+
+  function buildSecretRows(merchant, furnaceLoot) {
+    const crateData = globalThis.CrateLuckData ?? { crates: [], items: {} };
+    const rows = new Map();
+    for (const [name, item] of Object.entries(crateData.items ?? {})) {
+      if (String(item.rarity).toLowerCase() !== 'secret') continue;
+      const crate = (crateData.crates ?? []).find((c) => c.items.includes(name));
+      const base = item.variants?.Base;
+      const record = secretDatabaseRecord(name);
+      const how = item.anyCrate
+        ? escapeHtml(base?.obtainment ?? 'Any crate')
+        : crate ? `${escapeHtml(crate.name)} Crate (${escapeHtml(crate.cost)})` : escapeHtml(base?.obtainment ?? '—');
+      const odds = SECRET_VARIANTS
+        .filter((v) => item.variants?.[v]?.sheetOdds)
+        .map((v) => `<span class="wiki-secret-odds-line"><span>${escapeHtml(v)}</span> ${escapeHtml(item.variants[v].sheetOdds)}</span>`)
+        .join('') || '—';
+      rows.set(name, { name, type: secretTypeLabel(record?.type ?? (crate ? null : '')) || '—', how, odds, effect: secretEffectText(record, base), record });
+    }
+    for (const record of globalThis.TycoonDatabase?.records ?? []) {
+      if (record.variant !== 'Base' || String(record.rarity).toLowerCase() !== 'secret' || rows.has(record.name)) continue;
+      let how = escapeHtml(record.source ?? '—');
+      let odds = '—';
+      const stock = (merchant?.stock ?? []).find((s) => s.name === record.name);
+      if (stock) {
+        how = `Traveling Merchant, ${formatCrystalCost(stock.cost)}`;
+        odds = `${escapeHtml(stock.odds)} per stock slot`;
+      }
+      const loot = (furnaceLoot?.lootOdds ?? []).find((l) => l.reward === record.name);
+      if (loot) {
+        how = 'Furnace Loot';
+        odds = `${escapeHtml(loot.odds)} per loot drop (50% chance in about ${escapeHtml(loot.time50)} of AFK at max mastery)`;
+      }
+      rows.set(record.name, { name: record.name, type: secretTypeLabel(record.type), how, odds, effect: secretEffectText(record, null), record });
+    }
+    // Crate-only Secrets (e.g. Tornado Alley) may not be in the main database
+    // yet; take their type from the Index data when that's the case.
+    for (const row of rows.values()) {
+      if (row.type !== '—') continue;
+      const indexItem = indexItems.find((i) => i.name === row.name);
+      if (indexItem?.type) row.type = secretTypeLabel(indexItem.type);
+    }
+    return [...rows.values()];
+  }
+
+  async function renderSecretsPage() {
+    const [data, merchant, furnaceLoot] = await Promise.all([loadSecretsData(), loadMerchantData(), loadFurnaceLootData()]);
+    await ensureIndexItems();
+    const rows = buildSecretRows(merchant, furnaceLoot);
+    const order = data?.order ?? [];
+    const orderList = order.map((entry) => `
+      <li><strong>${formatCodeRewards([entry.name])}</strong>
+        <span class="wiki-secret-why">${escapeHtml(entry.why ?? '')}</span></li>`).join('');
+    const sorted = [...rows].sort((a, b) => {
+      const ta = SECRET_TYPE_ORDER.indexOf(a.type);
+      const tb = SECRET_TYPE_ORDER.indexOf(b.type);
+      return (ta < 0 ? 99 : ta) - (tb < 0 ? 99 : tb) || a.name.localeCompare(b.name);
+    });
+    const tableRows = sorted.map((row) => `
+      <tr${anchorAttr('secret', row.name)}>
+        <td>${formatCodeRewards([row.name])}</td>
+        <td>${escapeHtml(row.type)}</td>
+        <td>${row.how}</td>
+        <td class="wiki-secret-odds">${row.odds}</td>
+        <td>${escapeHtml(row.effect)}</td>
+      </tr>`).join('');
+    return `
+      <p>${escapeHtml(data?.intro ?? 'Secrets are the rarest items in the game.')}</p>
+      <h3 class="wiki-section-heading">Which Secret should I hunt first?</h3>
+      <p>${escapeHtml(data?.huntRule ?? '')}</p>
+      <ol class="wiki-secret-order">${orderList}</ol>
+      <h3 class="wiki-section-heading">Every Secret and how to get it</h3>
+      <p>Odds are base odds (Unbox Luck 1). More Unbox Luck improves crate odds, and the Luck Simulator shows your exact odds.</p>
+      <div class="wiki-scanner-scroll">
+        <table class="wiki-data-table wiki-secret-table">
+          <thead><tr><th>Secret</th><th>Type</th><th>How to get it</th><th>Base odds</th><th>What it does</th></tr></thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+      </div>`;
+  }
+
   // Potions are listed by name + rarity, but their icons are keyed by tier
   // ("Tier3 Luck Potion.png"), so map rarity to tier the same way the Brewer
   // page does. Tier 1 Mythic's file is "tier1 Mythic Potion.png" (no "Luck"),
@@ -2110,6 +2240,7 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
         <h3 class="wiki-section-heading">How to Get</h3>
         ${howToGet.join('') || (p2w ? '' : '<p>—</p>')}
         ${p2w}
+        ${item.rarity === 'Secret' ? '<button type="button" class="wiki-notes-link" data-wiki-page-link="secrets">See which Secret to hunt first</button>' : ''}
         ${item.variantList.length > 1 ? `
           <h3 class="wiki-section-heading">All Variants</h3>
           <table class="wiki-data-table wiki-index-compare">
@@ -2552,6 +2683,10 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
       title: 'Merchant',
       body: renderMerchantPage,
     },
+    secrets: {
+      title: 'Secrets',
+      body: renderSecretsPage,
+    },
     achievements: {
       title: 'Achievements',
       body: renderAchievementsPage,
@@ -2704,6 +2839,7 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
     index: 'items droppers upgraders furnaces item index tiers chat tags collection',
     rebirth: 'rebirths rewards prestige',
     merchant: 'traveling merchant shop stock restock',
+    secrets: 'secret secrets hunt rarest best order which secret odds',
     achievements: 'achievements rewards',
     mastery: 'masteries upgrades levels',
     events: 'events event cycle lucky luck',

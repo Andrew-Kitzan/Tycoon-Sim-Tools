@@ -1,12 +1,12 @@
 [
   {
     "date": "2026-10-20",
-    "title": "Capgrader Generator and scanner update",
+    "title": "Capgrader Generator, scanner and Secrets update",
     "highlights": [
-      "Capgrader Generator: new Speed and Distance toggles (turn both off to just end with the most money), and it now accounts for the 100-ore limit and slow conveyors like Castle Fortress",
-      "Capgrader Generator finds much better chains, with a new three-column layout",
-      "Scanners of the same type sweep in sync, so the generator now spaces them out, and every scanner page has a Scanner distance calculator (tested in game at ore size 1)",
-      "Azure Scanner hit chances corrected"
+      "Capgrader Generator: new Speed and Distance toggles (turn both off to just end with the most money), it accounts for the 100-ore limit and slow conveyors like Castle Fortress, and it finds much better chains",
+      "Scanners of the same type sweep in sync, so the generator now spaces them out, and every scanner page has a Scanner distance calculator (tested in game at ore size 1). Azure hit chances corrected",
+      "New Secrets page: which Secret to hunt first and why, plus every Secret's odds and how to get it",
+      "The home page shows more recent updates, and update entries now look like Game Updates"
     ]
   },
   {
