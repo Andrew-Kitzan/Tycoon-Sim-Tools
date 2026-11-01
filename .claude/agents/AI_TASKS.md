@@ -12,7 +12,11 @@ items to AI_HANDOFF.md's "What I changed" rather than just deleting them here.
   `data/manual/progression-income-data.json`. **Rules for every
   measurement: no codes, no achievement items, no secret items.** Masteries
   are just part of each setup; the player said not to track or analyze
-  them, so don't ask which mastery caused a stat change. Done so
+  them, so don't ask which mastery caused a stat change. **Also don't
+  explain where a plot size (or other stat) came from** (rebirth reward,
+  mastery, …) — just state the plot size at each crate as documented
+  (player's request, 2026-11-01; those derived notes were removed from the
+  data file). Done so
   far: Basic (19x19 build area, ~40K/min; end-of-tier luck stats 6.83
   unbox luck, 0.57 unbox speed, 1/2048 shiny and mythic); Advanced (21x21,
   ~16M/min, 9.9 luck, 0.5 speed, 1/512 shiny and mythic, R1 done here);

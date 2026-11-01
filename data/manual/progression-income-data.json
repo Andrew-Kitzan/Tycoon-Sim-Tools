@@ -28,7 +28,7 @@
       "rebirthsReached": [
         1
       ],
-      "notes": "Rebirth 1 (1M) was done during this tier. Its +2 plot size reward explains 19x19 -> 21x21, and its +1 luck is part of the luck increase.",
+      "notes": "Rebirth 1 (1M) was done during this tier.",
       "stage": "early"
     },
     {
@@ -40,7 +40,7 @@
       "shinyOdds": "1/512",
       "mythicOdds": "1/512",
       "rebirthsReached": [],
-      "notes": "No rebirth during this tier. The +3 plot size (21x21 -> 24x24) came from mastery.",
+      "notes": "No rebirth during this tier.",
       "stage": "early"
     },
     {
@@ -54,7 +54,7 @@
       "rebirthsReached": [
         2
       ],
-      "notes": "Rebirth 2 (10B) was done during this tier. Its +4 plot size reward explains 24x24 -> 28x28, and its +1 luck is part of the luck increase.",
+      "notes": "Rebirth 2 (10B) was done during this tier.",
       "stage": "early"
     },
     {
@@ -102,7 +102,7 @@
       "rebirthsReached": [
         3
       ],
-      "notes": "Retested without Castle Fortress: 13T/min (first test with Castle Fortress was 9T). Castle Fortress's slow conveyor (speed 6) plus the longer route was costing throughput, most likely because the base is at the 100-ore cap. Rebirth 3 (50T) was done during this tier; its +1 unbox slot reward explains 1 -> 2 unbox slots (earlier tiers all had 1).",
+      "notes": "Retested without Castle Fortress: 13T/min (first test with Castle Fortress was 9T). Castle Fortress's slow conveyor (speed 6) plus the longer route was costing throughput, most likely because the base is at the 100-ore cap. Rebirth 3 (50T) was done during this tier.",
       "stage": "early"
     },
     {
@@ -118,7 +118,7 @@
       "rebirthsReached": [
         4
       ],
-      "notes": "Rebirth 4 (10Qd) was done during this tier. Its +2 plot size reward explains 28x28 -> 30x30, and its +1 luck is part of the luck increase."
+      "notes": "Rebirth 4 (10Qd) was done during this tier."
     },
     {
       "highestCrate": "Periastron",
@@ -133,7 +133,7 @@
       "rebirthsReached": [
         5
       ],
-      "notes": "Rebirth 5 (25Qn) was done during this tier. Its +4 plot size reward explains 30x30 -> 34x34, and its +1 luck is part of the luck increase. First tier with Star Scanner and World Eater available."
+      "notes": "Rebirth 5 (25Qn) was done during this tier. First tier with Star Scanner and World Eater available."
     }
   ],
   "stages": {
