@@ -120,6 +120,11 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-11-09: Brewer page now states (player-confirmed) that potion timers
+pause while the player is offline (not in the game) and resume on rejoin —
+a highlighted note under the Potion Effects table in `renderBrewerPage()`.
+Not added to the update log.
+
 2026-10-21, White hat Dropper icon (committed and pushed): the icon existed as
 `icons/items/White Hat Dropper.png` but the data name is "White hat Dropper"
 (lowercase h). Windows ignores case, so it looked fine locally, but GitHub

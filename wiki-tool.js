@@ -845,7 +845,11 @@
           </tr>
         </thead>
         <tbody>${tierRows || '<tr><td colspan="4">Not filled in yet.</td></tr>'}</tbody>
-      </table>`;
+      </table>
+      <p class="wiki-index-lie"><strong>Potion timers only count down while
+      you're playing.</strong> When you're offline (not in the game), an
+      active potion's timer is paused and picks up where it left off the next
+      time you join — so going offline doesn't waste a potion.</p>`;
   }
 
   // Enchanter data lives in data/manual/enchanter-data.json — same
