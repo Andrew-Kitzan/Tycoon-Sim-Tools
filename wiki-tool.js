@@ -1519,7 +1519,7 @@
         return `
       <tr${i === 0 ? anchorAttr('mastery', mastery.name) : ''}>
         ${i === 0 ? `<td rowspan="${levels.length}">${formatMasteryName(mastery.name)}</td>` : ''}
-        ${i === 0 ? `<td rowspan="${levels.length}">${mastery.description ? escapeHtml(mastery.description) : '—'}</td>` : ''}
+        ${i === 0 ? `<td rowspan="${levels.length}">${mastery.description ? escapeHtml(mastery.description) : '—'}${mastery.detailsPage ? `<br><button type="button" class="wiki-notes-link" data-wiki-page-link="${escapeHtml(mastery.detailsPage)}">${escapeHtml(mastery.detailsLabel ?? 'More details')}</button>` : ''}</td>` : ''}
         <td>Level ${i + 1}</td>
         <td>${costCell}</td>
         <td>${formatMasteryEffect(mastery.name, level.effect)}</td>
@@ -1541,23 +1541,42 @@
           </tr>
         </thead>
         <tbody>${rows || '<tr><td colspan="5">Not filled in yet.</td></tr>'}</tbody>
-      </table>
-      ${sorted.map(masteryHowItWorksHtml).join('')}`;
+      </table>`;
   }
 
   // A mastery's optional "howItWorks" block in mastery-data.json — a longer
-  // breakdown than fits in the table's Description cell (Offline Earnings):
+  // breakdown than fits in the table's Description cell, shown on the
+  // mastery's own page (Offline Earnings → the offline-earnings page, linked
+  // from its Mastery row via "detailsPage"):
   // { title, sections: [{ heading, formula?: [lines], list?: [text] }] }.
   function masteryHowItWorksHtml(mastery) {
     const info = mastery.howItWorks;
     if (!info?.sections?.length) return '';
-    const sections = info.sections.map((section) => `
-      ${section.heading ? `<h4 class="wiki-scanner-subheading">${escapeHtml(section.heading)}</h4>` : ''}
+    return info.sections.map((section) => `
+      <h3 class="wiki-section-heading">${escapeHtml(section.heading ?? '')}</h3>
       ${section.formula?.length ? `<div class="wiki-scanner-scroll"><pre class="wiki-scanner-formula">${escapeHtml(section.formula.join('\n'))}</pre></div>` : ''}
       ${section.list?.length ? `<ul class="wiki-mech-steps">${section.list.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''}`).join('');
+  }
+
+  // The Offline Earnings page: the mastery's levels, then its breakdown.
+  async function renderOfflineEarningsPage() {
+    const masteries = await loadMasteryData();
+    const mastery = masteries.find((m) => m.name.trim().toLowerCase() === 'offline earnings');
+    if (!mastery) return '<p>Not filled in yet.</p>';
+    const levelRows = (mastery.levels ?? []).map((level, i) => {
+      const currency = String(level.currency ?? '').trim().toLowerCase();
+      const cost = currency.startsWith('crystal') ? formatCrystalCost(level.cost) : currency === 'cash' ? formatCashCost(level.cost) : '—';
+      return `<tr><td>Level ${i + 1}</td><td>${cost}</td><td>${level.effect ? escapeHtml(level.effect) : '—'}</td></tr>`;
+    }).join('');
     return `
-      <h3 class="wiki-section-heading"${anchorAttr('mastery-info', mastery.name)}>${escapeHtml(info.title ?? mastery.name)}</h3>
-      <div class="wiki-mech">${sections}</div>`;
+      <p>${escapeHtml(mastery.description ?? '')} You can buy the levels on the
+      <button type="button" class="wiki-notes-link" data-wiki-page-link="mastery">Mastery page</button>.</p>
+      <h3 class="wiki-section-heading">Mastery Levels</h3>
+      <table class="wiki-data-table">
+        <thead><tr><th>Level</th><th>Cost</th><th>Multiplier</th></tr></thead>
+        <tbody>${levelRows}</tbody>
+      </table>
+      ${masteryHowItWorksHtml(mastery)}`;
   }
 
   // Wires up any [data-wiki-page-link] buttons in the current page body
@@ -2773,6 +2792,11 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
       body: renderMasteryPage,
       after: wirePageLinks,
     },
+    'offline-earnings': {
+      title: 'Offline Earnings',
+      body: renderOfflineEarningsPage,
+      after: wirePageLinks,
+    },
     events: {
       title: 'Events',
       body: renderEventsPage,
@@ -2919,6 +2943,7 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
     secrets: 'secret secrets hunt rarest best order which secret odds',
     achievements: 'achievements rewards',
     mastery: 'masteries upgrades levels',
+    'offline-earnings': 'offline earnings afk away idle payout mastery money while offline',
     events: 'events event cycle lucky luck',
     'furnace-loot': 'furnace loot drops corium',
     codes: 'codes redeem promo free rewards',

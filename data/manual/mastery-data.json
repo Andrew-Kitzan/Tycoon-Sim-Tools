@@ -116,7 +116,9 @@
 
   {
     "name": "Offline Earnings",
-    "description": "Earn cash while you're offline. Each level sets how much of your offline rate you get — see How Offline Earnings Work below the table.",
+    "description": "Earn cash while you're offline. Each level sets how much of your offline rate you get.",
+    "detailsPage": "offline-earnings",
+    "detailsLabel": "How offline earnings work",
     "levels": [
       { "currency": "Cash", "cost": "1k", "effect": "0.1x offline earnings (10%)" },
       { "currency": "Cash", "cost": "30k", "effect": "0.2x offline earnings (20%)" },

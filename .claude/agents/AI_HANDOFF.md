@@ -137,6 +137,16 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   effects, and a `howItWorks` block (sections: heading / formula / list)
   rendered under the Mastery table by `masteryHowItWorksHtml()` — reusable
   for any other mastery.
+- Follow-up (same day): the breakdown moved to its **own wiki page**,
+  `offline-earnings` (`renderOfflineEarningsPage()`: description, a
+  Level / Cost / Multiplier table, then the `howItWorks` sections). Home
+  nav tile `.wiki-nav-tile-offline-earnings` sits right after Mastery and
+  points at `icons/wiki/offline-earnings-bg.png`, **which the player is
+  still making** — drop the file in with that exact name and the tile
+  picks it up. The Mastery table's Offline Earnings row now has a "How
+  offline earnings work" button (`detailsPage` / `detailsLabel` in
+  `mastery-data.json`, rendered for any mastery that sets them). The page
+  is in search (`SEARCH_PAGE_KEYWORDS`).
 - Plural item names ("Butterfly Droppers") now link too (`buildTextLinkPattern`).
 - Known, pre-existing: the Mastery table is ~570px wide, so the page
   scrolls sideways on phones. Not fixed.

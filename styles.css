@@ -1046,6 +1046,9 @@ table.capgrader-result-table tbody tr:last-child td { color: var(--accent); font
 .wiki-nav-tile-achievements { --tile-accent: #7a3fa8; --tile-accent-hover: #d9a6ff; background-image: url('icons/wiki/achievements-bg.png'); }
 .wiki-nav-tile-decoration { --tile-accent: #c9a227; --tile-accent-hover: #ffe066; background-image: url('icons/wiki/decoration-bg.png'); }
 .wiki-nav-tile-mastery { --tile-accent: #8fa3b3; --tile-accent-hover: #e8f2ff; background-image: url('icons/wiki/mastery-bg.png'); }
+/* icons/wiki/offline-earnings-bg.png is still to come from the player —
+   until it's added the tile just shows its plain accent border. */
+.wiki-nav-tile-offline-earnings { --tile-accent: #3fae7a; --tile-accent-hover: #8ff0c0; background-image: url('icons/wiki/offline-earnings-bg.png'); }
 .wiki-nav-tile-events { --tile-accent: #8a5a2e; --tile-accent-hover: #e0a860; background-image: url('icons/wiki/events-bg.png'); }
 .wiki-nav-tile-furnace-loot { --tile-accent: #6fae2e; --tile-accent-hover: #c6f26b; background-image: url('icons/wiki/furnace-loot-bg.png'); }
 .wiki-nav-tile-conveyor { --tile-accent: #b83fa0; --tile-accent-hover: #ff8fe0; background-image: url('icons/wiki/conveyor-bg.png'); }
