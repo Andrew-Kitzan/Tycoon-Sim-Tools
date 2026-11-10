@@ -149,7 +149,9 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 - Plural item names ("Butterfly Droppers") now link too (`buildTextLinkPattern`).
 - Known, pre-existing: the Mastery table is ~570px wide, so the page
   scrolls sideways on phones. Not fixed.
-- Not added to the update log.
+- Update log: the player then asked for a Wiki & Tools Updates entry —
+  added `2026-11-10 "Offline Earnings page"` (2 bullets) to
+  `data/wiki-updates-data.json`.
 
 2026-11-09: Brewer page now states (player-confirmed) that potion timers
 pause while the player is offline (not in the game) and resume on rejoin —

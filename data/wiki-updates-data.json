@@ -1,5 +1,13 @@
 [
   {
+    "date": "2026-11-10",
+    "title": "Offline Earnings page",
+    "highlights": [
+      "New Offline Earnings page (with its own button on the wiki home page): how offline earnings are worked out, the 15-minute minimum and 7-day cap, why only your last 50 ores from the last 10 minutes count, and tips to get the most from it",
+      "Offline Earnings mastery levels are filled in on the Mastery page: 0.1x up to 0.6x at max level, confirmed with an in-game test"
+    ]
+  },
+  {
     "date": "2026-10-20",
     "title": "Capgrader Generator, scanner and Secrets update",
     "highlights": [
