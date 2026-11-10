@@ -141,9 +141,8 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
   `offline-earnings` (`renderOfflineEarningsPage()`: description, a
   Level / Cost / Multiplier table, then the `howItWorks` sections). Home
   nav tile `.wiki-nav-tile-offline-earnings` sits right after Mastery and
-  points at `icons/wiki/offline-earnings-bg.png`, **which the player is
-  still making** — drop the file in with that exact name and the tile
-  picks it up. The Mastery table's Offline Earnings row now has a "How
+  uses `icons/wiki/offline-earnings-bg.png` (the player's screenshot of
+  Butterfly Droppers + Periastron's Throne, added the same day). The Mastery table's Offline Earnings row now has a "How
   offline earnings work" button (`detailsPage` / `detailsLabel` in
   `mastery-data.json`, rendered for any mastery that sets them). The page
   is in search (`SEARCH_PAGE_KEYWORDS`).
