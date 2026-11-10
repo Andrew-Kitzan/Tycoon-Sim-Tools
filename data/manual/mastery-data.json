@@ -149,7 +149,7 @@
           ],
           "list": [
             "The game remembers your last 50 sold ores, and for each one how much it sold for and how long it was alive.",
-            "The game works in cash per second (players usually track cash per minute because it jumps around a lot less), but your offline rate isn't your real cash per second either. Each ore counts as its value spread over its own trip, so it's like having only one ore on your belt at a time. More droppers or a faster drop rate don't raise it.",
+            "Your offline rate isn't your real cash per second. Each ore counts as its value spread over its own trip, so it's like having only one ore on your belt at a time. More droppers or a faster drop rate don't raise it.",
             "It adds up the ores it remembers and always divides by 50, no matter how many there are. So if only 25 ores were sold in your last 10 minutes, you get half the rate you'd get with 50.",
             "Ores are forgotten once they're about 10 minutes old (counting only time you're in the game), so only ores sold in your last ~10 minutes before leaving count."
           ]
