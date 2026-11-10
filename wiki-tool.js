@@ -1541,7 +1541,23 @@
           </tr>
         </thead>
         <tbody>${rows || '<tr><td colspan="5">Not filled in yet.</td></tr>'}</tbody>
-      </table>`;
+      </table>
+      ${sorted.map(masteryHowItWorksHtml).join('')}`;
+  }
+
+  // A mastery's optional "howItWorks" block in mastery-data.json — a longer
+  // breakdown than fits in the table's Description cell (Offline Earnings):
+  // { title, sections: [{ heading, formula?: [lines], list?: [text] }] }.
+  function masteryHowItWorksHtml(mastery) {
+    const info = mastery.howItWorks;
+    if (!info?.sections?.length) return '';
+    const sections = info.sections.map((section) => `
+      ${section.heading ? `<h4 class="wiki-scanner-subheading">${escapeHtml(section.heading)}</h4>` : ''}
+      ${section.formula?.length ? `<div class="wiki-scanner-scroll"><pre class="wiki-scanner-formula">${escapeHtml(section.formula.join('\n'))}</pre></div>` : ''}
+      ${section.list?.length ? `<ul class="wiki-mech-steps">${section.list.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''}`).join('');
+    return `
+      <h3 class="wiki-section-heading"${anchorAttr('mastery-info', mastery.name)}>${escapeHtml(info.title ?? mastery.name)}</h3>
+      <div class="wiki-mech">${sections}</div>`;
   }
 
   // Wires up any [data-wiki-page-link] buttons in the current page body
@@ -2576,6 +2592,10 @@ hit chance    = (asin(u_hi) − asin(u_lo)) / π</pre>`;
 
   function buildTextLinkPattern() {
     textLinkTargets = new Map(indexItems.map((item) => [item.name, item.name]));
+    // Plurals ("2 Butterfly Droppers") link to the item too.
+    for (const item of indexItems) {
+      if (!/s$/i.test(item.name) && !textLinkTargets.has(`${item.name}s`)) textLinkTargets.set(`${item.name}s`, item.name);
+    }
     for (const [alias, name] of Object.entries(TEXT_LINK_ALIASES)) {
       if (findIndexItem(name)) textLinkTargets.set(alias, name);
     }

@@ -120,6 +120,28 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-11-10: **Offline Earnings worked out from game code + one test.**
+- Code (player screenshots): last 50 sold ores are kept (`OreHistorySize`),
+  each `{value, timeAlive = max(elapsed, 1)}`, aged +10 s every 10 s while
+  in game and dropped at 600 s (`OreExpireT`). On join:
+  `moneyPerSecond = Σ(value / timeAlive) / 50` (always /50, so a part-full
+  list pays less); paid only if offline > 900 s
+  (`TimeBeforeOfflineEarningStarts`), full time counts, capped at 7 days;
+  `payout = moneyPerSecond × offlineTime × OfflineEarnings stat`.
+- Mastery levels' amounts .1/.2/.3/.4/.5/.55/.6 are the **total**
+  multiplier at that level (not cumulative). Confirmed by test: 2 Butterfly
+  Droppers (5M, Basic Furnace, ~0.5 s trip → counts as 1 s), 10 min run,
+  max level, offline 32:50 → predicted 5.91B, game paid 5.72B (the stacking
+  reading would have been 26.1B).
+- `mastery-data.json` Offline Earnings now has a description, the 7
+  effects, and a `howItWorks` block (sections: heading / formula / list)
+  rendered under the Mastery table by `masteryHowItWorksHtml()` — reusable
+  for any other mastery.
+- Plural item names ("Butterfly Droppers") now link too (`buildTextLinkPattern`).
+- Known, pre-existing: the Mastery table is ~570px wide, so the page
+  scrolls sideways on phones. Not fixed.
+- Not added to the update log.
+
 2026-11-09: Brewer page now states (player-confirmed) that potion timers
 pause while the player is offline (not in the game) and resume on rejoin —
 a highlighted note under the Potion Effects table in `renderBrewerPage()`.
