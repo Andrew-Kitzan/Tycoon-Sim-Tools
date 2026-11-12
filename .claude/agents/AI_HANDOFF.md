@@ -120,6 +120,13 @@ for any `data/manual/*.json` (or other content) file, add `{ cache:
 
 ## Last worked on
 
+2026-11-12: the item-page dropdowns (scanner Hit Chance and Stats for
+Nerds, `.wiki-mech-details`) now look like clickable bars: bordered,
+tinted box with a "Show ▾" / "Hide ▴" pill on the right (CSS `::after`),
+the open body boxed to match. Note `.wiki-section-heading:first-child`
+strips the summary's padding/border, so styles.css restates them with a
+more specific selector. Not added to the update log.
+
 2026-11-10: **Offline Earnings worked out from game code + one test.**
 - Code (player screenshots): last 50 sold ores are kept (`OreHistorySize`),
   each `{value, timeAlive = max(elapsed, 1)}`, aged +10 s every 10 s while
